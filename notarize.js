@@ -1,5 +1,4 @@
 require("dotenv").config();
-const { notarize } = require("@electron/notarize");
 
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
@@ -7,6 +6,13 @@ exports.default = async function notarizing(context) {
     return;
   }
 
+  // Skip notarization if Apple credentials are not provided
+  if (!process.env.APPLEID || !process.env.APPLEIDPASS || !process.env.TEAMID) {
+    console.log("Skipping notarization — APPLEID / APPLEIDPASS / TEAMID not set.");
+    return;
+  }
+
+  const { notarize } = require("@electron/notarize");
   const appName = context.packager.appInfo.productFilename;
 
   return await notarize({
