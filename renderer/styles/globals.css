@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
+
 @font-face {
   font-family: "Poppins";
   src: url("../fonts/poppins/Poppins-Regular.ttf");
@@ -39,10 +41,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Symp design tokens ───────────────────────────────────────────── */
+:root,
+[data-theme="symp"] {
+  --symp-bg:          #FAF9F7;
+  --symp-bg-2:        #F2F0EC;
+  --symp-panel:       #FFFFFF;
+  --symp-ink:         #0E0E0F;
+  --symp-ink-inv:     #FFFFFF;
+  --symp-ink-2:       #3A3A3D;
+  --symp-ink-3:       #6F6F75;
+  --symp-line:        rgba(14,14,15,0.08);
+  --symp-line-2:      rgba(14,14,15,0.14);
+  --symp-accent:      #E84C26;
+  --symp-accent-2:    #FF6A3D;
+  --symp-accent-tint: rgba(232,76,38,0.10);
+  --symp-shadow-soft: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 2px rgba(14,14,15,0.05), 0 8px 24px rgba(14,14,15,0.06);
+  --symp-shadow-pop:  0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 14px rgba(14,14,15,0.12), 0 24px 60px rgba(14,14,15,0.18);
+  --symp-radius-card: 14px;
+  --symp-radius-btn:  10px;
+  --symp-font:        "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --symp-mono:        "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+[data-theme="symp-dark"] {
+  --symp-bg:          #0B0B0C;
+  --symp-bg-2:        #131316;
+  --symp-panel:       #16161A;
+  --symp-ink:         #F4F3F0;
+  --symp-ink-inv:     #0E0E0F;
+  --symp-ink-2:       #C9C7C2;
+  --symp-ink-3:       #84827E;
+  --symp-line:        rgba(244,243,240,0.08);
+  --symp-line-2:      rgba(244,243,240,0.16);
+  --symp-accent-tint: rgba(232,76,38,0.18);
+  --symp-shadow-soft: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.5), 0 12px 28px rgba(0,0,0,0.5);
+  --symp-shadow-pop:  0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 20px rgba(0,0,0,0.55), 0 30px 70px rgba(0,0,0,0.65);
+}
+
 @layer base {
   * {
     @apply select-none border-border;
-    font-family: "Poppins", sans-serif;
+    font-family: "Geist", "Poppins", sans-serif;
   }
   body {
     @apply bg-background text-foreground;
@@ -108,28 +148,36 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+
   .hide-scrollbar::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
-
   .hide-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-transparent;
   }
 
   ::-webkit-scrollbar {
-    @apply w-3;
+    width: 10px;
+    height: 10px;
   }
-
   ::-webkit-scrollbar-track {
-    @apply rounded-full bg-base-300/30;
+    background: transparent;
   }
-
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-base-content/20;
+    background: var(--symp-line-2, rgba(14,14,15,0.14));
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--symp-ink-3, #6F6F75);
+    background-clip: content-box;
+    border: 2px solid transparent;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    @apply rounded-full bg-base-content/50;
+  ::selection {
+    background: #E84C26;
+    color: #fff;
   }
 }
 
@@ -150,27 +198,21 @@
   .react-select-container .react-select__control {
     @apply h-12 cursor-pointer rounded-btn !border-0 !border-none !border-transparent bg-primary shadow-none;
   }
-
   .react-select-container .react-select__control--menu-is-open {
     @apply bg-primary text-primary-content;
   }
-
   .react-select-container .react-select__single-value {
     @apply text-sm font-semibold uppercase text-primary-content;
   }
-
   .react-select-container .react-select__input-container {
     @apply text-sm font-semibold uppercase text-primary-content;
   }
-
   .react-select-container .react-select__menu {
     @apply rounded-lg bg-primary p-1 text-sm font-semibold uppercase;
   }
-
   .react-select-container .react-select__option {
     @apply my-1 cursor-pointer break-all rounded-md bg-primary text-primary-content hover:bg-primary-content/20 hover:text-primary-content;
   }
-
   .react-select-container .react-select__option--is-selected {
     @apply bg-accent text-accent-content;
   }
@@ -185,48 +227,67 @@
   }
 }
 
-.zoom-100 {
-  transform: scale(1);
-}
-.zoom-125 {
-  transform: scale(1.25);
-}
-.zoom-150 {
-  transform: scale(1.5);
-}
-.zoom-175 {
-  transform: scale(1.75);
-}
-.zoom-200 {
-  transform: scale(2);
+/* ── Symp theme overrides for daisyUI components ─────────────────── */
+[data-theme="symp"] body,
+[data-theme="symp-dark"] body {
+  font-family: var(--symp-font);
 }
 
-.animate-step-in {
-  animation: animate-step-in 0.6s cubic-bezier(0.07, 0.43, 0.02, 1);
+[data-theme="symp"] .btn,
+[data-theme="symp-dark"] .btn {
+  font-family: var(--symp-font);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-radius: var(--symp-radius-btn);
+  text-transform: none;
 }
 
-[data-theme="upscayl"] .btn {
-  @apply h-10 !min-h-min px-3 py-2 font-medium normal-case;
+[data-theme="symp"] .btn-primary,
+[data-theme="symp-dark"] .btn-primary {
+  background: var(--symp-ink);
+  border-color: var(--symp-ink);
+  color: var(--symp-ink-inv);
+  box-shadow: 0 1px 2px rgba(14,14,15,0.15);
+  transition: transform 0.08s ease, box-shadow 0.15s ease;
+}
+[data-theme="symp"] .btn-primary:hover,
+[data-theme="symp-dark"] .btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(14,14,15,0.25);
+}
+[data-theme="symp"] .btn-primary:active,
+[data-theme="symp-dark"] .btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
 }
 
-[data-theme="upscayl"] input[type="range"] {
+[data-theme="symp"] input[type="range"],
+[data-theme="symp-dark"] input[type="range"] {
   @apply rounded-full;
 }
 
-[data-theme="upscayl"] .react-select-container .react-select__control {
+[data-theme="symp"] .react-select-container .react-select__control,
+[data-theme="symp-dark"] .react-select-container .react-select__control {
   @apply h-10 cursor-pointer rounded-btn !border-0 !border-none !border-transparent bg-primary shadow-none;
 }
-
-[data-theme="upscayl"] .react-select-container .react-select__single-value {
+[data-theme="symp"] .react-select-container .react-select__single-value,
+[data-theme="symp-dark"] .react-select-container .react-select__single-value {
   @apply font-medium normal-case text-primary-content;
 }
-
-[data-theme="upscayl"] .react-select-container .react-select__input-container {
+[data-theme="symp"] .react-select-container .react-select__input-container,
+[data-theme="symp-dark"] .react-select-container .react-select__input-container {
   @apply text-xs font-medium normal-case text-primary-content;
 }
-
-[data-theme="upscayl"] .react-select-container .react-select__menu {
+[data-theme="symp"] .react-select-container .react-select__menu,
+[data-theme="symp-dark"] .react-select-container .react-select__menu {
   @apply rounded-lg bg-primary p-1 font-medium normal-case;
+}
+
+/* keep legacy upscayl theme working */
+[data-theme="upscayl"] .btn {
+  @apply h-10 !min-h-min px-3 py-2 font-medium normal-case;
+}
+[data-theme="upscayl"] input[type="range"] {
+  @apply rounded-full;
 }
 
 .__rcs-handle-button {
@@ -237,70 +298,61 @@
   -webkit-app-region: drag;
 }
 
+/* ── Zoom helpers ─────────────────────────────────────────────────── */
+.zoom-100  { transform: scale(1); }
+.zoom-125  { transform: scale(1.25); }
+.zoom-150  { transform: scale(1.5); }
+.zoom-175  { transform: scale(1.75); }
+.zoom-200  { transform: scale(2); }
+
+/* ── Checkerboard ─────────────────────────────────────────────────── */
 .checkerboard {
   background-color: rgba(255, 255, 255);
-  background-image: linear-gradient(
-      45deg,
-      #000 25%,
-      transparent 25%,
-      transparent 75%,
-      #000 75%,
-      #000
-    ),
-    linear-gradient(
-      -45deg,
-      #000 25%,
-      transparent 25%,
-      transparent 75%,
-      #000 75%,
-      #000
-    );
+  background-image:
+    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
+    linear-gradient(-45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
   background-size: 40px 40px;
   background-repeat: repeat;
 }
 
+/* ── Animations ───────────────────────────────────────────────────── */
 .spinner {
   -webkit-animation: sk-rotateplane 2.2s infinite ease-in-out;
   animation: sk-rotateplane 2.2s infinite ease-in-out;
 }
 
+.animate-step-in {
+  animation: animate-step-in 0.6s cubic-bezier(0.07, 0.43, 0.02, 1);
+}
+
 @keyframes animate-step-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
+  0%   { opacity: 0; transform: translateY(-10px); }
+  80%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0px); }
+}
+
+@keyframes symp-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes symp-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes symp-pulse {
+  0%, 100% { opacity: 1; transform: skewX(-15deg) scaleY(1); }
+  50%       { opacity: 0.5; transform: skewX(-15deg) scaleY(0.55); }
 }
 
 @-webkit-keyframes sk-rotateplane {
-  0% {
-    -webkit-transform: perspective(120px);
-  }
-  50% {
-    -webkit-transform: perspective(120px) rotateY(360deg);
-  }
-  100% {
-    -webkit-transform: perspective(120px) rotateY(360deg) rotateX(360deg);
-  }
+  0%   { -webkit-transform: perspective(120px); }
+  50%  { -webkit-transform: perspective(120px) rotateY(360deg); }
+  100% { -webkit-transform: perspective(120px) rotateY(360deg) rotateX(360deg); }
 }
 
 @keyframes sk-rotateplane {
-  0% {
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-  }
-  50% {
-    transform: perspective(120px) rotateX(-360.1deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(-360.1deg) rotateY(0deg);
-  }
-  100% {
-    transform: perspective(120px) rotateX(-360deg) rotateY(-179.9deg);
-    -webkit-transform: perspective(120px) rotateX(-360deg) rotateY(-359.9deg);
-  }
+  0%   { transform: perspective(120px) rotateX(0deg) rotateY(0deg); }
+  50%  { transform: perspective(120px) rotateX(-360.1deg) rotateY(0deg); }
+  100% { transform: perspective(120px) rotateX(-360deg) rotateY(-179.9deg); }
 }

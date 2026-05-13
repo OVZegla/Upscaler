@@ -1,32 +1,28 @@
-import { FEATURE_FLAGS } from "@common/feature-flags";
 import React from "react";
-import UpscaylSVGLogo from "@/components/icons/upscayl-logo-svg";
-import { useAtomValue } from "jotai";
-import { translationAtom } from "@/atoms/translations-atom";
+import SympLogo from "@/components/icons/symp-logo";
 
 export default function Header({ version }: { version: string }) {
-  const t = useAtomValue(translationAtom);
-
   return (
-    <a
-      href="https://github.com/upscayl/upscayl"
-      target="_blank"
-      className={`outline-none focus-visible:ring-2`}
-      data-tooltip-id="tooltip"
-      data-tooltip-content={t("HEADER.GITHUB_BUTTON_TITLE")}
+    <div
+      style={{
+        padding: "24px 18px 16px",
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "space-between",
+      }}
     >
-      <div className="flex items-center gap-3 px-5 py-5">
-        <UpscaylSVGLogo className="inline-block h-14 w-14" />
-        <div className="flex flex-col justify-center">
-          <h1 className="text-3xl font-bold">
-            {t("TITLE")}{" "}
-            <span className="text-xs">
-              {version} {FEATURE_FLAGS.APP_STORE_BUILD && "Mac"}
-            </span>
-          </h1>
-          <p className="">{t("HEADER.DESCRIPTION")}</p>
-        </div>
-      </div>
-    </a>
+      <SympLogo size={28} subtitle={true} />
+      <span
+        style={{
+          fontFamily: "var(--symp-mono, monospace)",
+          fontSize: 10.5,
+          color: "var(--symp-ink-3, #6F6F75)",
+          letterSpacing: "0.04em",
+          paddingBottom: 4,
+        }}
+      >
+        v{version}
+      </span>
+    </div>
   );
 }

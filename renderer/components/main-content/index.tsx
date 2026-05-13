@@ -268,6 +268,7 @@ const MainContent = ({
   return (
     <div
       className="relative flex h-screen w-full flex-col items-center justify-center"
+      style={{ background: "var(--symp-bg, #FAF9F7)" }}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
@@ -307,8 +308,15 @@ const MainContent = ({
       {batchMode &&
         upscaledBatchFolderPath.length === 0 &&
         batchFolderPath.length > 0 && (
-          <p className="select-none text-base-content">
-            <span className="font-bold">
+          <p
+            style={{
+              fontFamily: "var(--symp-mono, monospace)",
+              fontSize: 13,
+              color: "var(--symp-ink-3, #6F6F75)",
+              userSelect: "none",
+            }}
+          >
+            <span style={{ fontWeight: 600, color: "var(--symp-ink, #0E0E0F)" }}>
               {t("APP.PROGRESS.BATCH.SELECTED_FOLDER_TITLE")}
             </span>{" "}
             {batchFolderPath}
@@ -317,12 +325,41 @@ const MainContent = ({
       {/* BATCH UPSCALE DONE INFO */}
 
       {batchMode && upscaledBatchFolderPath.length > 0 && (
-        <div className="z-50 flex flex-col items-center">
-          <p className="select-none py-4 font-bold text-base-content">
+        <div
+          style={{
+            zIndex: 50,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <p
+            style={{
+              fontWeight: 600,
+              fontSize: 16,
+              letterSpacing: "-0.01em",
+              color: "var(--symp-ink, #0E0E0F)",
+              userSelect: "none",
+            }}
+          >
             {t("APP.PROGRESS.BATCH.DONE_TITLE")}
           </p>
           <button
-            className="bg-gradient-blue btn btn-primary rounded-btn p-3 font-medium text-white/90 transition-colors"
+            style={{
+              appearance: "none",
+              border: 0,
+              background: "var(--symp-ink, #0E0E0F)",
+              color: "var(--symp-ink-inv, #FFFFFF)",
+              fontFamily: "var(--symp-font, Geist, sans-serif)",
+              fontWeight: 600,
+              fontSize: 13,
+              padding: "12px 20px",
+              borderRadius: "var(--symp-radius-btn, 10px)",
+              cursor: "pointer",
+              boxShadow: "0 1px 2px rgba(14,14,15,0.15)",
+              transition: "box-shadow 0.15s ease",
+            }}
             onClick={openFolderHandler}
           >
             {t("APP.PROGRESS.BATCH.OPEN_UPSCAYLED_FOLDER_TITLE")}
