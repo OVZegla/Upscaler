@@ -103,8 +103,58 @@ module.exports = {
     require("@tailwindcss/typography"),
   ],
   daisyui: {
-    darkTheme: "upscayl",
+    darkTheme: "symp-dark",
     themes: [
+      {
+        symp: {
+          primary: "#E84C26",
+          "primary-content": "#FFFFFF",
+          secondary: "#3A3A3D",
+          "secondary-content": "#FFFFFF",
+          accent: "#FF6A3D",
+          "accent-content": "#FFFFFF",
+          neutral: "#6F6F75",
+          "neutral-content": "#FFFFFF",
+          "base-100": "#FFFFFF",
+          "base-200": "#FAF9F7",
+          "base-300": "#F2F0EC",
+          "base-content": "#0E0E0F",
+          "--rounded-btn": "10px",
+          "--rounded-badge": "999px",
+          "--animation-btn": "0.18s",
+          "--animation-input": "0.2s",
+          "--btn-text-case": "none",
+          "--btn-focus-scale": "0.97",
+          "--border-btn": "1px",
+          "--tab-border": "1px",
+          "--tab-radius": "999px",
+        },
+      },
+      {
+        "symp-dark": {
+          primary: "#E84C26",
+          "primary-content": "#FFFFFF",
+          secondary: "#C9C7C2",
+          "secondary-content": "#0E0E0F",
+          accent: "#FF6A3D",
+          "accent-content": "#FFFFFF",
+          neutral: "#84827E",
+          "neutral-content": "#FFFFFF",
+          "base-100": "#16161A",
+          "base-200": "#0B0B0C",
+          "base-300": "#131316",
+          "base-content": "#F4F3F0",
+          "--rounded-btn": "10px",
+          "--rounded-badge": "999px",
+          "--animation-btn": "0.18s",
+          "--animation-input": "0.2s",
+          "--btn-text-case": "none",
+          "--btn-focus-scale": "0.97",
+          "--border-btn": "1px",
+          "--tab-border": "1px",
+          "--tab-radius": "999px",
+        },
+      },
       {
         upscayl: {
           primary: "#334155",
@@ -114,15 +164,15 @@ module.exports = {
           "base-100": "#1e293b",
           "base-200": "#0f172a",
           "base-300": "#020617",
-          "--rounded-btn": "2rem", // border radius rounded-btn utility class, used in buttons and similar element
-          "--rounded-badge": "2rem", // border radius rounded-badge utility class, used in badges and similar
-          "--animation-btn": "0.5s", // duration of animation when you click on button
-          "--animation-input": "0.5s", // duration of animation for inputs like checkbox, toggle, radio, etc
-          "--btn-text-case": "uppercase", // set default text transform for buttons
-          "--btn-focus-scale": "0.95", // scale transform of button when you focus on it
-          "--border-btn": "1px", // border width of buttons
-          "--tab-border": "1px", // border width of tabs
-          "--tab-radius": "0.5rem", // border radius of tabs
+          "--rounded-btn": "2rem",
+          "--rounded-badge": "2rem",
+          "--animation-btn": "0.5s",
+          "--animation-input": "0.5s",
+          "--btn-text-case": "uppercase",
+          "--btn-focus-scale": "0.95",
+          "--border-btn": "1px",
+          "--tab-border": "1px",
+          "--tab-radius": "0.5rem",
         },
       },
       "light",

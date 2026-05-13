@@ -327,13 +327,49 @@ const Home = () => {
 
   if (isLoading) {
     return (
-      <UpscaylSVGLogo className="absolute left-1/2 top-1/2 w-36 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 12,
+        }}
+      >
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: "#0E0E0F",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "symp-pulse 1.2s ease-in-out infinite",
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              width: 6,
+              height: 22,
+              background: "#E84C26",
+              transform: "skewX(-15deg)",
+              borderRadius: 2,
+            }}
+          />
+        </div>
+      </div>
     );
   }
 
   return (
     <div
-      className="flex h-screen w-screen flex-row overflow-hidden bg-base-300"
+      className="flex h-screen w-screen flex-row overflow-hidden"
+      style={{ background: "var(--symp-bg, #FAF9F7)" }}
       onPaste={(e) => console.log(e)}
     >
       <Sidebar

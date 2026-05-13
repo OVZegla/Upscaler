@@ -204,13 +204,24 @@ const Sidebar = ({
       />
 
       <div
-        className={`relative flex h-screen min-w-[350px] max-w-[350px] flex-col bg-base-100 ${showSidebar ? "" : "hidden"}`}
+        className={`relative flex h-screen flex-col ${showSidebar ? "" : "hidden"}`}
+        style={{
+          minWidth: 360,
+          maxWidth: 360,
+          background: "var(--symp-panel, #FFFFFF)",
+          borderRight: "1px solid var(--symp-line, rgba(14,14,15,0.08))",
+        }}
       >
         <button
-          className="absolute -right-0 top-1/2 z-50 -translate-y-1/2 translate-x-1/2 rounded-full bg-base-100 p-4"
+          className="absolute -right-0 top-1/2 z-50 -translate-y-1/2 translate-x-1/2 rounded-full p-4"
+          style={{
+            background: "var(--symp-panel, #FFFFFF)",
+            border: "1px solid var(--symp-line-2, rgba(14,14,15,0.14))",
+            boxShadow: "0 2px 8px rgba(14,14,15,0.08)",
+          }}
           onClick={() => setShowSidebar((prev) => !prev)}
         >
-          <ChevronLeftIcon />
+          <ChevronLeftIcon style={{ width: 14, height: 14 }} />
         </button>
 
         {window.electron.platform === "mac" && (
