@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Tetapan",
-    "CHANGE_LANGUAGE": { "TITLE": "Tukar Bahasa" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Tukar Bahasa"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Pemampatan Imej",
       "DESCRIPTION": "Pemampatan PNG tidak menghilangkan data, jadi ia mungkin tidak mengurangkan saiz fail dengan ketara dan nilai pemampatan yang lebih tinggi mungkin menjejaskan prestasi. Pemampatan JPG dan WebP menghilangkan sebahagian data."
@@ -130,11 +132,11 @@
       "ZOOM": "Zum",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Standard",
+          "NAME": "Standard",
           "DESCRIPTION": "Sesuai untuk kebanyakan imej."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Sesuai untuk kebanyakan imej. Peningkatan saiz berkelajuan tinggi dengan kehilangan kualiti yang minimum."
         },
         "remacri-4x": {

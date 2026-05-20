@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Settings",
-    "CHANGE_LANGUAGE": { "TITLE": "Change Language" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Change Language"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Image Compression",
       "DESCRIPTION": "PNG compression is lossless, so it might not reduce the file size significantly and higher compression values might affect the performance. JPG and WebP compression is lossy."
@@ -130,11 +132,11 @@
       "ZOOM": "Zoom",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Standard",
+          "NAME": "Standard",
           "DESCRIPTION": "Suitable for most images."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Suitable for most images. High-speed upscaling with minimal quality loss."
         },
         "remacri-4x": {

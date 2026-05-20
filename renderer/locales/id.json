@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Pengaturan",
-    "CHANGE_LANGUAGE": { "TITLE": "Ubah Bahasa" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Ubah Bahasa"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Kompresi Gambar",
       "DESCRIPTION": "Kompresi PNG bersifat lossless, sehingga mungkin tidak mengurangi ukuran file secara signifikan dan nilai kompresi yang lebih tinggi dapat mempengaruhi kinerja. Kompresi JPG dan WebP bersifat lossy."
@@ -130,11 +132,11 @@
       "ZOOM": "Perbesar",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Standard",
+          "NAME": "Standard",
           "DESCRIPTION": "Cocok untuk sebagian besar gambar."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Cocok untuk sebagian besar gambar. Upscaling berkecepatan tinggi dengan kehilangan kualitas minimal."
         },
         "remacri-4x": {

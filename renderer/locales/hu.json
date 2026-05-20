@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Beállítások",
-    "CHANGE_LANGUAGE": { "TITLE": "Nyelvváltás" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Nyelvváltás"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Képtömörítés",
       "DESCRIPTION": "A PNG-tömörítés veszteségmentes, ezért nem feltétlenül csökkenti jelentősen a fájl méretét, és a magasabb tömörítési értékek ronthatják a teljesítményt. A JPG és WebP tömörítés viszont veszteséges."
@@ -130,11 +132,11 @@
       "ZOOM": "Nagyítás",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Standard",
+          "NAME": "Standard",
           "DESCRIPTION": "A legtöbb képhez alkalmas."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "A legtöbb képhez alkalmas. Nagysebességű felnagyítás minimális minőségvesztéssel."
         },
         "remacri-4x": {

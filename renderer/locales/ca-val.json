@@ -132,11 +132,11 @@
       "ZOOM": "Zoom",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl estàndard",
+          "NAME": "Standard",
           "DESCRIPTION": "Adequat per a la majoria de les imatges."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Adequat per a la majoria de les imatges. Augment de velocitat alta amb pèrdua de qualitat mínima."
         },
         "remacri-4x": {
