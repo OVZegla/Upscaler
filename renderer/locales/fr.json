@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Paramètres",
-    "CHANGE_LANGUAGE": { "TITLE": "Changer de langue" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Changer de langue"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Compression d'image",
       "DESCRIPTION": "La compression PNG est sans perte, donc elle pourrait ne pas réduire la taille du fichier de manière significative et des valeurs de compression plus élevées pourraient affecter les performances. La compression JPG et WebP est avec perte."
@@ -130,11 +132,11 @@
       "ZOOM": "Zoom",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Standard",
+          "NAME": "Standard",
           "DESCRIPTION": "Convient à la plupart des images."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Convient à la plupart des images. Suréchantillonnage rapide avec une perte de qualité minimale."
         },
         "remacri-4x": {
@@ -277,7 +279,7 @@
       "TITLE": "Avertissement sur les métadonnées",
       "DESCRIPTION": "Sur certains systèmes, les métadonnées peuvent ne pas être visibles dans les formats autres que JPG. Utilisez des outils spécifiques pour visualiser les métadonnées si nécessaire."
     }
-  },  
+  },
   "UPSCAYL_CLOUD": {
     "COMING_SOON": "Bientôt disponible !",
     "CATCHY_PHRASE_1": "Plus d'erreurs, de problèmes matériels, de compromis sur la qualité ou de longs temps de chargement !",

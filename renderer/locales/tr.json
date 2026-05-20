@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Ayarlar",
-    "CHANGE_LANGUAGE": { "TITLE": "Dili Değiştirin" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Dili Değiştirin"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Görsel Sıkıştırma",
       "DESCRIPTION": "PNG sıkıştırması kayıpsızdır, bu nedenle dosya boyutunu önemli ölçüde küçültmeyebilir ve daha yüksek sıkıştırma değerleri performansı etkileyebilir. JPG ve WebP sıkıştırması ise kayıplıdır."
@@ -130,11 +132,11 @@
       "ZOOM": "Yakınlaştır",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Standard",
+          "NAME": "Standard",
           "DESCRIPTION": "Çoğu görsel için ideal."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Çoğu görsel için ideal. Minimal kalite kaybıyla, yüksek hızda ölçeklendirme."
         },
         "remacri-4x": {
@@ -277,7 +279,7 @@
       "TITLE": "Meta Veri Uyarısı",
       "DESCRIPTION": "Bazı sistemlerde, JPG dışındaki formatlarda meta veriler görüntülenemeyebilir. Gerekirse meta verileri görüntülemek için özel araçlar kullanın."
     }
-  },    
+  },
   "UPSCAYL_CLOUD": {
     "COMING_SOON": "Yakında sizlerle!",
     "CATCHY_PHRASE_1": "Artık hatalar, donanım uyuşmazlıkları, kalite tavizleri ya da uzun yükleme süreleri yok!",

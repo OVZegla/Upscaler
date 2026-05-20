@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "Ajustes",
-    "CHANGE_LANGUAGE": { "TITLE": "Cambiar idioma" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "Cambiar idioma"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "Compresión de imagen",
       "DESCRIPTION": "La compresión PNG es sin pérdida, por lo que puede que no reduzca el tamaño del archivo significativamente y los valores de compresión más altos podrían afectar el rendimiento. La compresión JPG y WebP es con pérdida."
@@ -130,11 +132,11 @@
       "ZOOM": "Zoom",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscayl Estándar",
+          "NAME": "Standard",
           "DESCRIPTION": "Adecuado para la mayoría de las imágenes."
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscayl Lite",
+          "NAME": "Lite",
           "DESCRIPTION": "Adecuado para la mayoría de las imágenes. Aumento de velocidad alta con mínima pérdida de calidad."
         },
         "remacri-4x": {

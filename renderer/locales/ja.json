@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "設定",
-    "CHANGE_LANGUAGE": { "TITLE": "言語を変更する" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "言語を変更する"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "画像圧縮",
       "DESCRIPTION": "PNG圧縮は非可逆的であるため、ファイルサイズが大幅に削減されることはなく、高い圧縮値はパフォーマンスに影響を与える可能性があります。JPGおよびWebP圧縮は可逆的です。"
@@ -130,11 +132,11 @@
       "ZOOM": "ズーム",
       "MODELS": {
         "upscayl-standard-4x": {
-          "NAME": "Upscaylスタンダード",
+          "NAME": "Standard",
           "DESCRIPTION": "ほとんどの画像に適しています。"
         },
         "upscayl-lite-4x": {
-          "NAME": "Upscaylライト",
+          "NAME": "Lite",
           "DESCRIPTION": "ほとんどの画像に適しています。最小限の品質損失で高速アップスケーリング。"
         },
         "remacri-4x": {
@@ -277,7 +279,7 @@
       "TITLE": "メタデータの警告",
       "DESCRIPTION": "一部のシステムでは、JPG以外の形式ではメタデータが表示されない場合があります。必要に応じて専用のツールを使用してメタデータを表示してください。"
     }
-  },   
+  },
   "UPSCAYL_CLOUD": {
     "COMING_SOON": "近日公開！",
     "CATCHY_PHRASE_1": "もうエラー、ハードウェアの問題、品質の妥協や長い読み込み時間はありません！",
