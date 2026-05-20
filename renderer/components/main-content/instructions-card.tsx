@@ -79,7 +79,7 @@ function InstructionsCard({
               display: "inline-block",
               width: 8,
               height: 30,
-              background: "var(--symp-accent, #E84C26)",
+              background: "var(--symp-accent, #0055A4)",
               transform: "skewX(-15deg)",
               borderRadius: 2,
             }}

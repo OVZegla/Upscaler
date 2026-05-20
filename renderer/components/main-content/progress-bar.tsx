@@ -88,7 +88,7 @@ function ProgressBar({
             left: 0,
             width: 220,
             background:
-              "linear-gradient(90deg, transparent, rgba(232,76,38,0.16) 50%, transparent)",
+              "linear-gradient(90deg, transparent, rgba(0,85,164,0.16) 50%, transparent)",
             animation: "symp-sweep 1.8s ease-in-out infinite",
             mixBlendMode: "screen",
             pointerEvents: "none",
@@ -110,7 +110,7 @@ function ProgressBar({
               y1="0"
               x2={(600 / 4) * i}
               y2="400"
-              stroke="rgba(232,76,38,0.4)"
+              stroke="rgba(0,85,164,0.4)"
               strokeWidth="1"
               strokeDasharray="4 4"
             />
@@ -122,7 +122,7 @@ function ProgressBar({
               y1={(400 / 3) * i}
               x2="600"
               y2={(400 / 3) * i}
-              stroke="rgba(232,76,38,0.4)"
+              stroke="rgba(0,85,164,0.4)"
               strokeWidth="1"
               strokeDasharray="4 4"
             />
@@ -172,7 +172,7 @@ function ProgressBar({
                 display: "inline-block",
                 width: 5,
                 height: 18,
-                background: "var(--symp-accent, #E84C26)",
+                background: "var(--symp-accent, #0055A4)",
                 transform: "skewX(-15deg)",
                 borderRadius: 1,
                 animation: "symp-pulse 1.2s ease-in-out infinite",
@@ -224,9 +224,9 @@ function ProgressBar({
                   : "30%",
               height: "100%",
               background:
-                "linear-gradient(90deg, var(--symp-accent, #E84C26), var(--symp-accent-2, #FF6A3D))",
+                "linear-gradient(90deg, var(--symp-accent, #0055A4), var(--symp-accent-2, #1A6FCA))",
               transition: "width 0.12s linear",
-              boxShadow: "0 0 12px rgba(232,76,38,0.5)",
+              boxShadow: "0 0 12px rgba(0,85,164,0.5)",
             }}
           />
         </div>

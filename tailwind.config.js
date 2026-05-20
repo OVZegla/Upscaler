@@ -107,11 +107,11 @@ module.exports = {
     themes: [
       {
         symp: {
-          primary: "#E84C26",
+          primary: "#0055A4",
           "primary-content": "#FFFFFF",
           secondary: "#3A3A3D",
           "secondary-content": "#FFFFFF",
-          accent: "#FF6A3D",
+          accent: "#1A6FCA",
           "accent-content": "#FFFFFF",
           neutral: "#6F6F75",
           "neutral-content": "#FFFFFF",
@@ -132,11 +132,11 @@ module.exports = {
       },
       {
         "symp-dark": {
-          primary: "#E84C26",
+          primary: "#0055A4",
           "primary-content": "#FFFFFF",
           secondary: "#C9C7C2",
           "secondary-content": "#0E0E0F",
-          accent: "#FF6A3D",
+          accent: "#1A6FCA",
           "accent-content": "#FFFFFF",
           neutral: "#84827E",
           "neutral-content": "#FFFFFF",

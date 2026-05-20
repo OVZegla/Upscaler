@@ -16,7 +16,7 @@ const SympLogo = ({
   className,
 }: SympLogoProps) => {
   const ink = color || "currentColor";
-  const acc = accent || "var(--symp-accent, #E84C26)";
+  const acc = accent || "var(--symp-accent, #0055A4)";
 
   return (
     <div

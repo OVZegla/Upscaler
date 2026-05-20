@@ -121,7 +121,7 @@ function StepChip({
         fontWeight: 600,
         flexShrink: 0,
         background: done
-          ? "var(--symp-accent, #E84C26)"
+          ? "var(--symp-accent, #0055A4)"
           : active
           ? "var(--symp-ink, #0E0E0F)"
           : "var(--symp-bg-2, #F2F0EC)",
@@ -362,7 +362,7 @@ function MiniToggle({
           borderRadius: 999,
           border: 0,
           background: value
-            ? "var(--symp-accent, #E84C26)"
+            ? "var(--symp-accent, #0055A4)"
             : "var(--symp-line-2, rgba(14,14,15,0.14))",
           cursor: "pointer",
           transition: "background 0.2s ease",
@@ -539,7 +539,7 @@ function UpscaylSteps({
                 checked={doubleUpscayl}
                 onChange={(e) => setDoubleUpscayl(e.target.checked)}
                 style={{
-                  accentColor: "var(--symp-accent, #E84C26)",
+                  accentColor: "var(--symp-accent, #0055A4)",
                   width: 14,
                   height: 14,
                   margin: 0,
@@ -581,7 +581,7 @@ function UpscaylSteps({
               }}
             >
               {dimensions.width}×{dimensions.height}
-              <span style={{ color: "var(--symp-accent, #E84C26)", fontWeight: 600, margin: "0 4px" }}>→</span>
+              <span style={{ color: "var(--symp-accent, #0055A4)", fontWeight: 600, margin: "0 4px" }}>→</span>
               {upscaylResolution.width}×{upscaylResolution.height}
             </p>
           )}
