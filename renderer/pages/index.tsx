@@ -356,7 +356,7 @@ const Home = () => {
               display: "inline-block",
               width: 6,
               height: 22,
-              background: "#E84C26",
+              background: "#0055A4",
               transform: "skewX(-15deg)",
               borderRadius: 2,
             }}
