@@ -34,7 +34,8 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   let inputDir = decodeURIComponent(payload.batchFolderPath);
   // GET THE OUTPUT DIRECTORY
   let outputFolderPath = decodeURIComponent(payload.outputPath);
-  const outputFolderName = `upscaled_${saveImageAs}_${model}_${
+  const modelLabel = model.replace(/^upscayl-/i, "");
+  const outputFolderName = `upscaled_${saveImageAs}_${modelLabel}_${
     useCustomWidth ? `${customWidth}px` : `${scale}x`
   }`;
   outputFolderPath += slash + outputFolderName;

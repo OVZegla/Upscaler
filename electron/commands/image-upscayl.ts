@@ -48,13 +48,14 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
   const fileNameWithExt = getFilenameFromPath(imagePath);
   const fileName = parse(fileNameWithExt).name;
 
+  const modelLabel = model.replace(/^upscayl-/i, "");
   const outFile =
     outputDir +
     slash +
     fileName +
     "_upscaled_" +
     (useCustomWidth ? `${customWidth}px_` : `${scale}x_`) +
-    model +
+    modelLabel +
     "." +
     saveImageAs;
 

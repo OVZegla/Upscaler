@@ -70,7 +70,7 @@
       "DESCRIPTION": "Nếu được kích hoạt, Symp's Upscale sẽ xử lý lại hình ảnh thay vì tải nó trực tiếp."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "ĐẶT LẠI UPSCALE",
+      "BUTTON_TITLE": "ĐẶT LẠI",
       "ALERT": "Symp's Upscale đã được đặt lại. Vui lòng khởi động lại ứng dụng."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Nếu được kích hoạt, thư mục đầu ra sẽ được ghi nhớ giữa các phiên làm việc."
     },
     "AUTO_UPDATE": {
-      "TITLE": "CẬP NHẬT TỰ ĐỘNG UPSCALE",
+      "TITLE": "CẬP NHẬT TỰ ĐỘNG",
       "DESCRIPTION": "Nếu được kích hoạt, ứng dụng sẽ kiểm tra các bản cập nhật mới và thông báo cho bạn."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "GIÚP CẢI THIỆN UPSCALE",
+      "TITLE": "GIÚP CẢI THIỆN",
       "DESCRIPTION": "Nếu được kích hoạt, Symp's Upscale sẽ thu thập dữ liệu sử dụng ẩn danh để cải thiện giao diện và các tính năng của ứng dụng."
     },
     "THEME": {
-      "TITLE": "CHỦ ĐỀ UPSCALE"
+      "TITLE": "CHỦ ĐỀ"
     },
     "LANGUAGE": {
-      "TITLE": "NGÔN NGỮ UPSCALE"
+      "TITLE": "NGÔN NGỮ"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "KÍCH THƯỚC GẠCH TÙY CHỈNH",

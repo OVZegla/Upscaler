@@ -70,7 +70,7 @@
       "DESCRIPTION": "Jeżeli włączone, Symp's Upscale przetworzy obraz ponownie zamiast ładować go bezpośrednio."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "ZRESETUJ UPSCALE",
+      "BUTTON_TITLE": "ZRESETUJ",
       "ALERT": "Symp's Upscale został zresetowany. Uruchom ponownie aplikację."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Jeżeli włączone, wyjściowy folder zostanie zapamiętany pomiędzy sesjami."
     },
     "AUTO_UPDATE": {
-      "TITLE": "AUTOMATYCZNA AKTUALIZACJA UPSCALE",
+      "TITLE": "AUTOMATYCZNA AKTUALIZACJA",
       "DESCRIPTION": "Jeżeli włączone, aplikacja sprawdzi, czy są nowe aktualizacje i Cię powiadomi."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "POMÓŻ ULEPSZYĆ UPSCALE",
+      "TITLE": "POMÓŻ ULEPSZYĆ",
       "DESCRIPTION": "Jeżeli włączone, Symp's Upscale będzie zbierał anonimowe dane dotyczące użytkowania w celu ulepszenia interfejsu i funkcji aplikacji."
     },
     "THEME": {
-      "TITLE": "MOTYW UPSCALE"
+      "TITLE": "MOTYW"
     },
     "LANGUAGE": {
-      "TITLE": "JĘZYK UPSCALE"
+      "TITLE": "JĘZYK"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "NIESTANDARDOWY ROZMIAR KAFELKI",

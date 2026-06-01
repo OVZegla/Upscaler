@@ -70,7 +70,7 @@
       "DESCRIPTION": "Si està habilitat, Symp's Upscale processarà la imatge de nou en lloc de carregar-la directament."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "REINICIA UPSCALE",
+      "BUTTON_TITLE": "REINICIA",
       "ALERT": "Symp's Upscale s'ha reiniciat. Reinicia l'aplicació."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -82,7 +82,7 @@
       "DESCRIPTION": "Si està habilitat, l'aplicació buscarà noves actualitzacions i vos notificarà."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "AJUDEU A MILLORAR UPSCALE",
+      "TITLE": "AJUDEU A MILLORAR",
       "DESCRIPTION": "Si està habilitat, Symp's Upscale recopilarà dades d'ús anònimes per a millorar la interfície i les característiques de l'aplicació."
     },
     "THEME": {
