@@ -209,7 +209,7 @@ const Home = () => {
           setProgress(t("APP.PROGRESS.SUCCESS_TITLE"));
         }
         handleErrors(data);
-        logit(`🚧 UPSCAYL_PROGRESS: `, data);
+        logit(`🚧 PROGRESS: `, data);
       },
     );
     // FOLDER UPSCAYL PROGRESS
@@ -223,7 +223,7 @@ const Home = () => {
           setProgress(data);
         }
         handleErrors(data);
-        logit(`🚧 FOLDER_UPSCAYL_PROGRESS: `, data);
+        logit(`🚧 PROGRESS: `, data);
       },
     );
     // DOUBLE UPSCAYL PROGRESS
@@ -237,7 +237,7 @@ const Home = () => {
           setProgress(data);
         }
         handleErrors(data);
-        logit(`🚧 DOUBLE_UPSCAYL_PROGRESS: `, data);
+        logit(`🚧 PROGRESS: `, data);
       },
     );
     // UPSCAYL DONE
@@ -261,7 +261,7 @@ const Home = () => {
       (_, data: string) => {
         setProgress("");
         setUpscaledBatchFolderPath(data);
-        logit(`💯 FOLDER_UPSCAYL_DONE: `, data);
+        logit(`💯 DONE: `, data);
         setUserStats((prev) => ({
           ...prev,
           lastUpscaylDuration: new Date().getTime() - prev.lastUsedAt,
