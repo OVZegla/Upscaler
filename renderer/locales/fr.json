@@ -1,15 +1,15 @@
 {
-  "TITLE": "Upscayl",
-  "INTRO": "Présentation de Upscayl Cloud !",
+  "TITLE": "Symp's Upscale",
+  "INTRO": "Présentation de Symp's Cloud !",
   "HEADER": {
     "GITHUB_BUTTON_TITLE": "Mettre une étoile sur GitHub 😁",
     "DESCRIPTION": "Amélioration d'images AI"
   },
   "FOOTER": {
-    "NEWS_TITLE": "ACTUALITÉS UPSCAYL",
+    "NEWS_TITLE": "ACTUALITÉS UPSCALE",
     "COPYRIGHT": "Droits d'auteur ©",
     "TITLE": "Par ",
-    "LINK_TITLE": "L'équipe Upscayl"
+    "LINK_TITLE": "L'équipe Symp's Upscale"
   },
   "SETTINGS": {
     "TITLE": "Paramètres",
@@ -37,7 +37,7 @@
     },
     "GPU_ID_INPUT": {
       "TITLE": "ID GPU",
-      "DESCRIPTION": "Veuillez lire la documentation Upscayl pour plus d'informations.",
+      "DESCRIPTION": "Veuillez lire la documentation Symp's Upscale pour plus d'informations.",
       "ADDITIONAL_DESCRIPTION": "Activez le mode performance sur Windows pour de meilleurs résultats."
     },
     "IMAGE_FORMAT": {
@@ -56,7 +56,7 @@
     },
     "IMAGE_SCALE": {
       "TITLE": "Dimensions de l'image",
-      "DESCRIPTION": "Tout ce qui dépasse 4X (sauf 16X Double Upscayl) ne fait que redimensionner l'image et n'utilise pas l'améliorateur AI.",
+      "DESCRIPTION": "Tout ce qui dépasse 4X (sauf 16X Double Upscale) ne fait que redimensionner l'image et n'utilise pas l'améliorateur AI.",
       "WARNING": "Tout ce qui dépasse 5X peut causer des problèmes de performance sur certains appareils !",
       "ADDITIONAL_WARNING": "Cela peut causer des problèmes de performance sur certains appareils !"
     },
@@ -67,29 +67,29 @@
     },
     "OVERWRITE_TOGGLE": {
       "TITLE": "ÉCRASER LE RÉSULTAT PRÉCÉDENT",
-      "DESCRIPTION": "Si activé, Upscayl traitera à nouveau l'image au lieu de la charger directement."
+      "DESCRIPTION": "Si activé, Symp's Upscale traitera à nouveau l'image au lieu de la charger directement."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "RÉINITIALISER UPSCAYL",
-      "ALERT": "Upscayl a été réinitialisé. Veuillez redémarrer l'application."
+      "BUTTON_TITLE": "RÉINITIALISER UPSCALE",
+      "ALERT": "Symp's Upscale a été réinitialisé. Veuillez redémarrer l'application."
     },
     "SAVE_OUTPUT_FOLDER": {
       "TITLE": "ENREGISTRER LE DOSSIER DE SORTIE",
       "DESCRIPTION": "Si activé, le dossier de sortie sera mémorisé entre les sessions."
     },
     "AUTO_UPDATE": {
-      "TITLE": "MISE À JOUR AUTOMATIQUE UPSCAYL",
+      "TITLE": "MISE À JOUR AUTOMATIQUE UPSCALE",
       "DESCRIPTION": "Si activé, l'application vérifiera les nouvelles mises à jour et vous en informera."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "AIDER À AMÉLIORER UPSCAYL",
-      "DESCRIPTION": "Si activé, Upscayl collectera des données d'utilisation anonymes pour améliorer l'interface et les fonctionnalités de l'application."
+      "TITLE": "AIDER À AMÉLIORER UPSCALE",
+      "DESCRIPTION": "Si activé, Symp's Upscale collectera des données d'utilisation anonymes pour améliorer l'interface et les fonctionnalités de l'application."
     },
     "THEME": {
-      "TITLE": "THÈME UPSCAYL"
+      "TITLE": "THÈME UPSCALE"
     },
     "LANGUAGE": {
-      "TITLE": "LANGUE UPSCAYL"
+      "TITLE": "LANGUE UPSCALE"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "TAILLE DE TUILE PERSONNALISÉE",
@@ -97,7 +97,7 @@
     },
     "TURN_OFF_NOTIFICATIONS": {
       "TITLE": "DÉSACTIVER LES NOTIFICATIONS",
-      "DESCRIPTION": "Si activé, Upscayl n'enverra aucune notification système en cas de succès ou d'échec."
+      "DESCRIPTION": "Si activé, Symp's Upscale n'enverra aucune notification système en cas de succès ou d'échec."
     },
     "SUPPORT": {
       "TITLE": "Vous avez des problèmes ?",
@@ -113,7 +113,7 @@
     }
   },
   "APP": {
-    "TITLE": "Upscayl",
+    "TITLE": "Symp's Upscale",
     "BATCH_MODE": {
       "TITLE": "Amélioration par lot",
       "DESCRIPTION": "Cela vous permettra d'améliorer tous les fichiers d'un dossier en une seule fois"
@@ -162,12 +162,12 @@
       }
     },
     "DOUBLE_UPSCAYL": {
-      "TITLE": "Double Upscayl",
+      "TITLE": "Double Upscale",
       "DESCRIPTION": "Activez cette option pour exécuter le suréchantillonnage deux fois sur une image. Notez que cela peut entraîner une augmentation significative du temps de traitement et éventuellement des problèmes de performance pour des échelles supérieures à 4X."
     },
     "OUTPUT_PATH_SELECTION": {
       "TITLE": "Étape 3",
-      "MAC_APP_STORE_ALERT": "En raison des restrictions de sécurité de l'App Store MacOS, Upscayl vous demande de sélectionner un dossier de sortie à chaque démarrage.\n\nPour éviter cela, vous pouvez enregistrer de manière permanente un dossier de sortie par défaut dans l'onglet 'Paramètres' d'Upscayl.",
+      "MAC_APP_STORE_ALERT": "En raison des restrictions de sécurité de l'App Store MacOS, Symp's Upscale vous demande de sélectionner un dossier de sortie à chaque démarrage.\n\nPour éviter cela, vous pouvez enregistrer de manière permanente un dossier de sortie par défaut dans l'onglet 'Paramètres' d'Symp's Upscale.",
       "NOT_SELECTED": "Non sélectionné",
       "DEFAULT_IMG_PATH": "Par défaut au chemin de l'image",
       "DEFAULT_FOLDER_PATH": "Par défaut au chemin du dossier",
@@ -245,7 +245,7 @@
     },
     "EXCEPTION_ERROR": {
       "TITLE": "Erreur d'exception",
-      "DESCRIPTION": "Upscayl a rencontré une erreur. Il est possible que le binaire Upscayl n'ait pas réussi à exécuter correctement les commandes. Essayez de vérifier les journaux pour voir si vous obtenez des informations. Vous pouvez poster un problème sur le dépôt GitHub d'Upscayl pour obtenir plus d'aide."
+      "DESCRIPTION": "Symp's Upscale a rencontré une erreur. Il est possible que le binaire Symp's Upscale n'ait pas réussi à exécuter correctement les commandes. Essayez de vérifier les journaux pour voir si vous obtenez des informations. Vous pouvez poster un problème sur le dépôt GitHub d'Symp's Upscale pour obtenir plus d'aide."
     },
     "GENERIC_ERROR": {
       "TITLE": "Erreur"
@@ -283,9 +283,9 @@
   "UPSCAYL_CLOUD": {
     "COMING_SOON": "Bientôt disponible !",
     "CATCHY_PHRASE_1": "Plus d'erreurs, de problèmes matériels, de compromis sur la qualité ou de longs temps de chargement !",
-    "CATCHY_PHRASE_2": "🌐 Amélioration possible partout, à tout moment, sur tout appareil\n☁️ Pas de carte graphique ou de matériel requis\n👩 Amélioration du visage\n🦋 Plus de 10 modèles au choix\n🏎 5x plus rapide que Upscayl Desktop\n🎞 Amélioration vidéo\n💰 Utilisation commerciale\n😴 Amélioration pendant votre sommeil",
+    "CATCHY_PHRASE_2": "🌐 Amélioration possible partout, à tout moment, sur tout appareil\n☁️ Pas de carte graphique ou de matériel requis\n👩 Amélioration du visage\n🦋 Plus de 10 modèles au choix\n🏎 5x plus rapide que Symp's Upscale Desktop\n🎞 Amélioration vidéo\n💰 Utilisation commerciale\n😴 Amélioration pendant votre sommeil",
     "ALREADY_REGISTERED_ALERT": "Merci {name} ! Il semble que votre email ait déjà été enregistré :D Si ce n'est pas le cas, veuillez réessayer.",
-    "ADD_SUCCESS": "Merci de rejoindre la liste d'attente ! Nous vous informerons lorsque Upscayl Cloud sera prêt pour vous.",
+    "ADD_SUCCESS": "Merci de rejoindre la liste d'attente ! Nous vous informerons lorsque Symp's Cloud sera prêt pour vous.",
     "INCORRECT_FIELDS_ALERT": "Veuillez remplir correctement tous les champs.",
     "JOIN_WAITLIST": "Rejoindre la liste d'attente",
     "DONT_SHOW_AGAIN": "NE PLUS AFFICHER"
@@ -296,7 +296,7 @@
     "GET_STARTED_BUTTON_TITLE": "Commencer",
     "SETTINGS_NOTE": "Vous pouvez toujours modifier ces paramètres plus tard.",
     "STEP_1": {
-      "TITLE": "Bienvenue sur Upscayl 🎉",
+      "TITLE": "Bienvenue sur Symp's Upscale 🎉",
       "DESCRIPTION": "Commençons par quelques étapes rapides."
     },
     "STEP_2": {
@@ -304,12 +304,12 @@
       "DESCRIPTION": "Configurez vos paramètres initiaux."
     },
     "STEP_3": {
-      "TITLE": "Comment utiliser Upscayl ? 🚀",
+      "TITLE": "Comment utiliser Symp's Upscale ? 🚀",
       "DESCRIPTION": "Regardez cette courte vidéo pour découvrir les nouvelles fonctionnalités."
     },
     "STEP_4": {
       "TITLE": "Vous êtes prêt ! 🎉",
-      "DESCRIPTION": "Vous êtes prêt à commencer à améliorer des images avec Upscayl !"
+      "DESCRIPTION": "Vous êtes prêt à commencer à améliorer des images avec Symp's Upscale !"
     }
   }
 }
