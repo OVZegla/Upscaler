@@ -70,7 +70,7 @@
       "DESCRIPTION": "启用后，Symp's Upscale 将重新处理图片，不直接加载之前的结果。"
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "重置 Symp's Upscale",
+      "BUTTON_TITLE": "重置 Symp's",
       "ALERT": "Symp's Upscale 已被重置，请重新启动应用程序。"
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,11 +78,11 @@
       "DESCRIPTION": "启用后，输出文件夹将在会话之间被记住。"
     },
     "AUTO_UPDATE": {
-      "TITLE": "自动更新Symp's Upscale",
+      "TITLE": "自动更新Symp's",
       "DESCRIPTION": "启用后，应用程序将检查更新并通知你。"
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "帮助改进Symp's Upscale",
+      "TITLE": "帮助改进Symp's",
       "DESCRIPTION": "启用后，Symp's Upscale 将收集匿名使用数据以改进应用程序界面和功能。"
     },
     "THEME": {

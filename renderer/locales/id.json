@@ -70,7 +70,7 @@
       "DESCRIPTION": "Jika diaktifkan, Symp's Upscale akan memproses gambar itu lagi alih-alih memuatnya secara langsung."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "RESET UPSCALE",
+      "BUTTON_TITLE": "RESET",
       "ALERT": "Symp's Upscale telah direset. Silakan restart aplikasi."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Jika diaktifkan, folder output akan diingat antara sesi."
     },
     "AUTO_UPDATE": {
-      "TITLE": "PEMBARUAN OTOMATIS UPSCALE",
+      "TITLE": "PEMBARUAN OTOMATIS",
       "DESCRIPTION": "Jika diaktifkan, aplikasi akan memeriksa pembaruan baru dan memberi tahu Anda."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "BANTU TINGKATKAN UPSCALE",
+      "TITLE": "BANTU TINGKATKAN",
       "DESCRIPTION": "Jika diaktifkan, Symp's Upscale akan mengumpulkan data penggunaan anonim untuk meningkatkan antarmuka dan fitur aplikasi."
     },
     "THEME": {
-      "TITLE": "TEMA UPSCALE"
+      "TITLE": "TEMA"
     },
     "LANGUAGE": {
-      "TITLE": "BAHASA UPSCALE"
+      "TITLE": "BAHASA"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "UKURAN TILE KUSTOM",

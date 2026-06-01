@@ -70,7 +70,7 @@
       "DESCRIPTION": "Se estiver ativado, o Symp's Upscale processará a imagem novamente em vez de a carregar diretamente."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "REPOR UPSCALE",
+      "BUTTON_TITLE": "REPOR",
       "ALERT": "Symp's Upscale foi restaurado. Por favor, reinicie a aplicação."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Se estiver ativado, a pasta de saída será memorizada entre as sessões."
     },
     "AUTO_UPDATE": {
-      "TITLE": "ATUALIZAR AUTOMATICAMENTE UPSCALE",
+      "TITLE": "ATUALIZAR AUTOMATICAMENTE",
       "DESCRIPTION": "Se estiver ativado, a aplicação verificará se existem novas atualizações e notificá-lo-á."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "AJUDE A MELHORAR O UPSCALE",
+      "TITLE": "AJUDE A MELHORAR O",
       "DESCRIPTION": "Se ativado, o Symp's Upscale irá recolher dados anónimos de utilização para melhorar a interface e as funcionalidades da aplicação."
     },
     "THEME": {
-      "TITLE": "TEMA UPSCALE"
+      "TITLE": "TEMA"
     },
     "LANGUAGE": {
-      "TITLE": "IDIOMA UPSCALE"
+      "TITLE": "IDIOMA"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "TAMANHO DE BLOCO PERSONALIZADO",

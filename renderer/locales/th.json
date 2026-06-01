@@ -70,7 +70,7 @@
       "DESCRIPTION": "หากเปิดใช้งาน Symp's Upscale จะประมวลผลรูปใหม่อีกครั้งแทนที่จะโหลดโดยตรง"
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "คืนค่า UPSCALE",
+      "BUTTON_TITLE": "คืนค่า",
       "ALERT": "Symp's Upscale จะถูกคืนค่า โปรดปิดแล้วเปิดแอพใหม่"
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "หากเปิดใช้งาน โฟลเดอร์ปลายทางจะถูกจดจำไว้ระหว่างช่วงนั้น"
     },
     "AUTO_UPDATE": {
-      "TITLE": "อัพเดท UPSCALE อัตโนมัติ",
+      "TITLE": "อัพเดท",
       "DESCRIPTION": "หากเปิดใช้งาน แอพลิเคชั่นจะตรวจหาเวอร์ชั่นใหม่และแจ้งเตือนคุณ"
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "ช่วยปรับปรุง UPSCALE",
+      "TITLE": "ช่วยปรับปรุง",
       "DESCRIPTION": "หากเปิดใช้งาน Symp's Upscale จะรวบรวมข้อมูลการใช้งานโดยไม่ระบุตัวตนเพื่อปรับปรุงส่วนติดต่อแลัคุณสมบัติของแอพลเคชั่น"
     },
     "THEME": {
-      "TITLE": "ธีม UPSCALE"
+      "TITLE": "ธีม"
     },
     "LANGUAGE": {
-      "TITLE": "ภาษา UPSCALE"
+      "TITLE": "ภาษา"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "ขนาดไทล์แบบกำหนดเอง",

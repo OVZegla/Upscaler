@@ -70,7 +70,7 @@
       "DESCRIPTION": "Jika diaktifkan, Symp's Upscale akan memproses imej sekali lagi dan bukannya memuatnya secara langsung."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "TETAPKAN SEMULA UPSCALE",
+      "BUTTON_TITLE": "TETAPKAN SEMULA",
       "ALERT": "Symp's Upscale telah ditetapkan semula. Sila mulakan semula aplikasi."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Jika diaktifkan, folder output akan diingati antara sesi."
     },
     "AUTO_UPDATE": {
-      "TITLE": "KEMAS KINI AUTO UPSCALE",
+      "TITLE": "KEMAS KINI AUTO",
       "DESCRIPTION": "Jika diaktifkan, aplikasi akan memeriksa kemas kini baharu dan memberitahu anda."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "BANTU TINGKATKAN UPSCALE",
+      "TITLE": "BANTU TINGKATKAN",
       "DESCRIPTION": "Jika diaktifkan, Symp's Upscale akan mengumpulkan data penggunaan tanpa nama untuk meningkatkan antara muka dan ciri-ciri aplikasi."
     },
     "THEME": {
-      "TITLE": "TEMA UPSCALE"
+      "TITLE": "TEMA"
     },
     "LANGUAGE": {
-      "TITLE": "BAHASA UPSCALE"
+      "TITLE": "BAHASA"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "SAIZ JUBIN KHAS",

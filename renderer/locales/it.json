@@ -70,7 +70,7 @@
       "DESCRIPTION": "Se abilitato, Symp's Upscale rielaborerà l'immagine invece di caricarla direttamente."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "RIPRISTINA UPSCALE",
+      "BUTTON_TITLE": "RIPRISTINA",
       "ALERT": "Symp's Upscale è stato ripristinato. Riavviare l'applicazione."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Se abilitata, la cartella di output verrà memorizzata tra una sessione e l'altra."
     },
     "AUTO_UPDATE": {
-      "TITLE": "AGGIORNAMENTO AUTOMATICO DI UPSCALE",
+      "TITLE": "AGGIORNAMENTO AUTOMATICO DI",
       "DESCRIPTION": "Se abilitato, l'app controllerà la presenza di nuovi aggiornamenti e ti avviserà."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "AIUTA A MIGLIORARE UPSCALE",
+      "TITLE": "AIUTA A MIGLIORARE",
       "DESCRIPTION": "Se abilitato, Symp's Upscale raccoglierà dati di utilizzo anonimi per migliorare l'interfaccia e la funzionalità dell'app."
     },
     "THEME": {
-      "TITLE": "TEMA DI UPSCALE"
+      "TITLE": "TEMA DI"
     },
     "LANGUAGE": {
-      "TITLE": "LINGUA DI UPSCALE"
+      "TITLE": "LINGUA DI"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "DIMENSIONE PERSONALIZZATA DEL RIQUADRO",

@@ -70,7 +70,7 @@
       "DESCRIPTION": "Si activé, Symp's Upscale traitera à nouveau l'image au lieu de la charger directement."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "RÉINITIALISER UPSCALE",
+      "BUTTON_TITLE": "RÉINITIALISER",
       "ALERT": "Symp's Upscale a été réinitialisé. Veuillez redémarrer l'application."
     },
     "SAVE_OUTPUT_FOLDER": {
@@ -78,18 +78,18 @@
       "DESCRIPTION": "Si activé, le dossier de sortie sera mémorisé entre les sessions."
     },
     "AUTO_UPDATE": {
-      "TITLE": "MISE À JOUR AUTOMATIQUE UPSCALE",
+      "TITLE": "MISE À JOUR AUTOMATIQUE",
       "DESCRIPTION": "Si activé, l'application vérifiera les nouvelles mises à jour et vous en informera."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "AIDER À AMÉLIORER UPSCALE",
+      "TITLE": "AIDER À AMÉLIORER",
       "DESCRIPTION": "Si activé, Symp's Upscale collectera des données d'utilisation anonymes pour améliorer l'interface et les fonctionnalités de l'application."
     },
     "THEME": {
-      "TITLE": "THÈME UPSCALE"
+      "TITLE": "THÈME"
     },
     "LANGUAGE": {
-      "TITLE": "LANGUE UPSCALE"
+      "TITLE": "LANGUE"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "TAILLE DE TUILE PERSONNALISÉE",

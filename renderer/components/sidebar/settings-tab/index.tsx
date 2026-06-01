@@ -5,7 +5,6 @@ import { CustomModelsFolderSelect } from "./select-custom-models-folder";
 import { LogArea } from "./log-area";
 import { SelectImageScale } from "./select-image-scale";
 import { SelectImageFormat } from "./select-image-format";
-import { DonateButton } from "./donate-button";
 import React, { useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { customModelsPathAtom, scaleAtom } from "@/atoms/user-settings-atom";
@@ -140,31 +139,6 @@ function SettingsTab({
         enableScrolling();
       }}
     >
-      <div className="flex flex-col gap-2 text-sm font-medium uppercase">
-        <p>{t("SETTINGS.SUPPORT.TITLE")}</p>
-        <a
-          className="btn btn-primary"
-          href="https://docs.upscayl.org/"
-          target="_blank"
-        >
-          {t("SETTINGS.SUPPORT.DOCS_BUTTON_TITLE")}
-        </a>
-        {FEATURE_FLAGS.APP_STORE_BUILD && (
-          <button
-            className="btn btn-primary"
-            onClick={async () => {
-              const systemInfo = await window.electron.getSystemInfo();
-              const appVersion = await window.electron.getAppVersion();
-              const mailToUrl = `mailto:support@upscayl.org?subject=Symp%27s%20Upscale%20Issue%3A%20%3CWRITE%20HERE%3E&body=Hi%20Nayam!%0AI'm%20having%20an%20issue%20with%20Symp%27s%20Upscale%20${appVersion}%0A%0A%3CPLEASE%20DESCRIBE%20ISSUE%20HERE%3E%0A%0A---%0ALOGS%3A%0A${logData.join("\n")}%0A%0ADEVICE%20DETAILS%3A%20${JSON.stringify(systemInfo)}`;
-              window.open(mailToUrl, "_blank");
-            }}
-          >
-            {t("SETTINGS.SUPPORT.EMAIL_BUTTON_TITLE")}
-          </button>
-        )}
-        {!FEATURE_FLAGS.APP_STORE_BUILD && <DonateButton />}
-      </div>
-
       <LogArea
         copyOnClickHandler={copyOnClickHandler}
         isCopied={isCopied}

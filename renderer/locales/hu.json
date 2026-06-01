@@ -82,7 +82,7 @@
       "DESCRIPTION": "Ha be van kapcsolva, az alkalmazás ellenőrzi az új frissítéseket és értesít róla."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "SEGÍTS FEJLESZTENI AZ UPSCALE-T",
+      "TITLE": "SEGÍTS FEJLESZTENI AZ",
       "DESCRIPTION": "Ha be van kapcsolva, az Symp's Upscale névtelen használati adatokat gyűjt az alkalmazás felületének és funkcióinak javítása érdekében."
     },
     "THEME": {
