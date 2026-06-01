@@ -25,7 +25,7 @@ function ProgressBar({
 
   const stopHandler = () => {
     window.electron.send(ELECTRON_COMMANDS.STOP);
-    logit("🛑 Stopping Upscayl");
+    logit("🛑 Stopping");
   };
 
   const numericPct = (() => {

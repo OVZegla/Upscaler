@@ -1,15 +1,15 @@
 {
-  "TITLE": "Upscayl",
-  "INTRO": "Memperkenalkan Upscayl Cloud!",
+  "TITLE": "Symp's Upscale",
+  "INTRO": "Memperkenalkan Symp's Cloud!",
   "HEADER": {
     "GITHUB_BUTTON_TITLE": "Bintangi kami di GitHub 😁",
     "DESCRIPTION": "Pengubah Saiz Imej AI"
   },
   "FOOTER": {
-    "NEWS_TITLE": "BERITA UPSCAYL",
+    "NEWS_TITLE": "BERITA UPSCALE",
     "COPYRIGHT": "Hak Cipta ©",
     "TITLE": "Oleh ",
-    "LINK_TITLE": "Pasukan Upscayl"
+    "LINK_TITLE": "Pasukan Symp's Upscale"
   },
   "SETTINGS": {
     "TITLE": "Tetapan",
@@ -37,7 +37,7 @@
     },
     "GPU_ID_INPUT": {
       "TITLE": "ID GPU",
-      "DESCRIPTION": "Sila baca Dokumentasi Upscayl untuk maklumat lanjut.",
+      "DESCRIPTION": "Sila baca Dokumentasi Symp's Upscale untuk maklumat lanjut.",
       "ADDITIONAL_DESCRIPTION": "Aktifkan mod prestasi di Windows untuk hasil yang lebih baik."
     },
     "IMAGE_FORMAT": {
@@ -56,7 +56,7 @@
     },
     "IMAGE_SCALE": {
       "TITLE": "Skala Imej",
-      "DESCRIPTION": "Apa-apa melebihi 4X (kecuali 16X Double Upscayl) hanya mengubah saiz imej dan tidak menggunakan peningkatan AI.",
+      "DESCRIPTION": "Apa-apa melebihi 4X (kecuali 16X Double Upscale) hanya mengubah saiz imej dan tidak menggunakan peningkatan AI.",
       "WARNING": "Apa-apa melebihi 5X mungkin menyebabkan masalah prestasi pada sesetengah peranti!",
       "ADDITIONAL_WARNING": "Ini mungkin menyebabkan masalah prestasi pada sesetengah peranti!"
     },
@@ -67,29 +67,29 @@
     },
     "OVERWRITE_TOGGLE": {
       "TITLE": "TULIS GANTI PENINGKATAN SEBELUMNYA",
-      "DESCRIPTION": "Jika diaktifkan, Upscayl akan memproses imej sekali lagi dan bukannya memuatnya secara langsung."
+      "DESCRIPTION": "Jika diaktifkan, Symp's Upscale akan memproses imej sekali lagi dan bukannya memuatnya secara langsung."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "TETAPKAN SEMULA UPSCAYL",
-      "ALERT": "Upscayl telah ditetapkan semula. Sila mulakan semula aplikasi."
+      "BUTTON_TITLE": "TETAPKAN SEMULA UPSCALE",
+      "ALERT": "Symp's Upscale telah ditetapkan semula. Sila mulakan semula aplikasi."
     },
     "SAVE_OUTPUT_FOLDER": {
       "TITLE": "SIMPAN FOLDER OUTPUT",
       "DESCRIPTION": "Jika diaktifkan, folder output akan diingati antara sesi."
     },
     "AUTO_UPDATE": {
-      "TITLE": "KEMAS KINI AUTO UPSCAYL",
+      "TITLE": "KEMAS KINI AUTO UPSCALE",
       "DESCRIPTION": "Jika diaktifkan, aplikasi akan memeriksa kemas kini baharu dan memberitahu anda."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "BANTU TINGKATKAN UPSCAYL",
-      "DESCRIPTION": "Jika diaktifkan, Upscayl akan mengumpulkan data penggunaan tanpa nama untuk meningkatkan antara muka dan ciri-ciri aplikasi."
+      "TITLE": "BANTU TINGKATKAN UPSCALE",
+      "DESCRIPTION": "Jika diaktifkan, Symp's Upscale akan mengumpulkan data penggunaan tanpa nama untuk meningkatkan antara muka dan ciri-ciri aplikasi."
     },
     "THEME": {
-      "TITLE": "TEMA UPSCAYL"
+      "TITLE": "TEMA UPSCALE"
     },
     "LANGUAGE": {
-      "TITLE": "BAHASA UPSCAYL"
+      "TITLE": "BAHASA UPSCALE"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "SAIZ JUBIN KHAS",
@@ -97,7 +97,7 @@
     },
     "TURN_OFF_NOTIFICATIONS": {
       "TITLE": "MATIKAN PEMBERITAHUAN",
-      "DESCRIPTION": "Jika diaktifkan, Upscayl tidak akan menghantar sebarang pemberitahuan sistem tentang kejayaan atau kegagalan."
+      "DESCRIPTION": "Jika diaktifkan, Symp's Upscale tidak akan menghantar sebarang pemberitahuan sistem tentang kejayaan atau kegagalan."
     },
     "SUPPORT": {
       "TITLE": "Menghadapi masalah?",
@@ -113,10 +113,10 @@
     }
   },
   "APP": {
-    "TITLE": "Upscayl",
+    "TITLE": "Symp's Upscale",
     "BATCH_MODE": {
-      "TITLE": "Upscayl Kelompok",
-      "DESCRIPTION": "Ini akan membolehkan anda mengupscayl semua fail dalam folder sekaligus"
+      "TITLE": "Symp's Upscale Kelompok",
+      "DESCRIPTION": "Ini akan membolehkan anda mengupscale semua fail dalam folder sekaligus"
     },
     "FILE_SELECTION": {
       "TITLE": "Langkah 1",
@@ -162,12 +162,12 @@
       }
     },
     "DOUBLE_UPSCAYL": {
-      "TITLE": "Double Upscayl",
-      "DESCRIPTION": "Aktifkan pilihan ini untuk menjalankan upscayl dua kali pada satu imej. Perhatikan bahawa ini mungkin menyebabkan peningkatan ketara dalam masa pemprosesan dan mungkin masalah prestasi untuk skala lebih besar daripada 4X."
+      "TITLE": "Double Upscale",
+      "DESCRIPTION": "Aktifkan pilihan ini untuk menjalankan upscale dua kali pada satu imej. Perhatikan bahawa ini mungkin menyebabkan peningkatan ketara dalam masa pemprosesan dan mungkin masalah prestasi untuk skala lebih besar daripada 4X."
     },
     "OUTPUT_PATH_SELECTION": {
       "TITLE": "Langkah 3",
-      "MAC_APP_STORE_ALERT": "Disebabkan sekatan keselamatan MacOS App Store, Upscayl memerlukan anda memilih folder output setiap kali anda memulakan aplikasi.\n\nUntuk mengelakkan ini, anda boleh menyimpan folder output lalai secara kekal dalam tab 'Tetapan' Upscayl.",
+      "MAC_APP_STORE_ALERT": "Disebabkan sekatan keselamatan MacOS App Store, Symp's Upscale memerlukan anda memilih folder output setiap kali anda memulakan aplikasi.\n\nUntuk mengelakkan ini, anda boleh menyimpan folder output lalai secara kekal dalam tab 'Tetapan' Symp's Upscale.",
       "NOT_SELECTED": "Tidak Dipilih",
       "DEFAULT_IMG_PATH": "Lalai ke laluan Imej",
       "DEFAULT_FOLDER_PATH": "Lalai ke laluan Folder",
@@ -175,28 +175,28 @@
     },
     "SCALE_SELECTION": {
       "TITLE": "Langkah 4",
-      "FROM_TITLE": "Upscayl dari ",
+      "FROM_TITLE": "Symp's Upscale dari ",
       "TO_TITLE": " kepada ",
       "NO_OUTPUT_FOLDER_ALERT": "Sila pilih folder output terlebih dahulu",
-      "START_BUTTON_TITLE": "Upscayl 🚀",
-      "IN_PROGRESS_BUTTON_TITLE": "Sedang Upscayl ⏳"
+      "START_BUTTON_TITLE": "Symp's Upscale 🚀",
+      "IN_PROGRESS_BUTTON_TITLE": "Sedang Symp's Upscale ⏳"
     },
     "MORE_OPTIONS_DRAWER": {
       "RESET_BUTTON_TITLE": "Tetapkan Semula Imej",
       "LENS_VIEW_TITLE": "Paparan Kanta",
       "SLIDER_VIEW_TITLE": "Paparan Peluncur",
       "ZOOM_AMOUNT_TITLE": "Jumlah Zum",
-      "TOTAL_UPSCAYLS": "Jumlah Upscayl",
-      "TOTAL_BATCH_UPSCAYLS": "Jumlah Upscayl Kelompok",
-      "TOTAL_IMAGE_UPSCAYLS": "Jumlah Upscayl Imej",
-      "TOTAL_DOUBLE_UPSCAYLS": "Jumlah Double Upscayl",
-      "AVERAGE_UPSCAYL_TIME": "Purata Masa Upscayl",
-      "LAST_UPSCAYL_DURATION": "Tempoh Upscayl Terakhir",
+      "TOTAL_UPSCAYLS": "Jumlah Symp's Upscale",
+      "TOTAL_BATCH_UPSCAYLS": "Jumlah Symp's Upscale Kelompok",
+      "TOTAL_IMAGE_UPSCAYLS": "Jumlah Symp's Upscale Imej",
+      "TOTAL_DOUBLE_UPSCAYLS": "Jumlah Double Upscale",
+      "AVERAGE_UPSCAYL_TIME": "Purata Masa Symp's Upscale",
+      "LAST_UPSCAYL_DURATION": "Tempoh Symp's Upscale Terakhir",
       "LAST_USED_AT": "Terakhir Digunakan Pada"
     },
     "PROGRESS_BAR": {
-      "BATCH_UPSCAYL_IN_PROGRESS_TITLE": "Upscayl Kelompok Sedang Berjalan:",
-      "IN_PROGRESS_TITLE": "Melakukan magik Upscayl...",
+      "BATCH_UPSCAYL_IN_PROGRESS_TITLE": "Symp's Upscale Kelompok Sedang Berjalan:",
+      "IN_PROGRESS_TITLE": "Melakukan magik Symp's Upscale...",
       "STOP_BUTTON_TITLE": "HENTI"
     },
     "RESET_BUTTON_TITLE": "Tetapkan Semula",
@@ -211,16 +211,16 @@
       "PROCESSING_TITLE": "Memproses imej...",
       "SCALING_CONVERTING_TITLE": "Mengubah saiz dan menukar imej...",
       "WAIT_TITLE": "Tunggu sebentar...",
-      "SUCCESS_TITLE": "Upscayl Berjaya!",
+      "SUCCESS_TITLE": "Symp's Upscale Berjaya!",
       "BATCH": {
         "SELECTED_FOLDER_TITLE": "Folder yang dipilih:",
         "DONE_TITLE": "Semuanya selesai!",
-        "OPEN_UPSCAYLED_FOLDER_TITLE": "Buka Folder Upscayl"
+        "OPEN_UPSCAYLED_FOLDER_TITLE": "Buka Folder Symp's Upscale"
       }
     },
     "SLIDER": {
       "ORIGINAL_TITLE": "Asal",
-      "UPSCAYLED_TITLE": "Upscayl"
+      "UPSCAYLED_TITLE": "Symp's Upscale"
     },
     "DIALOG_BOX": {
       "CLOSE": "Tutup"
@@ -245,7 +245,7 @@
     },
     "EXCEPTION_ERROR": {
       "TITLE": "Ralat Pengecualian",
-      "DESCRIPTION": "Upscayl menghadapi ralat. Mungkin, binari upscayl gagal melaksanakan arahan dengan betul. Cuba semak log untuk melihat jika anda mendapat sebarang maklumat. Anda boleh menghantar isu di repositori GitHub Upscayl untuk mendapatkan bantuan lebih lanjut."
+      "DESCRIPTION": "Symp's Upscale menghadapi ralat. Mungkin, binari upscale gagal melaksanakan arahan dengan betul. Cuba semak log untuk melihat jika anda mendapat sebarang maklumat. Anda boleh menghantar isu di repositori GitHub Symp's Upscale untuk mendapatkan bantuan lebih lanjut."
     },
     "GENERIC_ERROR": {
       "TITLE": "Ralat"
@@ -283,9 +283,9 @@
   "UPSCAYL_CLOUD": {
     "COMING_SOON": "Akan datang!",
     "CATCHY_PHRASE_1": "Tiada lagi ralat, masalah perkakasan, kompromi kualiti atau masa pemuatan yang lama!",
-    "CATCHY_PHRASE_2": "🌐 Upscayl di mana-mana, bila-bila masa, apa-apa peranti\n☁️ Tiada Kad Grafik atau perkakasan diperlukan\n👩 Peningkatan Wajah\n🦋 10+ model untuk dipilih\n🏎 5x lebih pantas dari Upscayl Desktop\n🎞 Peningkatan Saiz Video\n💰 Penggunaan Komersial\n😴 Upscayl semasa anda tidur",
+    "CATCHY_PHRASE_2": "🌐 Symp's Upscale di mana-mana, bila-bila masa, apa-apa peranti\n☁️ Tiada Kad Grafik atau perkakasan diperlukan\n👩 Peningkatan Wajah\n🦋 10+ model untuk dipilih\n🏎 5x lebih pantas dari Symp's Upscale Desktop\n🎞 Peningkatan Saiz Video\n💰 Penggunaan Komersial\n😴 Symp's Upscale semasa anda tidur",
     "ALREADY_REGISTERED_ALERT": "Terima kasih {name}! Nampaknya e-mel anda telah didaftarkan :D Jika itu bukan masalahnya, sila cuba lagi.",
-    "ADD_SUCCESS": "Terima kasih kerana menyertai senarai menunggu! Kami akan memberitahu anda apabila Upscayl Cloud sedia untuk anda.",
+    "ADD_SUCCESS": "Terima kasih kerana menyertai senarai menunggu! Kami akan memberitahu anda apabila Symp's Cloud sedia untuk anda.",
     "INCORRECT_FIELDS_ALERT": "Sila isi semua bidang dengan betul.",
     "JOIN_WAITLIST": "Sertai senarai menunggu",
     "DONT_SHOW_AGAIN": "JANGAN TUNJUKKAN LAGI"
@@ -296,7 +296,7 @@
     "GET_STARTED_BUTTON_TITLE": "Mulakan",
     "SETTINGS_NOTE": "Anda boleh mengubah tetapan ini kemudian.",
     "STEP_1": {
-      "TITLE": "Selamat datang ke Upscayl 🎉",
+      "TITLE": "Selamat datang ke Symp's Upscale 🎉",
       "DESCRIPTION": "Mari mulakan dengan beberapa langkah cepat."
     },
     "STEP_2": {
@@ -304,12 +304,12 @@
       "DESCRIPTION": "Konfigurasikan tetapan awal anda."
     },
     "STEP_3": {
-      "TITLE": "Bagaimana saya menggunakan Upscayl? 🚀",
+      "TITLE": "Bagaimana saya menggunakan Symp's Upscale? 🚀",
       "DESCRIPTION": "Tonton video pendek ini untuk mengetahui tentang ciri-ciri baharu."
     },
     "STEP_4": {
       "TITLE": "Anda Sudah Bersedia! 🎉",
-      "DESCRIPTION": "Anda sudah bersedia untuk mula meningkatkan saiz imej dengan Upscayl!"
+      "DESCRIPTION": "Anda sudah bersedia untuk mula meningkatkan saiz imej dengan Symp's Upscale!"
     }
   }
 }

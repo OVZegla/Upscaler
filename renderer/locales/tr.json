@@ -1,15 +1,15 @@
 {
-  "TITLE": "Upscayl",
-  "INTRO": "Upscayl Cloud ile tanışın!",
+  "TITLE": "Symp's Upscale",
+  "INTRO": "Symp's Cloud ile tanışın!",
   "HEADER": {
     "GITHUB_BUTTON_TITLE": "Bize GitHub'da yıldız verin! 🌟",
     "DESCRIPTION": "AI Görsel İyileştirici"
   },
   "FOOTER": {
-    "NEWS_TITLE": "UPSCAYL HABERLERİ",
+    "NEWS_TITLE": "UPSCALE HABERLERİ",
     "COPYRIGHT": "Telif Hakkı ©",
     "TITLE": "Geliştiren: ",
-    "LINK_TITLE": "The Upscayl Ekibi"
+    "LINK_TITLE": "The Symp's Upscale Ekibi"
   },
   "SETTINGS": {
     "TITLE": "Ayarlar",
@@ -37,7 +37,7 @@
     },
     "GPU_ID_INPUT": {
       "TITLE": "GPU ID",
-      "DESCRIPTION": "Daha fazla bilgi için lütfen Upscayl Dökümantasyonunu okuyun.",
+      "DESCRIPTION": "Daha fazla bilgi için lütfen Symp's Upscale Dökümantasyonunu okuyun.",
       "ADDITIONAL_DESCRIPTION": "Windows'da daha iyi sonuçlar için performnas modunu etkinleştirin."
     },
     "IMAGE_FORMAT": {
@@ -56,7 +56,7 @@
     },
     "IMAGE_SCALE": {
       "TITLE": "Görsel Ölçeği",
-      "DESCRIPTION": "4X'ten büyük herhangi bir ayar (16X Çifte Upscayl dışında) yalnızca görüntüyü yeniden boyutlandırır ve AI ile iyileştirme yapmaz.",
+      "DESCRIPTION": "4X'ten büyük herhangi bir ayar (16X Çifte Symp's Upscale dışında) yalnızca görüntüyü yeniden boyutlandırır ve AI ile iyileştirme yapmaz.",
       "WARNING": "5X üzerinde herhangi bir ayar bazı aygıtlarda performans sorunlarına neden olabilir!",
       "ADDITIONAL_WARNING": "Bu bazı cihazlarda performans sorunlarına neden olabilir!"
     },
@@ -67,29 +67,29 @@
     },
     "OVERWRITE_TOGGLE": {
       "TITLE": "ÖNCEKİ GELİŞTİRME AYARLARININ ÜZERİNE YAZ",
-      "DESCRIPTION": "Etkinleştirilirdiği takdirde, Upscayl görüntüyü doğrudan yüklemek yerine tekrardan işleyecektir."
+      "DESCRIPTION": "Etkinleştirilirdiği takdirde, Symp's Upscale görüntüyü doğrudan yüklemek yerine tekrardan işleyecektir."
     },
     "RESET_SETTINGS": {
-      "BUTTON_TITLE": "UPSCAYL'I SIFIRLA",
-      "ALERT": "Upscayl sıfırlandı. Lütfen uygulamayı yeniden başlatın."
+      "BUTTON_TITLE": "UPSCALE'I SIFIRLA",
+      "ALERT": "Symp's Upscale sıfırlandı. Lütfen uygulamayı yeniden başlatın."
     },
     "SAVE_OUTPUT_FOLDER": {
       "TITLE": "ÇIKTI KLASÖRÜNÜ KAYDET",
-      "DESCRIPTION": "Etkinleştirildiği takdirde, Upscayl oturumlar arası çıktı klasörünü hatırlayacaktır."
+      "DESCRIPTION": "Etkinleştirildiği takdirde, Symp's Upscale oturumlar arası çıktı klasörünü hatırlayacaktır."
     },
     "AUTO_UPDATE": {
-      "TITLE": "UPSCAYL'I OTOMATİK GÜNCELLE",
+      "TITLE": "UPSCALE'I OTOMATİK GÜNCELLE",
       "DESCRIPTION": "Etkinleştirildiği takdirde, uygulama yeni güncellemeleri kendiliğinden kontrol edecek ve sizi de bilgilendirecektir."
     },
     "ENABLE_CONTRIBUTION": {
-      "TITLE": "UPSCAYL'I GELİŞTİRMEYE YARDIMCI OL",
-      "DESCRIPTION": "Etkinleştirildiği takdirde; Upscayl, uygulama arayüzünü ve özelliklerini geliştirmek için anonim kullanım verileri toplayacaktır."
+      "TITLE": "UPSCALE'I GELİŞTİRMEYE YARDIMCI OL",
+      "DESCRIPTION": "Etkinleştirildiği takdirde; Symp's Upscale, uygulama arayüzünü ve özelliklerini geliştirmek için anonim kullanım verileri toplayacaktır."
     },
     "THEME": {
-      "TITLE": "UPSCAYL'IN TEMASI"
+      "TITLE": "UPSCALE'IN TEMASI"
     },
     "LANGUAGE": {
-      "TITLE": "UPSCAYL'IN DİLİ"
+      "TITLE": "UPSCALE'IN DİLİ"
     },
     "CUSTOM_TILE_SIZE": {
       "TITLE": "ÖZEL KARO BOYUTU",
@@ -97,7 +97,7 @@
     },
     "TURN_OFF_NOTIFICATIONS": {
       "TITLE": "BİLDİRİMLERİ KAPAT",
-      "DESCRIPTION": "Etkinleştirildiği takdirde, Upscayl başarı veya başarısızlık durumunda herhangi bir sistem bildirimi göndermeyecektir."
+      "DESCRIPTION": "Etkinleştirildiği takdirde, Symp's Upscale başarı veya başarısızlık durumunda herhangi bir sistem bildirimi göndermeyecektir."
     },
     "SUPPORT": {
       "TITLE": "Sorun mu var?",
@@ -113,10 +113,10 @@
     }
   },
   "APP": {
-    "TITLE": "Upscayl",
+    "TITLE": "Symp's Upscale",
     "BATCH_MODE": {
-      "TITLE": "Topyekün Upscayl",
-      "DESCRIPTION": "Bununla birlikte tek seferde bir bütün klasörü Upscayl edebilirsiniz."
+      "TITLE": "Topyekün Symp's Upscale",
+      "DESCRIPTION": "Bununla birlikte tek seferde bir bütün klasörü Symp's Upscale edebilirsiniz."
     },
     "FILE_SELECTION": {
       "TITLE": "1. Adım",
@@ -162,12 +162,12 @@
       }
     },
     "DOUBLE_UPSCAYL": {
-      "TITLE": "Çifte Upscayl",
-      "DESCRIPTION": "Bu seçeneği etkinleştirerek, bir görüntü üzerinde Upscayl'ı iki kez çalıştırabilirsiniz. Lakin, bu işlem süresinde önemli bir uzamaya ve 4X'ten büyük ölçeklerde performans sorunlarına yol açabilir."
+      "TITLE": "Çifte Symp's Upscale",
+      "DESCRIPTION": "Bu seçeneği etkinleştirerek, bir görüntü üzerinde Symp's Upscale'ı iki kez çalıştırabilirsiniz. Lakin, bu işlem süresinde önemli bir uzamaya ve 4X'ten büyük ölçeklerde performans sorunlarına yol açabilir."
     },
     "OUTPUT_PATH_SELECTION": {
       "TITLE": "3. Adım",
-      "MAC_APP_STORE_ALERT": "MacOS App Store güvenlik kısıtlamaları nedeniyle, Upscayl her başlatıldığında bir çıktı klasörü seçmenizi isteyecektir.\n\nBunu engellemek için, Upscayl'ın 'Ayarlar' sekmesinde varsayılan bir çıktı klasörü kalıcı olarak kaydedebilirsiniz.",
+      "MAC_APP_STORE_ALERT": "MacOS App Store güvenlik kısıtlamaları nedeniyle, Symp's Upscale her başlatıldığında bir çıktı klasörü seçmenizi isteyecektir.\n\nBunu engellemek için, Symp's Upscale'ın 'Ayarlar' sekmesinde varsayılan bir çıktı klasörü kalıcı olarak kaydedebilirsiniz.",
       "NOT_SELECTED": "Seçilmemiş",
       "DEFAULT_IMG_PATH": "Çıktı resim, girdi resmin dizinine",
       "DEFAULT_FOLDER_PATH": "Çıktı klasör, girdi klasörün dizine",
@@ -178,25 +178,25 @@
       "FROM_TITLE": "",
       "TO_TITLE": "'dan ->",
       "NO_OUTPUT_FOLDER_ALERT": "Lütfen önce bir çıktı klasörü seçin.",
-      "START_BUTTON_TITLE": "Upscayl'la 🚀",
-      "IN_PROGRESS_BUTTON_TITLE": "Upscayl'lanıyor ⏳"
+      "START_BUTTON_TITLE": "Symp's Upscale'la 🚀",
+      "IN_PROGRESS_BUTTON_TITLE": "Symp's Upscale'lanıyor ⏳"
     },
     "MORE_OPTIONS_DRAWER": {
       "RESET_BUTTON_TITLE": "Resmi Sıfırla",
       "LENS_VIEW_TITLE": "Lensli Büyüteç",
       "SLIDER_VIEW_TITLE": "Kaydırmalı Büyüteç",
       "ZOOM_AMOUNT_TITLE": "Yakınlaştırma Miktarı",
-      "TOTAL_UPSCAYLS": "Toplam Upscayllar",
-      "TOTAL_BATCH_UPSCAYLS": "Toplam Topyekün Upscayllar",
-      "TOTAL_IMAGE_UPSCAYLS": "Toplam Görsel Upscaylları",
-      "TOTAL_DOUBLE_UPSCAYLS": "Toplam Çifte Upscayllar",
-      "AVERAGE_UPSCAYL_TIME": "Ortalama Upscayl Süresi",
-      "LAST_UPSCAYL_DURATION": "Son Upscayl Süresi",
+      "TOTAL_UPSCAYLS": "Toplam Symp's Upscalelar",
+      "TOTAL_BATCH_UPSCAYLS": "Toplam Topyekün Symp's Upscalelar",
+      "TOTAL_IMAGE_UPSCAYLS": "Toplam Görsel Symp's Upscaleları",
+      "TOTAL_DOUBLE_UPSCAYLS": "Toplam Çifte Symp's Upscalelar",
+      "AVERAGE_UPSCAYL_TIME": "Ortalama Symp's Upscale Süresi",
+      "LAST_UPSCAYL_DURATION": "Son Symp's Upscale Süresi",
       "LAST_USED_AT": "En son şu tarihte kullanıldı"
     },
     "PROGRESS_BAR": {
-      "BATCH_UPSCAYL_IN_PROGRESS_TITLE": "Topyekün Upscayl ediliyor...",
-      "IN_PROGRESS_TITLE": "Upscayl sihrini konuşturuyor...",
+      "BATCH_UPSCAYL_IN_PROGRESS_TITLE": "Topyekün Symp's Upscale ediliyor...",
+      "IN_PROGRESS_TITLE": "Symp's Upscale sihrini konuşturuyor...",
       "STOP_BUTTON_TITLE": "DURDUR"
     },
     "RESET_BUTTON_TITLE": "Sıfırla",
@@ -211,16 +211,16 @@
       "PROCESSING_TITLE": "Görsel işleniyor...",
       "SCALING_CONVERTING_TITLE": "Görsel ölçeklendirilip dönüştürülüyor...",
       "WAIT_TITLE": "Bekleyin...",
-      "SUCCESS_TITLE": "Upscayl Başarılı!",
+      "SUCCESS_TITLE": "Symp's Upscale Başarılı!",
       "BATCH": {
         "SELECTED_FOLDER_TITLE": "Seçili klasör:",
         "DONE_TITLE": "Hepsi tamamlandı!",
-        "OPEN_UPSCAYLED_FOLDER_TITLE": "Upscayllenmiş klasörü açın"
+        "OPEN_UPSCAYLED_FOLDER_TITLE": "Symp's Upscalelenmiş klasörü açın"
       }
     },
     "SLIDER": {
       "ORIGINAL_TITLE": "Orjinali",
-      "UPSCAYLED_TITLE": "Upscayllanmışı"
+      "UPSCAYLED_TITLE": "Symp's Upscalelanmışı"
     },
     "DIALOG_BOX": {
       "CLOSE": "Kapat"
@@ -245,7 +245,7 @@
     },
     "EXCEPTION_ERROR": {
       "TITLE": "İstinai Hata",
-      "DESCRIPTION": "Upscayl bir hata ile karşılaştı. Muhtemelen, upscayl ikili dosyası komutları düzgün şekilde çalıştırmayı başaramadı. Bilgi almak için log dosyalarını kontrol etmeyi deneyin. Daha fazla yardım için Upscayl'ın GitHub deposunda bir sorun bildirisi oluşturabilirsiniz."
+      "DESCRIPTION": "Symp's Upscale bir hata ile karşılaştı. Muhtemelen, upscale ikili dosyası komutları düzgün şekilde çalıştırmayı başaramadı. Bilgi almak için log dosyalarını kontrol etmeyi deneyin. Daha fazla yardım için Symp's Upscale'ın GitHub deposunda bir sorun bildirisi oluşturabilirsiniz."
     },
     "GENERIC_ERROR": {
       "TITLE": "Hata"
@@ -283,9 +283,9 @@
   "UPSCAYL_CLOUD": {
     "COMING_SOON": "Yakında sizlerle!",
     "CATCHY_PHRASE_1": "Artık hatalar, donanım uyuşmazlıkları, kalite tavizleri ya da uzun yükleme süreleri yok!",
-    "CATCHY_PHRASE_2": "🌐 Upscayl her yerde, her zaman , her cihazda\n☁️ Ekran kartına ya da donanıma gerek yok.\n👩 Yüz güzelleştirici\n🦋 Seçilebilecek 10 model ve fazlası\n🏎 Upscayl Desktop'tan 5 kat daha hızlı\n🎞 Video İyileştirici\n💰 Ticari Kullanım\n😴 Siz uyurken Upscayl",
+    "CATCHY_PHRASE_2": "🌐 Symp's Upscale her yerde, her zaman , her cihazda\n☁️ Ekran kartına ya da donanıma gerek yok.\n👩 Yüz güzelleştirici\n🦋 Seçilebilecek 10 model ve fazlası\n🏎 Symp's Upscale Desktop'tan 5 kat daha hızlı\n🎞 Video İyileştirici\n💰 Ticari Kullanım\n😴 Siz uyurken Symp's Upscale",
     "ALREADY_REGISTERED_ALERT": "Teşekkürler {name}! Görünüşe göre e-postanı zaten kaydetmişiz :D Eğer bu bir hata ise, tekrar deneyin.",
-    "ADD_SUCCESS": "Bekleme listesine katıldığın için teşekkürler! Upscayl Cloud senin için hazır olduğunda mutlaka ulaşacağız!",
+    "ADD_SUCCESS": "Bekleme listesine katıldığın için teşekkürler! Symp's Cloud senin için hazır olduğunda mutlaka ulaşacağız!",
     "INCORRECT_FIELDS_ALERT": "Lütfen tüm alanları tam doldurun.",
     "JOIN_WAITLIST": "Bekleme listesine yazıl",
     "DONT_SHOW_AGAIN": "BİR DAHA GÖSTERME"
@@ -296,7 +296,7 @@
     "GET_STARTED_BUTTON_TITLE": "Başlayın",
     "SETTINGS_NOTE": "Tüm bu ayarları istersen sonra değiştirebilirsin.",
     "STEP_1": {
-      "TITLE": "Upscayl'e hoş geldiniz! 🎉",
+      "TITLE": "Symp's Upscale'e hoş geldiniz! 🎉",
       "DESCRIPTION": "Hadi sizi bir kaç adımda hazır edelim."
     },
     "STEP_2": {
@@ -304,12 +304,12 @@
       "DESCRIPTION": "Ön ayarlarınızı yapılandırın."
     },
     "STEP_3": {
-      "TITLE": "Upscayl'ı nasıl kullanacağım? 🚀",
+      "TITLE": "Symp's Upscale'ı nasıl kullanacağım? 🚀",
       "DESCRIPTION": "Bu kısa videoyu izleyerek en yeni özellikleri öğrenin"
     },
     "STEP_4": {
       "TITLE": "Hazır ve nazırsınız! 🎉",
-      "DESCRIPTION": "Upscayl ile görsellerinizi iyileştirmeye hazırsınız!"
+      "DESCRIPTION": "Symp's Upscale ile görsellerinizi iyileştirmeye hazırsınız!"
     }
   }
 }
