@@ -28,7 +28,7 @@ const SympLogo = ({
       }}
     >
       <img
-        src="public:///sympsupscale.png"
+        src="public:///icone.png"
         alt="Symp's Upscale"
         style={{ width: size * 1.1, height: size * 1.1, objectFit: "contain" }}
         draggable={false}

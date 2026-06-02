@@ -46,23 +46,18 @@ const LeftNav = ({ selectedTab, setSelectedTab, version }: LeftNavProps) => {
       {isMac && <div style={{ height: 28 }} className="mac-titlebar" />}
 
       <div style={{ padding: "0 16px", marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <img
-            src="public:///sympsupscale.png"
-            alt="logo"
-            style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0 }}
-          />
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 12, letterSpacing: "0.04em", color: "var(--symp-ink, #0E0E0F)", lineHeight: 1.2 }}>
-              SYMP'S UPSCALE
-            </div>
-            {version && (
-              <div style={{ fontSize: 11, color: "var(--symp-ink-3, #6F6F75)", marginTop: 2 }}>
-                v{version}
-              </div>
-            )}
+        {/* Full logo image (icon + "SYMP'S UPSCALE" typography) */}
+        <img
+          src="public:///logo.png"
+          alt="Symp's Upscale"
+          style={{ width: "100%", maxWidth: 180, height: "auto", objectFit: "contain" }}
+          draggable={false}
+        />
+        {version && (
+          <div style={{ fontSize: 10, color: "var(--symp-ink-3, #6F6F75)", marginTop: 4, paddingLeft: 2 }}>
+            v{version}
           </div>
-        </div>
+        )}
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "0 8px", flex: 1 }}>
