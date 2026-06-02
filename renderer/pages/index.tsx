@@ -423,6 +423,7 @@ const Home = () => {
             upscaylHandler={upscaylHandler}
             imagePath={imagePath}
             batchFolderPath={batchFolderPath}
+            dimensions={dimensions}
           />
         </>
       ) : (
