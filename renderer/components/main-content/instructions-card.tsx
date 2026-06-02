@@ -59,44 +59,19 @@ function InstructionsCard({
           transition: "all 0.2s ease",
         }}
       >
-        {/* Logo mark — ink square with accent tick */}
+        {/* App icon in drop zone */}
         <div
           style={{
             width: 72,
             height: 72,
-            borderRadius: 18,
-            background: "var(--symp-ink, #0E0E0F)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             marginBottom: 6,
-            position: "relative",
-            boxShadow: "0 14px 30px rgba(14,14,15,0.18)",
           }}
         >
-          <span
-            style={{
-              display: "inline-block",
-              width: 8,
-              height: 30,
-              background: "var(--symp-accent, #0055A4)",
-              transform: "skewX(-15deg)",
-              borderRadius: 2,
-            }}
+          <img
+            src="/sympsupscale.png"
+            alt="Symp's Upscale"
+            style={{ width: 72, height: 72, objectFit: "contain" }}
           />
-          <span
-            style={{
-              position: "absolute",
-              bottom: 14,
-              fontFamily: "var(--symp-mono, monospace)",
-              fontSize: 8,
-              fontWeight: 600,
-              letterSpacing: "0.18em",
-              color: "rgba(255,255,255,0.7)",
-            }}
-          >
-            ×2
-          </span>
         </div>
 
         <div
