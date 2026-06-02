@@ -139,11 +139,16 @@ function SettingsTab({
         enableScrolling();
       }}
     >
-      <LogArea
-        copyOnClickHandler={copyOnClickHandler}
-        isCopied={isCopied}
-        logData={logData}
-      />
+      <details>
+        <summary style={{ cursor: "pointer", fontSize: 12, color: "var(--symp-ink-3)", userSelect: "none" }}>
+          Logs
+        </summary>
+        <LogArea
+          copyOnClickHandler={copyOnClickHandler}
+          isCopied={isCopied}
+          logData={logData}
+        />
+      </details>
 
       {/* THEME SELECTOR */}
       <SelectTheme />
@@ -213,6 +218,10 @@ function SettingsTab({
       )}
 
       <SystemInfo />
+
+      <div style={{ marginTop: "auto", paddingTop: 32, textAlign: "center", fontSize: 11, color: "var(--symp-ink-3)", opacity: 0.6 }}>
+        Powered by Upscayl
+      </div>
     </div>
   );
 }

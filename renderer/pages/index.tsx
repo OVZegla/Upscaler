@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ELECTRON_COMMANDS } from "@common/electron-commands";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { customModelIdsAtom } from "../atoms/models-list-atom";
 import {
   batchModeAtom,
@@ -9,20 +9,26 @@ import {
   progressAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
+  compressionAtom,
+  gpuIdAtom,
+  saveImageAsAtom,
+  dontShowCloudModalAtom,
 } from "../atoms/user-settings-atom";
 import useLogger from "../components/hooks/use-logger";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import UpscaylSVGLogo from "@/components/icons/upscayl-logo-svg";
 import { translationAtom } from "@/atoms/translations-atom";
 import Sidebar from "@/components/sidebar";
 import MainContent from "@/components/main-content";
+import RightPanel from "@/components/right-panel";
+import SettingsTab from "@/components/sidebar/settings-tab";
 import getDirectoryFromPath from "@common/get-directory-from-path";
 import { FEATURE_FLAGS } from "@common/feature-flags";
 import { ImageFormat, VALID_IMAGE_FORMATS } from "@/lib/valid-formats";
 import { initCustomModels } from "@/components/hooks/use-custom-models";
 import { OnboardingDialog } from "@/components/main-content/onboarding-dialog";
 import useSystemInfo from "@/components/hooks/use-system-info";
+import { logAtom } from "@/atoms/log-atom";
 
 const Home = () => {
   const t = useAtomValue(translationAtom);
@@ -48,6 +54,20 @@ const Home = () => {
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
+
+  const [selectedTab, setSelectedTab] = useState(0);
+  const upscaylHandlerRef = useRef<(() => Promise<void>) | null>(null);
+  const handleUpscaylHandlerReady = (handler: () => Promise<void>) => {
+    upscaylHandlerRef.current = handler;
+  };
+  const upscaylHandler = () => upscaylHandlerRef.current?.();
+
+  const [compression, setCompression] = useAtom(compressionAtom);
+  const [gpuId, setGpuId] = useAtom(gpuIdAtom);
+  const [saveImageAs, setSaveImageAs] = useAtom(saveImageAsAtom);
+  const setDontShowCloudModal = useSetAtom(dontShowCloudModalAtom);
+  const logData = useAtomValue(logAtom);
+  const [showCloudModal, setShowCloudModal] = useState(false);
 
   const selectImageHandler = async () => {
     resetImagePaths();
@@ -380,20 +400,46 @@ const Home = () => {
         setUpscaledBatchFolderPath={setUpscaledBatchFolderPath}
         selectImageHandler={selectImageHandler}
         selectFolderHandler={selectFolderHandler}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+        onUpscaylHandlerReady={handleUpscaylHandlerReady}
       />
-      <MainContent
-        imagePath={imagePath}
-        resetImagePaths={resetImagePaths}
-        upscaledBatchFolderPath={upscaledBatchFolderPath}
-        setImagePath={setImagePath}
-        validateImagePath={validateImagePath}
-        selectFolderHandler={selectFolderHandler}
-        selectImageHandler={selectImageHandler}
-        batchFolderPath={batchFolderPath}
-        upscaledImagePath={upscaledImagePath}
-        doubleUpscaylCounter={doubleUpscaylCounter}
-        setDimensions={setDimensions}
-      />
+      {selectedTab === 0 ? (
+        <>
+          <MainContent
+            imagePath={imagePath}
+            resetImagePaths={resetImagePaths}
+            upscaledBatchFolderPath={upscaledBatchFolderPath}
+            setImagePath={setImagePath}
+            validateImagePath={validateImagePath}
+            selectFolderHandler={selectFolderHandler}
+            selectImageHandler={selectImageHandler}
+            batchFolderPath={batchFolderPath}
+            upscaledImagePath={upscaledImagePath}
+            doubleUpscaylCounter={doubleUpscaylCounter}
+            setDimensions={setDimensions}
+          />
+          <RightPanel
+            upscaylHandler={upscaylHandler}
+            imagePath={imagePath}
+            batchFolderPath={batchFolderPath}
+          />
+        </>
+      ) : (
+        <SettingsTab
+          batchMode={batchMode}
+          saveImageAs={saveImageAs}
+          setSaveImageAs={setSaveImageAs}
+          compression={compression}
+          setCompression={setCompression}
+          gpuId={gpuId}
+          setGpuId={setGpuId}
+          logData={logData}
+          show={showCloudModal}
+          setShow={setShowCloudModal}
+          setDontShowCloudModal={setDontShowCloudModal}
+        />
+      )}
       <OnboardingDialog />
     </div>
   );
