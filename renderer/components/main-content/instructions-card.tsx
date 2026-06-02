@@ -68,7 +68,7 @@ function InstructionsCard({
           }}
         >
           <img
-            src="public:///sympsupscale.png"
+            src="public:///icone.png"
             alt="Symp's Upscale"
             style={{ width: 72, height: 72, objectFit: "contain" }}
           />
