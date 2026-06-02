@@ -48,7 +48,7 @@ const LeftNav = ({ selectedTab, setSelectedTab, version }: LeftNavProps) => {
       <div style={{ padding: "0 16px", marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
           <img
-            src="/sympsupscale.png"
+            src="public:///sympsupscale.png"
             alt="logo"
             style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0 }}
           />
