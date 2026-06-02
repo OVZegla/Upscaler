@@ -19,7 +19,11 @@ const MODEL_LIST = [
   { id: "digital-art-4x", label: "Digital Art", sub: "Art digital" },
 ];
 
-const SCALE_OPTIONS = ["2", "4", "8"];
+const SCALE_MARKS = [
+  { value: "2", label: "×2" },
+  { value: "4", label: "×4" },
+  { value: "8", label: "×8" },
+];
 
 const OPTION_TOGGLES = [
   { label: "Réduction du bruit", defaultOn: true },
@@ -30,7 +34,7 @@ const OPTION_TOGGLES = [
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "var(--symp-ink-3, #6F6F75)", textTransform: "uppercase", marginBottom: 8 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "var(--symp-ink-3, #6F6F75)", textTransform: "uppercase", marginBottom: 10 }}>
       {children}
     </div>
   );
@@ -47,6 +51,9 @@ const RightPanel = ({ upscaylHandler, imagePath, batchFolderPath }: RightPanelPr
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [toggles, setToggles] = useState(OPTION_TOGGLES.map((o) => o.defaultOn));
 
+  const scaleIndex = SCALE_MARKS.findIndex((m) => m.value === scale);
+  const sliderValue = scaleIndex >= 0 ? scaleIndex : 1;
+
   return (
     <div
       style={{
@@ -58,106 +65,131 @@ const RightPanel = ({ upscaylHandler, imagePath, batchFolderPath }: RightPanelPr
         flexDirection: "column",
         background: "var(--symp-panel, #FFFFFF)",
         borderLeft: "1px solid var(--symp-line, rgba(14,14,15,0.08))",
-        padding: "20px",
-        gap: 0,
-        overflowY: "auto",
         flexShrink: 0,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
-        <span style={{ color: "var(--symp-ink-3, #6F6F75)", display: "inline-flex" }}>
-          <GearIcon />
-        </span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--symp-ink, #0E0E0F)", letterSpacing: "-0.01em" }}>
-          Réglages
-        </span>
-      </div>
+      {/* Scrollable content */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
+          <span style={{ color: "var(--symp-ink-3, #6F6F75)", display: "inline-flex" }}>
+            <GearIcon />
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "var(--symp-ink, #0E0E0F)", letterSpacing: "-0.01em" }}>
+            Réglages
+          </span>
+        </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Facteur d'upscale</SectionLabel>
-        <div style={{ display: "flex", gap: 6 }}>
-          {SCALE_OPTIONS.map((s) => {
-            const active = scale === s;
-            return (
-              <button
-                key={s}
-                onClick={() => setScale(s)}
-                style={{
-                  flex: 1,
-                  padding: "7px 0",
-                  borderRadius: 8,
-                  border: active ? "none" : "1px solid var(--symp-line-2, rgba(14,14,15,0.14))",
-                  background: active ? "var(--symp-ink, #0E0E0F)" : "transparent",
-                  color: active ? "#fff" : "var(--symp-ink-2, #3A3A3D)",
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                ×{s}
-              </button>
-            );
-          })}
+        {/* Scale slider */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <SectionLabel>Facteur d'upscale</SectionLabel>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--symp-accent, #0055A4)" }}>
+              ×{scale}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={2}
+            step={1}
+            value={sliderValue}
+            onChange={(e) => setScale(SCALE_MARKS[Number(e.target.value)].value)}
+            style={{ width: "100%", accentColor: "#0055A4", cursor: "pointer" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+            {SCALE_MARKS.map((m) => (
+              <span key={m.value} style={{ fontSize: 10, color: "var(--symp-ink-3, #6F6F75)", fontWeight: 500 }}>
+                {m.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Model grid */}
+        <div style={{ marginBottom: 24 }}>
+          <SectionLabel>Modèle</SectionLabel>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+            {MODEL_LIST.map((m) => {
+              const active = selectedModelId === m.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => setSelectedModelId(m.id)}
+                  style={{
+                    borderRadius: 8,
+                    padding: 10,
+                    border: active ? "1.5px solid var(--symp-accent, #0055A4)" : "1px solid var(--symp-line, rgba(14,14,15,0.08))",
+                    background: active ? "rgba(0,85,164,0.08)" : "var(--symp-bg-2, #F2F0EC)",
+                    color: active ? "var(--symp-accent, #0055A4)" : "var(--symp-ink, #0E0E0F)",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: 12, lineHeight: 1.3 }}>{m.label}</div>
+                  <div style={{ fontSize: 10, color: active ? "var(--symp-accent, #0055A4)" : "var(--symp-ink-3, #6F6F75)", marginTop: 2, opacity: 0.8 }}>{m.sub}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Option toggles */}
+        <div style={{ marginBottom: 8 }}>
+          <SectionLabel>Options</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {OPTION_TOGGLES.map((opt, i) => {
+              const on = toggles[i];
+              return (
+                <label key={opt.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
+                  <span style={{ fontSize: 12.5, color: "var(--symp-ink, #0E0E0F)", fontWeight: 500 }}>{opt.label}</span>
+                  {/* Custom toggle */}
+                  <div
+                    onClick={() => {
+                      const next = [...toggles];
+                      next[i] = !next[i];
+                      setToggles(next);
+                    }}
+                    style={{
+                      width: 40,
+                      height: 22,
+                      borderRadius: 11,
+                      background: on ? "#0055A4" : "rgba(14,14,15,0.15)",
+                      position: "relative",
+                      cursor: "pointer",
+                      transition: "background 0.2s ease",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 3,
+                        left: on ? 21 : 3,
+                        width: 16,
+                        height: 16,
+                        borderRadius: "50%",
+                        background: "#fff",
+                        transition: "left 0.2s ease",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                      }}
+                    />
+                  </div>
+                </label>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Modèle</SectionLabel>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-          {MODEL_LIST.map((m) => {
-            const active = selectedModelId === m.id;
-            return (
-              <button
-                key={m.id}
-                onClick={() => setSelectedModelId(m.id)}
-                style={{
-                  borderRadius: 8,
-                  padding: 10,
-                  border: active ? "1.5px solid var(--symp-accent, #0055A4)" : "1px solid var(--symp-line, rgba(14,14,15,0.08))",
-                  background: active ? "var(--symp-accent-tint, rgba(0,85,164,0.08))" : "var(--symp-bg-2, #F2F0EC)",
-                  color: active ? "var(--symp-accent, #0055A4)" : "var(--symp-ink, #0E0E0F)",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <div style={{ fontWeight: 700, fontSize: 12, lineHeight: 1.3 }}>{m.label}</div>
-                <div style={{ fontSize: 10, color: active ? "var(--symp-accent, #0055A4)" : "var(--symp-ink-3, #6F6F75)", marginTop: 2, opacity: 0.8 }}>{m.sub}</div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Options</SectionLabel>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {OPTION_TOGGLES.map((opt, i) => (
-            <label key={opt.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
-              <span style={{ fontSize: 12.5, color: "var(--symp-ink, #0E0E0F)", fontWeight: 500 }}>{opt.label}</span>
-              <input
-                type="checkbox"
-                checked={toggles[i]}
-                onChange={(e) => {
-                  const next = [...toggles];
-                  next[i] = e.target.checked;
-                  setToggles(next);
-                }}
-                className="toggle toggle-sm"
-              />
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: "auto" }}>
+      {/* Fixed launch button at bottom */}
+      <div style={{ padding: "12px 20px 20px", borderTop: "1px solid var(--symp-line, rgba(14,14,15,0.08))" }}>
         <button
           onClick={upscaylHandler}
           style={{
             width: "100%",
-            background: "var(--symp-ink, #0E0E0F)",
-            color: "var(--symp-ink-inv, #FFFFFF)",
+            background: "#C0392B",
+            color: "#FFFFFF",
             borderRadius: 10,
             padding: "14px 0",
             fontWeight: 700,
@@ -165,7 +197,10 @@ const RightPanel = ({ upscaylHandler, imagePath, batchFolderPath }: RightPanelPr
             letterSpacing: "-0.01em",
             border: "none",
             cursor: "pointer",
+            transition: "background 0.15s ease",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#A93226")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#C0392B")}
         >
           Lancer l'upscale
         </button>
