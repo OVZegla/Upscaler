@@ -21,6 +21,7 @@ import { FEATURE_FLAGS } from "../common/feature-flags";
 import settings from "electron-settings";
 import pasteImage from "./commands/paste-image";
 import path from "path";
+import { fileURLToPath } from "url";
 
 // INITIALIZATION
 log.initialize({ preload: true });
@@ -30,8 +31,12 @@ app.on("ready", async () => {
 
   app.whenReady().then(() => {
     protocol.registerFileProtocol("file", (request, callback) => {
-      const pathname = decodeURI(request.url.replace("file:///", ""));
-      callback(pathname);
+      try {
+        callback(fileURLToPath(request.url));
+      } catch (error) {
+        // Fall back to the previous naive parsing if the URL is malformed
+        callback(decodeURI(request.url.replace("file:///", "")));
+      }
     });
     protocol.registerFileProtocol("public", (request, callback) => {
       const filePath = decodeURI(request.url.replace("public:///", ""));

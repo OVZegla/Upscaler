@@ -221,8 +221,9 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.UPSCAYL_PROGRESS,
       (_, data: string) => {
-        if (data.length > 0 && data.length < 10) {
-          setProgress(data);
+        const percentMatch = data.match(/\d+(?:\.\d+)?%/);
+        if (percentMatch) {
+          setProgress(percentMatch[0]);
         } else if (data.includes("converting")) {
           setProgress(t("APP.PROGRESS.SCALING_CONVERTING_TITLE"));
         } else if (data.includes("Successful")) {
@@ -236,11 +237,11 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
       (_, data: string) => {
+        const percentMatch = data.match(/\d+(?:\.\d+)?%/);
         if (data.includes("Successful")) {
           setProgress(t("APP.PROGRESS.SUCCESS_TITLE"));
-        }
-        if (data.length > 0 && data.length < 10) {
-          setProgress(data);
+        } else if (percentMatch) {
+          setProgress(percentMatch[0]);
         }
         handleErrors(data);
         logit(`🚧 PROGRESS: `, data);
@@ -250,11 +251,12 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.DOUBLE_UPSCAYL_PROGRESS,
       (_, data: string) => {
-        if (data.length > 0 && data.length < 10) {
-          if (data === "0.00%") {
+        const percentMatch = data.match(/\d+(?:\.\d+)?%/);
+        if (percentMatch) {
+          if (percentMatch[0] === "0.00%") {
             setDoubleUpscaylCounter(doubleUpscaylCounter + 1);
           }
-          setProgress(data);
+          setProgress(percentMatch[0]);
         }
         handleErrors(data);
         logit(`🚧 PROGRESS: `, data);
