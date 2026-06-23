@@ -18,8 +18,7 @@
         "height": 940,
         "minWidth": 600,
         "minHeight": 500,
-        "backgroundColor": "#171717",
-        "fileDropEnabled": true
+        "backgroundColor": "#171717"
       }
     ],
     "security": {
