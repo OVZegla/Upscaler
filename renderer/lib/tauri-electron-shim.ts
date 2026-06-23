@@ -74,8 +74,20 @@ export function installTauriElectronShim(): void {
   // Only activate under Tauri, and never clobber a real Electron preload.
   if (!tauri || (window as any).electron) return;
 
-  const invoke = tauri.core.invoke as (cmd: string, args?: any) => Promise<any>;
-  const listen = tauri.event.listen as (
+  // Guard against an unexpected __TAURI__ shape: a hard throw here would abort
+  // _app.tsx module evaluation and leave the user staring at a black screen.
+  const core = tauri.core;
+  const eventApi = tauri.event;
+  if (!core?.invoke || !eventApi?.listen) {
+    console.error(
+      "[tauri-shim] __TAURI__ present but core.invoke/event.listen missing; shim not installed.",
+      { hasCore: !!core, hasEvent: !!eventApi },
+    );
+    return;
+  }
+
+  const invoke = core.invoke as (cmd: string, args?: any) => Promise<any>;
+  const listen = eventApi.listen as (
     event: string,
     handler: (e: any) => void,
   ) => Promise<() => void>;
