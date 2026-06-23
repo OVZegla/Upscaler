@@ -126,6 +126,7 @@ const MODE_CARDS = [
   { id: "upscayl-standard-4x", label: "Standard", sub: "Meilleure qualité", icon: <ClockIcon /> },
 ];
 
+const SCALE_VALUES = [1, 2, 4, 6, 8];
 const SCALE_TICKS = ["1x", "2x", "4x", "6x", "8x"];
 
 type LeftPanelProps = {
@@ -167,6 +168,7 @@ const LeftPanel = ({
   const [smartSharpen, setSmartSharpen] = useState(true);
 
   const scaleInt = parseInt(scale) || 4;
+  const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
   const isUpscaling = progress.length > 0;
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
@@ -294,11 +296,11 @@ const LeftPanel = ({
           </div>
           <input
             type="range"
-            min={1}
-            max={8}
+            min={0}
+            max={4}
             step={1}
-            value={Math.min(scaleInt, 8)}
-            onChange={(e) => setScale(e.target.value)}
+            value={scaleIdx}
+            onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
             style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
           />
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
