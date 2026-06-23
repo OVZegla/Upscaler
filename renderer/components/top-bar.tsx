@@ -114,7 +114,7 @@ const TopBar = ({
         <img
           src="public:///logo.png"
           alt="Symp's Upscale"
-          style={{ height: 40, width: "auto", objectFit: "contain" }}
+          style={{ height: 56, width: "auto", objectFit: "contain" }}
           draggable={false}
         />
       </div>
