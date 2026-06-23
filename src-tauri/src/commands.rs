@@ -27,6 +27,13 @@ fn deser_opt_str<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Er
     Ok(opt.unwrap_or_default())
 }
 
+/// Deserialize a JSON number-or-null as i64 (null → 0). The renderer's
+/// tileSize atom is `number | null` and defaults to null.
+fn deser_opt_i64<'de, D: serde::Deserializer<'de>>(d: D) -> Result<i64, D::Error> {
+    let opt: Option<i64> = serde::Deserialize::deserialize(d)?;
+    Ok(opt.unwrap_or(0))
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageUpscaylPayload {
@@ -45,7 +52,7 @@ pub struct ImageUpscaylPayload {
     pub custom_width: String,
     #[serde(default)]
     pub use_custom_width: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_i64")]
     pub tile_size: i64,
     #[serde(default)]
     pub tta_mode: bool,
@@ -69,7 +76,7 @@ pub struct DoubleUpscaylPayload {
     pub custom_width: String,
     #[serde(default)]
     pub use_custom_width: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_i64")]
     pub tile_size: i64,
     #[serde(default)]
     pub tta_mode: bool,
@@ -93,7 +100,7 @@ pub struct BatchUpscaylPayload {
     pub custom_width: String,
     #[serde(default)]
     pub use_custom_width: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_i64")]
     pub tile_size: i64,
     #[serde(default)]
     pub tta_mode: bool,
