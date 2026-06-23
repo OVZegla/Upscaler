@@ -5,6 +5,7 @@ import { Provider } from "jotai";
 import "react-tooltip/dist/react-tooltip.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Tooltip } from "react-tooltip";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
@@ -25,7 +26,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <base href="./" />
 
       <Provider>
-        <Component {...pageProps} data-theme="symp" />
+        <ErrorBoundary>
+          <Component {...pageProps} data-theme="symp" />
+        </ErrorBoundary>
         <Toaster />
         <Tooltip
           className="z-[999] max-w-sm break-words !bg-secondary"

@@ -12,7 +12,6 @@ import {
   compressionAtom,
   gpuIdAtom,
   saveImageAsAtom,
-  dontShowCloudModalAtom,
 } from "../atoms/user-settings-atom";
 import useLogger from "../components/hooks/use-logger";
 import { useToast } from "@/components/ui/use-toast";
@@ -133,9 +132,7 @@ const Home = () => {
   const [compression, setCompression] = useAtom(compressionAtom);
   const [gpuId, setGpuId] = useAtom(gpuIdAtom);
   const [saveImageAs, setSaveImageAs] = useAtom(saveImageAsAtom);
-  const setDontShowCloudModal = useSetAtom(dontShowCloudModalAtom);
   const logData = useAtomValue(logAtom);
-  const [showCloudModal, setShowCloudModal] = useState(false);
 
   const selectImageHandler = async () => {
     resetImagePaths();
@@ -509,9 +506,6 @@ const Home = () => {
             gpuId={gpuId}
             setGpuId={setGpuId}
             logData={logData}
-            show={showCloudModal}
-            setShow={setShowCloudModal}
-            setDontShowCloudModal={setDontShowCloudModal}
           />
         </div>
       ) : (
