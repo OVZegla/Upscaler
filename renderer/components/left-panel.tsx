@@ -1,11 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import {
   scaleAtom,
   selectedModelIdAtom,
   doubleUpscaylAtom,
   progressAtom,
+  customWidthAtom,
+  useCustomWidthAtom,
 } from "../atoms/user-settings-atom";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
@@ -157,6 +159,8 @@ const LeftPanel = ({
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const progress = useAtomValue(progressAtom);
+  const customWidth = useAtomValue(customWidthAtom);
+  const useCustomWidth = useAtomValue(useCustomWidthAtom);
 
   const [printOptim, setPrintOptim] = useState(false);
   const [smartSharpen, setSmartSharpen] = useState(true);
@@ -165,6 +169,15 @@ const LeftPanel = ({
   const isUpscaling = progress.length > 0;
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
+
+  const outputDimensions = useMemo(() => {
+    if (!dimensions.width || !dimensions.height) return null;
+    if (useCustomWidth && customWidth > 0) {
+      return { width: customWidth, height: Math.round(customWidth * (dimensions.height / dimensions.width)) };
+    }
+    const factor = doubleUpscayl ? scaleInt * scaleInt : scaleInt;
+    return { width: dimensions.width * factor, height: dimensions.height * factor };
+  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth]);
 
   // progress percentage parse
   const pctMatch = progress.match(/(\d+(?:\.\d+)?)%/);
@@ -218,6 +231,21 @@ const LeftPanel = ({
               <div style={{ fontWeight: 600, fontSize: 13.5, color: "var(--ink)", wordBreak: "break-all", maxWidth: "100%" }}>
                 {fileName}
               </div>
+              {dimensions.width && dimensions.height && (
+                <div style={{ fontSize: 11.5, color: "var(--ink-3)", display: "flex", gap: 8 }}>
+                  <span style={{ fontFamily: "var(--symp-mono, monospace)", fontWeight: 600, color: "var(--ink-2)" }}>
+                    {dimensions.width}×{dimensions.height}
+                  </span>
+                  {outputDimensions && (
+                    <>
+                      <span style={{ opacity: 0.4 }}>→</span>
+                      <span style={{ fontFamily: "var(--symp-mono, monospace)", fontWeight: 700, color: "var(--accent)" }}>
+                        {outputDimensions.width}×{outputDimensions.height}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
               <div style={{ fontSize: 12, color: "var(--ink-3)" }}>
                 Cliquez pour changer d'image
               </div>
@@ -266,9 +294,9 @@ const LeftPanel = ({
           <input
             type="range"
             min={1}
-            max={16}
+            max={8}
             step={1}
-            value={scaleInt}
+            value={Math.min(scaleInt, 8)}
             onChange={(e) => setScale(e.target.value)}
             style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
           />
@@ -334,17 +362,23 @@ const LeftPanel = ({
             <SectionLabel>Options d'amélioration</SectionLabel>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                <span style={{ color: "var(--ink-2)", display: "inline-flex" }}><PrinterIcon /></span>
-                <span style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink)" }}>Optimisation d'impression</span>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
+                <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><PrinterIcon /></span>
+                <div>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink)" }}>Optimisation d'impression</div>
+                  <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>Améliore le contraste et les détails pour l'impression.</div>
+                </div>
               </div>
               <PillToggle on={printOptim} onChange={setPrintOptim} />
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                <span style={{ color: "var(--ink-2)", display: "inline-flex" }}><SparkleIcon /></span>
-                <span style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink)" }}>Netteté intelligente</span>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
+                <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><SparkleIcon /></span>
+                <div>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink)" }}>Netteté intelligente</div>
+                  <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>Renforce intelligemment les détails sans artefacts.</div>
+                </div>
               </div>
               <PillToggle on={smartSharpen} onChange={setSmartSharpen} />
             </div>
@@ -378,7 +412,7 @@ const LeftPanel = ({
           {isUpscaling ? (
             <span>{pct !== null ? `Traitement… ${pct.toFixed(0)}%` : progress}</span>
           ) : (
-            <span>🚀 Lancer l'upscale →</span>
+            <span>Lancer l'upscale</span>
           )}
         </button>
         {isUpscaling && (

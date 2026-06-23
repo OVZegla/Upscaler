@@ -1,4 +1,3 @@
-import SelectTheme from "./select-theme";
 import { SaveOutputFolderToggle } from "./save-output-folder-toggle";
 import { InputGpuId } from "./input-gpu-id";
 import { CustomModelsFolderSelect } from "./select-custom-models-folder";
@@ -150,8 +149,6 @@ function SettingsTab({
         />
       </details>
 
-      {/* THEME SELECTOR */}
-      <SelectTheme />
 
       <LanguageSwitcher />
 

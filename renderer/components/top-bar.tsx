@@ -8,6 +8,8 @@ type TopBarProps = {
   setTheme: (t: "light" | "dark") => void;
   zoomAmount: string;
   setZoomAmount: (z: string) => void;
+  showComparison: boolean;
+  setShowComparison: (v: boolean) => void;
 };
 
 const EyeIcon = () => (
@@ -59,6 +61,8 @@ const TopBar = ({
   setTheme,
   zoomAmount,
   setZoomAmount,
+  showComparison,
+  setShowComparison,
 }: TopBarProps) => {
   const [showZoomMenu, setShowZoomMenu] = useState(false);
   const zoomWrapRef = useRef<HTMLDivElement>(null);
@@ -110,18 +114,21 @@ const TopBar = ({
         <img
           src="public:///logo.png"
           alt="Symp's Upscale"
-          style={{ height: 28, width: "auto", objectFit: "contain" }}
+          style={{ height: 40, width: "auto", objectFit: "contain" }}
           draggable={false}
         />
       </div>
 
       <div style={{ flex: 1 }} />
 
-      {/* Prévisualisations dropdown */}
+      {/* Prévisualisations — toggle comparison view + zoom dropdown */}
       <div ref={zoomWrapRef} style={{ position: "relative" }}>
         <button
-          style={navButtonStyle(false)}
-          onClick={() => setShowZoomMenu((v) => !v)}
+          style={navButtonStyle(showComparison)}
+          onClick={() => {
+            setShowComparison(!showComparison);
+            setShowZoomMenu((v) => !v);
+          }}
         >
           <EyeIcon />
           <span>Prévisualisations</span>
@@ -174,10 +181,10 @@ const TopBar = ({
         )}
       </div>
 
-      {/* Paramètres */}
+      {/* Paramètres — toggle on/off */}
       <button
         style={navButtonStyle(selectedTab === 1)}
-        onClick={() => setSelectedTab(1)}
+        onClick={() => setSelectedTab(selectedTab === 1 ? 0 : 1)}
       >
         <GearIcon />
         <span>Paramètres</span>
@@ -204,25 +211,6 @@ const TopBar = ({
         {theme === "light" ? <MoonIcon /> : <SunIcon />}
       </button>
 
-      {/* Avatar */}
-      <div
-        style={{
-          width: 38,
-          height: 38,
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontWeight: 700,
-          fontSize: 13,
-          flexShrink: 0,
-          userSelect: "none",
-        }}
-      >
-        SU
-      </div>
     </div>
   );
 };
