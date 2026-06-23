@@ -38,7 +38,6 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           rel="stylesheet"
         />
       </Head>
-      <base href="./" />
 
       <ErrorBoundary>
         <Provider>
