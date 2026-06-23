@@ -9,6 +9,7 @@ import {
 } from "../atoms/user-settings-atom";
 import { sanitizePath } from "@common/sanitize-path";
 import ImageViewer from "./main-content/image-viewer";
+import SliderView from "./main-content/slider-view";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
 
@@ -27,6 +28,7 @@ type PreviewPanelProps = {
   doubleUpscaylCounter: number;
   setDimensions: (d: { width: number; height: number }) => void;
   zoomAmount: string;
+  showComparison?: boolean;
   fileInfo?: { size?: number; format?: string };
 };
 
@@ -53,6 +55,7 @@ const PreviewPanel = ({
   dimensions,
   setDimensions,
   zoomAmount,
+  showComparison,
   fileInfo,
 }: PreviewPanelProps) => {
   const scale = useAtomValue(scaleAtom);
@@ -118,8 +121,23 @@ const PreviewPanel = ({
         minWidth: 0,
       }}
     >
-      {/* Before / After columns */}
-      <div style={{ flex: 1, display: "flex", gap: 16, padding: 20, overflow: "hidden", minHeight: 0 }}>
+      {/* Comparison slider (shown when Prévisualisations is active and upscaled image exists) */}
+      {showComparison && imagePath && upscaledImagePath ? (
+        <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
+          <SliderView
+            sanitizedImagePath={sanitizePath(imagePath)}
+            sanitizedUpscaledImagePath={sanitizePath(upscaledImagePath)}
+            zoomAmount={zoomAmount}
+          />
+        </div>
+      ) : showComparison && imagePath && !upscaledImagePath ? (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ink-3)", fontSize: 13, fontFamily: fontStack }}>
+          Lancez l'upscale pour voir la comparaison
+        </div>
+      ) : null}
+
+      {/* Before / After columns (hidden when comparison active) */}
+      {!showComparison && <div style={{ flex: 1, display: "flex", gap: 16, padding: 20, overflow: "hidden", minHeight: 0 }}>
         {/* AVANT */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "var(--ink-3)", textTransform: "uppercase" }}>
@@ -193,7 +211,7 @@ const PreviewPanel = ({
             </span>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Bottom status bar */}
       <div

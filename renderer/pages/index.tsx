@@ -67,6 +67,7 @@ const Home = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [zoomAmount, setZoomAmount] = useState("100");
   const [dragActive, setDragActive] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   // DRAG AND DROP HANDLERS
   const handleDragEnter = (e: React.DragEvent) => {
@@ -96,9 +97,14 @@ const Home = () => {
     }
 
     const file = files[0];
-    // In Electron, File objects have a .path property with the native FS path
-    const filePath = (file as any).path || "";
-    const extension = (file.name.split(".").pop() || "").toLowerCase() as ImageFormat;
+    // Use Electron 32+ webUtils.getPathForFile (exposed via preload), fallback to legacy .path
+    let filePath = "";
+    try {
+      filePath = (window as any).electron?.getPathForFile?.(file) || (file as any).path || "";
+    } catch {
+      filePath = (file as any).path || "";
+    }
+    const extension = (filePath.split(/[\\/]/).pop()?.split(".").pop() || file.name.split(".").pop() || "").toLowerCase() as ImageFormat;
 
     if (!filePath) {
       toast({
@@ -488,6 +494,8 @@ const Home = () => {
         setTheme={setTheme}
         zoomAmount={zoomAmount}
         setZoomAmount={setZoomAmount}
+        showComparison={showComparison}
+        setShowComparison={setShowComparison}
       />
 
       {selectedTab === 1 ? (
@@ -531,6 +539,7 @@ const Home = () => {
             doubleUpscaylCounter={doubleUpscaylCounter}
             setDimensions={setDimensions}
             zoomAmount={zoomAmount}
+            showComparison={showComparison}
           />
         </div>
       )}

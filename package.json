@@ -2,7 +2,7 @@
   "name": "upscayl",
   "private": true,
   "version": "2.15.0",
-  "productName": "Upscayl",
+  "productName": "Symp's Upscale",
   "author": {
     "name": "Nayam Amarshe",
     "email": "nayam.emikx@aleeas.com",
@@ -71,8 +71,8 @@
     "validate-schema": "node scripts/validate-schema.js"
   },
   "build": {
-    "productName": "Upscayl",
-    "appId": "org.upscayl.Upscayl",
+    "productName": "Symp's Upscale",
+    "appId": "com.sympupscale.app",
     "artifactName": "${name}-${version}-${os}.${ext}",
     "afterSign": "./notarize.js",
     "asar": true,
@@ -180,7 +180,7 @@
       "icon": "resources/icons/"
     },
     "win": {
-      "publisherName": "Upscayl Team",
+      "publisherName": "Symp's Upscale",
       "target": [
         "nsis",
         "zip"
