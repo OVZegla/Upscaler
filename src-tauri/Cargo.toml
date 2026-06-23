@@ -1,6 +1,6 @@
 [package]
 name = "symps-upscale"
-version = "2.15.0"
+version = "1.1.0"
 description = "Symp's Upscale - AI Image Upscaler"
 authors = ["Symp"]
 edition = "2021"
