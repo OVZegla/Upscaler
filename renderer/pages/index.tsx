@@ -19,8 +19,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { translationAtom } from "@/atoms/translations-atom";
 import Sidebar from "@/components/sidebar";
-import MainContent from "@/components/main-content";
-import RightPanel from "@/components/right-panel";
+import TopBar from "@/components/top-bar";
+import LeftPanel from "@/components/left-panel";
+import PreviewPanel from "@/components/preview-panel";
 import SettingsTab from "@/components/sidebar/settings-tab";
 import getDirectoryFromPath from "@common/get-directory-from-path";
 import { FEATURE_FLAGS } from "@common/feature-flags";
@@ -61,6 +62,67 @@ const Home = () => {
     upscaylHandlerRef.current = handler;
   };
   const upscaylHandler = () => upscaylHandlerRef.current?.();
+
+  // UI redesign state
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [zoomAmount, setZoomAmount] = useState("100");
+  const [dragActive, setDragActive] = useState(false);
+
+  // DRAG AND DROP HANDLERS
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    resetImagePaths();
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) {
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    const file = files[0];
+    // In Electron, File objects have a .path property with the native FS path
+    const filePath = (file as any).path || "";
+    const extension = (file.name.split(".").pop() || "").toLowerCase() as ImageFormat;
+
+    if (!filePath) {
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    if (!VALID_IMAGE_FORMATS.includes(extension)) {
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    logit("🖼 Drop: setting image path: ", filePath);
+    setImagePath(filePath);
+    if (!FEATURE_FLAGS.APP_STORE_BUILD && !rememberOutputFolder) {
+      setOutputPath(getDirectoryFromPath(filePath));
+    }
+    validateImagePath(filePath);
+  };
 
   const [compression, setCompression] = useAtom(compressionAtom);
   const [gpuId, setGpuId] = useAtom(gpuIdAtom);
@@ -390,59 +452,89 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen w-screen flex-row overflow-hidden"
-      style={{ background: "var(--symp-bg, #FAF9F7)" }}
+      data-theme={theme}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+        background: "var(--bg)",
+        color: "var(--ink)",
+        fontFamily: "var(--symp-font, Geist, -apple-system, sans-serif)",
+      }}
       onPaste={(e) => console.log(e)}
     >
-      <Sidebar
-        imagePath={imagePath}
-        dimensions={dimensions}
-        setUpscaledImagePath={setUpscaledImagePath}
-        batchFolderPath={batchFolderPath}
-        setUpscaledBatchFolderPath={setUpscaledBatchFolderPath}
-        selectImageHandler={selectImageHandler}
-        selectFolderHandler={selectFolderHandler}
+      {/* Hidden Sidebar: provides upscaylHandler IPC wiring */}
+      <div style={{ display: "none" }}>
+        <Sidebar
+          imagePath={imagePath}
+          dimensions={dimensions}
+          setUpscaledImagePath={setUpscaledImagePath}
+          batchFolderPath={batchFolderPath}
+          setUpscaledBatchFolderPath={setUpscaledBatchFolderPath}
+          selectImageHandler={selectImageHandler}
+          selectFolderHandler={selectFolderHandler}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          onUpscaylHandlerReady={handleUpscaylHandlerReady}
+        />
+      </div>
+
+      <TopBar
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
-        onUpscaylHandlerReady={handleUpscaylHandlerReady}
+        theme={theme}
+        setTheme={setTheme}
+        zoomAmount={zoomAmount}
+        setZoomAmount={setZoomAmount}
       />
-      {selectedTab === 0 ? (
-        <>
-          <MainContent
-            imagePath={imagePath}
-            resetImagePaths={resetImagePaths}
-            upscaledBatchFolderPath={upscaledBatchFolderPath}
-            setImagePath={setImagePath}
-            validateImagePath={validateImagePath}
-            selectFolderHandler={selectFolderHandler}
-            selectImageHandler={selectImageHandler}
-            batchFolderPath={batchFolderPath}
-            upscaledImagePath={upscaledImagePath}
-            doubleUpscaylCounter={doubleUpscaylCounter}
-            setDimensions={setDimensions}
+
+      {selectedTab === 1 ? (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
+          <SettingsTab
+            batchMode={batchMode}
+            saveImageAs={saveImageAs}
+            setSaveImageAs={setSaveImageAs}
+            compression={compression}
+            setCompression={setCompression}
+            gpuId={gpuId}
+            setGpuId={setGpuId}
+            logData={logData}
+            show={showCloudModal}
+            setShow={setShowCloudModal}
+            setDontShowCloudModal={setDontShowCloudModal}
           />
-          <RightPanel
-            upscaylHandler={upscaylHandler}
+        </div>
+      ) : (
+        <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
+          <LeftPanel
             imagePath={imagePath}
             batchFolderPath={batchFolderPath}
             dimensions={dimensions}
+            selectImageHandler={selectImageHandler}
+            selectFolderHandler={selectFolderHandler}
+            resetImagePaths={resetImagePaths}
+            validateImagePath={validateImagePath}
+            setImagePath={setImagePath}
+            upscaylHandler={upscaylHandler}
+            dragActive={dragActive}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
           />
-        </>
-      ) : (
-        <SettingsTab
-          batchMode={batchMode}
-          saveImageAs={saveImageAs}
-          setSaveImageAs={setSaveImageAs}
-          compression={compression}
-          setCompression={setCompression}
-          gpuId={gpuId}
-          setGpuId={setGpuId}
-          logData={logData}
-          show={showCloudModal}
-          setShow={setShowCloudModal}
-          setDontShowCloudModal={setDontShowCloudModal}
-        />
+          <PreviewPanel
+            imagePath={imagePath}
+            upscaledImagePath={upscaledImagePath}
+            dimensions={dimensions}
+            doubleUpscaylCounter={doubleUpscaylCounter}
+            setDimensions={setDimensions}
+            zoomAmount={zoomAmount}
+          />
+        </div>
       )}
+
       <OnboardingDialog />
     </div>
   );

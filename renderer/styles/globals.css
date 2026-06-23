@@ -41,6 +41,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Redesign theme tokens (light / dark) ─────────────────────────── */
+:root,
+[data-theme="light"] {
+  --bg: #F4F6FA;
+  --bg-card: #FFFFFF;
+  --ink: #1A1A2E;
+  --ink-2: #3A3A5C;
+  --ink-3: #8888A8;
+  --border: rgba(26,26,46,0.08);
+  --border-2: rgba(26,26,46,0.14);
+  --accent: #4F46E5;
+  --accent-tint: rgba(79,70,229,0.08);
+  --accent-2: #3B82F6;
+  --red: #E53E3E;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --radius: 12px;
+}
+
+[data-theme="dark"] {
+  --bg: #0F0F1A;
+  --bg-card: #1A1A2E;
+  --ink: #F0F0FF;
+  --ink-2: #C0C0D8;
+  --ink-3: #7070A0;
+  --border: rgba(240,240,255,0.08);
+  --border-2: rgba(240,240,255,0.14);
+  --accent: #6366F1;
+  --accent-tint: rgba(99,102,241,0.12);
+  --accent-2: #60A5FA;
+  --red: #FC8181;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+}
+
 /* ── Symp design tokens ───────────────────────────────────────────── */
 :root,
 [data-theme="symp"] {
