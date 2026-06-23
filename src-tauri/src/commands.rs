@@ -21,6 +21,12 @@ use crate::upscale::{
 
 // ── Payload types (mirror common/types/types.d.ts) ──────────────────────────
 
+/// Deserialize a JSON string-or-null as a plain String (null → "").
+fn deser_opt_str<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
+    let opt: Option<String> = serde::Deserialize::deserialize(d)?;
+    Ok(opt.unwrap_or_default())
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageUpscaylPayload {
@@ -28,14 +34,14 @@ pub struct ImageUpscaylPayload {
     pub output_path: String,
     pub scale: String,
     pub model: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub gpu_id: String,
     pub save_image_as: String,
     #[serde(default)]
     pub overwrite: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub compression: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub custom_width: String,
     #[serde(default)]
     pub use_custom_width: bool,
@@ -54,12 +60,12 @@ pub struct DoubleUpscaylPayload {
     pub output_path: String,
     pub scale: String,
     pub model: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub gpu_id: String,
     pub save_image_as: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub compression: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub custom_width: String,
     #[serde(default)]
     pub use_custom_width: bool,
@@ -77,13 +83,13 @@ pub struct BatchUpscaylPayload {
     pub batch_folder_path: String,
     pub output_path: String,
     pub model: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub gpu_id: String,
     pub save_image_as: String,
     pub scale: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub compression: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deser_opt_str")]
     pub custom_width: String,
     #[serde(default)]
     pub use_custom_width: bool,
