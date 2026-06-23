@@ -95,6 +95,21 @@ export function installTauriElectronShim(): void {
   // Track unlisten handles so `off` can detach a previously registered fn.
   const unlisteners = new Map<string, Map<AnyFn, Promise<() => void>>>();
 
+  // Locally invoke any handlers registered for a given event slug. Used to
+  // surface invoke() failures to the renderer's existing error listeners so a
+  // failed command shows an error instead of hanging forever on "patientez".
+  const emitLocal = (slug: string, payload: any) => {
+    const map = unlisteners.get(slug);
+    if (!map) return;
+    map.forEach((_promise, fn) => {
+      try {
+        fn({ payload }, payload);
+      } catch {
+        /* ignore handler errors */
+      }
+    });
+  };
+
   const toTauriArgs = (command: string, payload: any) => {
     if (PAYLOAD_COMMANDS.has(command)) return { payload };
     return payload === undefined ? undefined : payload;
@@ -109,9 +124,15 @@ export function installTauriElectronShim(): void {
         console.warn("[tauri-shim] unmapped send command:", command);
         return;
       }
-      invoke(tauriCmd, toTauriArgs(command, payload)).catch((err) =>
-        console.error(`[tauri-shim] send ${command} failed:`, err),
-      );
+      invoke(tauriCmd, toTauriArgs(command, payload)).catch((err) => {
+        console.error(`[tauri-shim] send ${command} failed:`, err);
+        // Don't let an upscale command fail silently (UI would hang). Route the
+        // error to the renderer's upscayl-error listeners.
+        emitLocal(
+          COMMAND_TO_EVENT[ELECTRON_COMMANDS.UPSCAYL_ERROR] ?? "upscayl-error",
+          `${command} failed: ${err}`,
+        );
+      });
     },
 
     invoke: (command: string, payload?: any) => {
