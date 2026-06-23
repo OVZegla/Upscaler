@@ -45,6 +45,13 @@ const createMainWindow = () => {
     return { action: "deny" };
   });
 
+  mainWindow.webContents.on("will-navigate", (event, navUrl) => {
+    // Prevent Electron from navigating to dropped file URLs
+    if (navUrl.startsWith("file://")) {
+      event.preventDefault();
+    }
+  });
+
   mainWindow.once("ready-to-show", () => {
     if (!mainWindow) return;
     mainWindow.show();

@@ -71,6 +71,7 @@ const MainContent = ({
   const lensSize = useAtomValue(lensSizeAtom);
   const rememberOutputFolder = useAtomValue(rememberOutputFolderAtom);
   const [zoomAmount, setZoomAmount] = useState("100");
+  const [dragActive, setDragActive] = useState(false);
 
   const sanitizedUpscaledImagePath = useMemo(
     () => sanitizePath(upscaledImagePath),
@@ -94,17 +95,16 @@ const MainContent = ({
   ]);
 
   // DRAG AND DROP HANDLERS
-  const handleDragEnter = (e) => {
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    console.log("drag enter");
+    setDragActive(true);
   };
-  const handleDragLeave = (e) => {
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    console.log("drag leave");
+    setDragActive(false);
   };
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    console.log("drag over");
   };
 
   const openFolderHandler = (e) => {
@@ -121,13 +121,14 @@ const MainContent = ({
     [imagePath],
   );
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
     resetImagePaths();
-    if (
-      e.dataTransfer.items.length === 0 ||
-      e.dataTransfer.files.length === 0
-    ) {
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) {
       logit("👎 No valid files dropped");
       toast({
         title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
@@ -135,31 +136,36 @@ const MainContent = ({
       });
       return;
     }
-    const type = e.dataTransfer.items[0].type;
-    const filePath = e.dataTransfer.files[0].path;
-    const extension = e.dataTransfer.files[0].name.split(".").at(-1);
-    logit("⤵️ Dropped file: ", JSON.stringify({ type, filePath, extension }));
-    if (
-      !type.includes("image") ||
-      !VALID_IMAGE_FORMATS.includes(extension.toLowerCase())
-    ) {
+
+    const file = files[0];
+    // In Electron, File objects have a .path property with the native FS path
+    const filePath = (file as any).path || "";
+    const extension = (file.name.split(".").pop() || "").toLowerCase() as ImageFormat;
+
+    if (!filePath) {
+      logit("🚫 Dropped file has no native path");
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    if (!VALID_IMAGE_FORMATS.includes(extension)) {
       logit("🚫 Invalid file dropped");
       toast({
         title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
         description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
       });
-    } else {
-      logit("🖼 Setting image path: ", filePath);
-      setImagePath(filePath);
-      const dirname = getDirectoryFromPath(filePath);
-      logit("🗂 Setting output path: ", dirname);
-      if (!FEATURE_FLAGS.APP_STORE_BUILD) {
-        if (!rememberOutputFolder) {
-          setOutputPath(dirname);
-        }
-      }
-      validateImagePath(filePath);
+      return;
     }
+
+    logit("🖼 Drop: setting image path: ", filePath);
+    setImagePath(filePath);
+    if (!FEATURE_FLAGS.APP_STORE_BUILD && !rememberOutputFolder) {
+      setOutputPath(getDirectoryFromPath(filePath));
+    }
+    validateImagePath(filePath);
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
@@ -268,7 +274,12 @@ const MainContent = ({
   return (
     <div
       className="relative flex h-screen w-full flex-col items-center justify-center"
-      style={{ background: "var(--symp-bg, #FAF9F7)" }}
+      style={{
+        background: "var(--symp-bg, #FAF9F7)",
+        outline: dragActive ? "2px solid var(--accent, #4F46E5)" : "none",
+        outlineOffset: -2,
+        transition: "outline 0.15s ease",
+      }}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
