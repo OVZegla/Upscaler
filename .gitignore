@@ -54,4 +54,4 @@ main/utils/*.js
 *.provisionprofile
 flags.ts
 *.p12
-dockerfile
+dockerfile.claude/
