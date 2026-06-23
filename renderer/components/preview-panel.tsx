@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useAtomValue } from "jotai";
 import {
   scaleAtom,
@@ -32,6 +32,18 @@ type PreviewPanelProps = {
   fileInfo?: { size?: number; format?: string };
 };
 
+function useFileSize(filePath: string) {
+  const [size, setSize] = useState<number | null>(null);
+  useEffect(() => {
+    if (!filePath) { setSize(null); return; }
+    try {
+      const fs = (window as any).require("fs");
+      setSize(fs.statSync(filePath).size);
+    } catch { setSize(null); }
+  }, [filePath]);
+  return size;
+}
+
 function formatBytes(bytes?: number) {
   if (!bytes || bytes <= 0) return "—";
   const units = ["o", "Ko", "Mo", "Go"];
@@ -56,9 +68,10 @@ const PreviewPanel = ({
   setDimensions,
   zoomAmount,
   showComparison,
-  fileInfo,
 }: PreviewPanelProps) => {
   const scale = useAtomValue(scaleAtom);
+  const inputSize = useFileSize(imagePath);
+  const outputSize = useFileSize(upscaledImagePath);
   const doubleUpscayl = useAtomValue(doubleUpscaylAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
@@ -167,6 +180,7 @@ const PreviewPanel = ({
             </span>
             <span style={{ fontSize: 12, color: "var(--ink-3)" }}>
               {beforeMP !== null ? `${beforeMP.toFixed(2)} MP` : "—"}
+              {inputSize ? <span style={{ marginLeft: 8, opacity: 0.7 }}>{formatBytes(inputSize)}</span> : null}
             </span>
           </div>
         </div>
@@ -208,6 +222,7 @@ const PreviewPanel = ({
               {afterMP !== null && outputDimensions
                 ? `${afterMP.toFixed(2)} MP (${outputDimensions.factor}x)`
                 : "—"}
+              {outputSize ? <span style={{ marginLeft: 8, opacity: 0.7 }}>{formatBytes(outputSize)}</span> : null}
             </span>
           </div>
         </div>
@@ -232,9 +247,7 @@ const PreviewPanel = ({
           {imagePath ? fileName : "Aucune image chargée"}
         </span>
         <span style={{ opacity: 0.4 }}>|</span>
-        <span>Format : {imagePath ? (fileInfo?.format || ext || "—") : "—"}</span>
-        <span style={{ opacity: 0.4 }}>|</span>
-        <span>Taille : {imagePath ? formatBytes(fileInfo?.size) : "—"}</span>
+        <span>Format : {imagePath ? (ext || "—") : "—"}</span>
       </div>
     </div>
   );
