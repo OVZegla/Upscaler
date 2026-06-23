@@ -7,7 +7,7 @@ import {
   customWidthAtom,
   useCustomWidthAtom,
 } from "../atoms/user-settings-atom";
-import { sanitizePath } from "@common/sanitize-path";
+import { userFileUrl } from "@/lib/asset-url";
 import ImageViewer from "./main-content/image-viewer";
 import SliderView from "./main-content/slider-view";
 
@@ -143,8 +143,8 @@ const PreviewPanel = ({
       {showComparison && imagePath && upscaledImagePath ? (
         <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
           <SliderView
-            sanitizedImagePath={sanitizePath(imagePath)}
-            sanitizedUpscaledImagePath={sanitizePath(upscaledImagePath)}
+            imagePath={imagePath}
+            upscaledImagePath={upscaledImagePath}
             zoomAmount={zoomAmount}
           />
         </div>
@@ -210,7 +210,7 @@ const PreviewPanel = ({
           >
             {upscaledImagePath ? (
               <img
-                src={"file:///" + sanitizePath(upscaledImagePath)}
+                src={userFileUrl(upscaledImagePath)}
                 draggable={false}
                 alt=""
                 style={{ width: "100%", height: "100%", objectFit: "contain" }}

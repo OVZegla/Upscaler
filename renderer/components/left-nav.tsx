@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { publicAssetUrl } from "@/lib/asset-url";
 
 const SparkleIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +49,7 @@ const LeftNav = ({ selectedTab, setSelectedTab, version }: LeftNavProps) => {
       <div style={{ padding: "0 16px", marginBottom: 24 }}>
         {/* Full logo image (icon + "SYMP'S UPSCALE" typography) */}
         <img
-          src="public:///logo.png"
+          src={publicAssetUrl("logo.png")}
           alt="Symp's Upscale"
           style={{ width: "100%", maxWidth: 180, height: "auto", objectFit: "contain" }}
           draggable={false}

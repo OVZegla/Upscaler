@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+import { publicAssetUrl } from "@/lib/asset-url";
 
 type TopBarProps = {
   selectedTab: number;
@@ -112,7 +113,7 @@ const TopBar = ({
       {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
         <img
-          src="public:///logo.png"
+          src={publicAssetUrl("logo.png")}
           alt="Symp's Upscale"
           style={{ height: 56, width: "auto", objectFit: "contain" }}
           draggable={false}

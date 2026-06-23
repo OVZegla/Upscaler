@@ -1,0 +1,7 @@
+/target
+/gen
+# Heavy binaries/models are staged by CI before bundling
+/resources/bin/*
+/resources/models/*
+!/resources/bin/.gitkeep
+!/resources/models/.gitkeep
