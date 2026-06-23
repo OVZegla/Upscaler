@@ -101,6 +101,11 @@ const PreviewPanel = ({
   const beforeMP = megapixels(dimensions.width, dimensions.height);
   const afterMP = outputDimensions ? megapixels(outputDimensions.width, outputDimensions.height) : null;
 
+  // Raw pixel size estimate (like Photoshop's document size): w × h × 3 bytes (24-bit RGB)
+  const estimatedRawSize = outputDimensions
+    ? outputDimensions.width * outputDimensions.height * 3
+    : null;
+
   const placeholder = (
     <div
       style={{
@@ -222,7 +227,13 @@ const PreviewPanel = ({
               {afterMP !== null && outputDimensions
                 ? `${afterMP.toFixed(2)} MP (${outputDimensions.factor}x)`
                 : "—"}
-              {outputSize ? <span style={{ marginLeft: 8, opacity: 0.7 }}>{formatBytes(outputSize)}</span> : null}
+              {outputSize ? (
+                <span style={{ marginLeft: 8, opacity: 0.7 }}>{formatBytes(outputSize)}</span>
+              ) : estimatedRawSize ? (
+                <span style={{ marginLeft: 8, opacity: 0.55 }} title="Taille brute non compressée (estimation)">
+                  ~{formatBytes(estimatedRawSize)} brut
+                </span>
+              ) : null}
             </span>
           </div>
         </div>
