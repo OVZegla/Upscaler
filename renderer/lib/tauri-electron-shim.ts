@@ -143,10 +143,74 @@ export function installTauriElectronShim(): void {
     getSystemInfo: async () => invoke("get_system_info"),
     getAppVersion: async () => invoke("get_app_version"),
 
-    // Drag-and-drop file path resolution. Tauri exposes the OS path on the
-    // File object in most cases; fall back gracefully.
-    getPathForFile: (file: File) => (file as any).path ?? file.name ?? "",
+    // Drag-and-drop: Tauri's WebView does NOT add .path to HTML File objects.
+    // Instead, Tauri fires a "tauri://drag-drop" event with the OS paths.
+    // We listen for it, cache the paths, and re-dispatch a synthetic DOM
+    // "drop" event carrying real File objects that our drag-handler can use.
+    //
+    // getPathForFile looks up the path by File.name (best-effort; only the
+    // file name is available from the HTML File API, not the full path).
+    getPathForFile: (file: File) => {
+      return (window as any).__tauriDropPaths__?.[file.name] ?? (file as any).path ?? "";
+    },
   };
+
+  // Cache: filename → full OS path from Tauri's drop event.
+  (window as any).__tauriDropPaths__ = {} as Record<string, string>;
+
+  listen("tauri://drag-drop", (e: any) => {
+    const paths: string[] = e.payload?.paths ?? [];
+    if (!paths.length) return;
+
+    // Update the cache (keyed by base filename for getPathForFile lookups).
+    const cache = (window as any).__tauriDropPaths__ as Record<string, string>;
+    paths.forEach((p) => {
+      const name = p.replace(/\\/g, "/").split("/").pop() ?? p;
+      cache[name] = p;
+    });
+
+    // Build synthetic File objects and re-fire a "drop" event on the element
+    // under the pointer so existing onDrop handlers receive them.
+    const buildFiles = async () => {
+      const files: File[] = [];
+      for (const p of paths) {
+        try {
+          const name = p.replace(/\\/g, "/").split("/").pop() ?? p;
+          // Fetch from asset protocol to get the actual bytes.
+          const url = tauri.core.convertFileSrc(p);
+          const res = await fetch(url);
+          const blob = await res.blob();
+          const f = new File([blob], name, { type: blob.type });
+          // Stash the path directly on the File object too (belt+suspenders).
+          (f as any).path = p;
+          files.push(f);
+        } catch {
+          // If fetch fails (network/perms) we still emit with a minimal File.
+          const name = p.replace(/\\/g, "/").split("/").pop() ?? p;
+          const f = new File([], name);
+          (f as any).path = p;
+          files.push(f);
+        }
+      }
+
+      const dt = new DataTransfer();
+      files.forEach((f) => dt.items.add(f));
+
+      const target = document.elementFromPoint(
+        e.payload?.position?.x ?? window.innerWidth / 2,
+        e.payload?.position?.y ?? window.innerHeight / 2,
+      ) ?? document.body;
+
+      const synth = new DragEvent("drop", {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer: dt,
+      });
+      target.dispatchEvent(synth);
+    };
+
+    buildFiles().catch(() => {});
+  }).catch(() => {});
 
   (window as any).electron = electron;
   console.log("[tauri-shim] window.electron installed (platform:", electron.platform, ")");
