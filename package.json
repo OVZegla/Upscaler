@@ -1,5 +1,5 @@
 {
-  "name": "upscayl",
+  "name": "symps-upscale",
   "private": true,
   "version": "2.15.0",
   "productName": "Symp's Upscale",
@@ -73,7 +73,7 @@
   "build": {
     "productName": "Symp's Upscale",
     "appId": "com.sympupscale.app",
-    "artifactName": "${name}-${version}-${os}.${ext}",
+    "artifactName": "SympsUpscale-${version}-${os}.${ext}",
     "afterSign": "./notarize.js",
     "asar": true,
     "asarUnpack": [
