@@ -5,7 +5,6 @@ import { Provider } from "jotai";
 import "react-tooltip/dist/react-tooltip.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Tooltip } from "react-tooltip";
-import PostHogProviderWrapper from "@/components/posthog-provider-wrapper";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
@@ -26,14 +25,12 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <base href="./" />
 
       <Provider>
-        <PostHogProviderWrapper>
-          <Component {...pageProps} data-theme="symp" />
-          <Toaster />
-          <Tooltip
-            className="z-[999] max-w-sm break-words !bg-secondary"
-            id="tooltip"
-          />
-        </PostHogProviderWrapper>
+        <Component {...pageProps} data-theme="symp" />
+        <Toaster />
+        <Tooltip
+          className="z-[999] max-w-sm break-words !bg-secondary"
+          id="tooltip"
+        />
       </Provider>
     </>
   );

@@ -231,7 +231,6 @@
     "@radix-ui/react-toast": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.4",
     "dotenv": "^16.4.7",
     "electron-is-dev": "^2.0.0",
     "electron-log": "^5.2.4",
@@ -240,21 +239,14 @@
     "electron-updater": "^6.3.9",
     "eslint-config-next": "^14.2.7",
     "exiftool-vendored": "^29.3.0",
-    "firebase": "^11.1.0",
-    "gray-matter": "^4.0.3",
     "jotai": "^2.11.0",
     "lucide-react": "^0.469.0",
-    "posthog-js": "^1.203.2",
     "react-compare-slider": "^3.1.0",
-    "react-markdown": "^9.0.1",
     "react-resizable-panels": "^2.1.7",
-    "react-select": "^5.9.0",
     "react-tooltip": "^5.28.0",
-    "remark-gfm": "^4.0.0",
     "tailwind-merge": "^2.6.0",
     "tailwind-scrollbar": "^3.1.0",
-    "tailwindcss-animate": "^1.0.7",
-    "theme-change": "^2.5.0"
+    "tailwindcss-animate": "^1.0.7"
   },
   "volta": {
     "node": "18.20.5"

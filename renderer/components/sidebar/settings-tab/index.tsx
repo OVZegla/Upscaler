@@ -9,7 +9,6 @@ import { useAtom, useAtomValue } from "jotai";
 import { customModelsPathAtom, scaleAtom } from "@/atoms/user-settings-atom";
 import { InputCompression } from "./input-compression";
 import OverwriteToggle from "./overwrite-toggle";
-import { UpscaylCloudModal } from "@/components/upscayl-cloud-modal";
 import { ResetSettingsButton } from "./reset-settings-button";
 import { FEATURE_FLAGS } from "@common/feature-flags";
 import TurnOffNotificationsToggle from "./turn-off-notifications-toggle";
@@ -34,9 +33,6 @@ interface IProps {
   gpuId: string;
   setGpuId: React.Dispatch<React.SetStateAction<string>>;
   logData: string[];
-  show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  setDontShowCloudModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function SettingsTab({
@@ -48,9 +44,6 @@ function SettingsTab({
   saveImageAs,
   setSaveImageAs,
   logData,
-  show,
-  setShow,
-  setDontShowCloudModal,
 }: IProps) {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -194,25 +187,6 @@ function SettingsTab({
 
       {/* RESET SETTINGS */}
       <ResetSettingsButton />
-
-      {FEATURE_FLAGS.SHOW_UPSCAYL_CLOUD_INFO && (
-        <>
-          <button
-            className="mx-5 mb-5 animate-pulse rounded-btn bg-success p-1 text-sm text-slate-50 shadow-lg shadow-success/40"
-            onClick={() => {
-              setShow(true);
-            }}
-          >
-            {t("INTRO")}
-          </button>
-
-          <UpscaylCloudModal
-            show={show}
-            setShow={setShow}
-            setDontShowCloudModal={setDontShowCloudModal}
-          />
-        </>
-      )}
 
       <SystemInfo />
 
