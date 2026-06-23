@@ -147,6 +147,7 @@ type LeftPanelProps = {
 
 const LeftPanel = ({
   imagePath,
+  dimensions,
   selectImageHandler,
   upscaylHandler,
   dragActive,
