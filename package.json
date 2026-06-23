@@ -135,7 +135,6 @@
       "entitlements": "resources/entitlements.mac.plist",
       "entitlementsInherit": "resources/entitlements.mac.plist",
       "provisioningProfile": "embedded.provisionprofile",
-      "type": null,
       "target": [
         {
           "target": "dmg",

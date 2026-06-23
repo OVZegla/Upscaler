@@ -25,24 +25,32 @@ jobs:
           npm install --platform=darwin --arch=x64 sharp
           npm rebuild --platform=darwin --arch=arm64 sharp
 
-      - name: Build macOS zip (unsigned, no notarization)
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Patch package.json for unsigned build
         run: |
-          # Remove afterSign and provisioningProfile from package.json so
-          # electron-builder doesn't try to load the notarize hook at all
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
             delete pkg.build.afterSign;
-            delete pkg.build.mac.provisioningProfile;
-            pkg.build.mac.identity = null;
+            if (pkg.build.mac) {
+              delete pkg.build.mac.provisioningProfile;
+              pkg.build.mac.identity = null;
+              pkg.build.mac.hardenedRuntime = false;
+            }
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+            console.log('package.json patched successfully');
           "
-          npx tsc
-          npm run build
-          npx electron-builder build -m zip --universal --publish never
+
+      - name: TypeScript compile (electron)
+        run: npx tsc
+
+      - name: Next.js build
+        run: node scripts/validate-schema.js && npx next build renderer
+
+      - name: Build macOS zip (unsigned, no notarization)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder build -m zip --universal --publish never
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
