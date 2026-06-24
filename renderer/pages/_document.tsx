@@ -43,7 +43,16 @@ const diagnosticScript = `
   window.addEventListener("error", function (e) {
     var t = e.target || e.srcElement;
     if (t && (t.src || t.href)) {
-      paint("Asset introuvable (404 / chemin invalide)", (t.tagName || "?") + " -> " + (t.src || t.href) + "\\n\\nC'est la cause de l'ecran noir : le bundle ne se charge pas.");
+      var url = String(t.src || t.href);
+      // Ignore failures from external/CDN URLs — Google Fonts, etc.
+      // Only surface failures for local app assets (tauri://, localhost, file://).
+      var isLocal = url.indexOf("tauri://") === 0 ||
+                    url.indexOf("tauri.localhost") >= 0 ||
+                    url.indexOf("localhost") >= 0 ||
+                    url.indexOf("file://") === 0 ||
+                    url.indexOf("/") === 0;
+      if (!isLocal) return;
+      paint("Asset introuvable (404 / chemin invalide)", (t.tagName || "?") + " -> " + url + "\\n\\nC'est la cause de l'ecran noir : le bundle ne se charge pas.");
     } else if (e.message) {
       paint("Erreur JavaScript", e.message + "\\n  " + (e.filename || "") + ":" + (e.lineno || "") + ":" + (e.colno || ""));
     }

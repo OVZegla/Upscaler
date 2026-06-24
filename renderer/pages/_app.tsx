@@ -1,5 +1,10 @@
 import "../styles/globals.css";
+import { Geist, Geist_Mono } from "next/font/google";
 import Head from "next/head";
+
+// Loaded at build time — no network request at runtime (works offline).
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 import { AppProps } from "next/app";
 import { Provider } from "jotai";
 import "react-tooltip/dist/react-tooltip.css";
@@ -24,19 +29,9 @@ try {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <>
+    <div className={`${geist.variable} ${geistMono.variable}`}>
       <Head>
         <title>Symp&apos;s Upscale</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
       </Head>
 
       <ErrorBoundary>
@@ -49,7 +44,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           />
         </Provider>
       </ErrorBoundary>
-    </>
+    </div>
   );
 };
 
