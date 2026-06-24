@@ -26,7 +26,6 @@ import getDirectoryFromPath from "@common/get-directory-from-path";
 import { FEATURE_FLAGS } from "@common/feature-flags";
 import { ImageFormat, VALID_IMAGE_FORMATS } from "@/lib/valid-formats";
 import { initCustomModels } from "@/components/hooks/use-custom-models";
-import { OnboardingDialog } from "@/components/main-content/onboarding-dialog";
 import useSystemInfo from "@/components/hooks/use-system-info";
 import { logAtom } from "@/atoms/log-atom";
 
@@ -538,7 +537,6 @@ const Home = () => {
         </div>
       )}
 
-      <OnboardingDialog />
     </div>
   );
 };

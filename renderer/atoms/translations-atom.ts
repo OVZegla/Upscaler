@@ -70,7 +70,7 @@ const getNestedTranslation = (
 };
 
 // Atom to store the current locale
-export const localeAtom = atomWithStorage<Locales>("language", "en");
+export const localeAtom = atomWithStorage<Locales>("language", "fr");
 
 // Atom to get the translation function based on the current locale
 export const translationAtom = atom((get) => {

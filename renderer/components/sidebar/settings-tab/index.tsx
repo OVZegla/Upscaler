@@ -190,8 +190,11 @@ function SettingsTab({
 
       <SystemInfo />
 
-      <div style={{ marginTop: "auto", paddingTop: 32, textAlign: "center", fontSize: 11, color: "var(--symp-ink-3)", opacity: 0.6 }}>
-        Powered by Upscayl
+      <div style={{ marginTop: "auto", paddingTop: 32, fontSize: 11, color: "var(--symp-ink-3)", lineHeight: 1.7, opacity: 0.7 }}>
+        <div>Basé sur <strong>Upscayl</strong> — licence GNU AGPL-3.0.</div>
+        <div>Code source disponible sur GitHub.</div>
+        <div>Aucun lien officiel avec le projet Upscayl.</div>
+        <div>Le support Symp's ne s'applique qu'aux builds officiels Symp's.</div>
       </div>
     </div>
   );
