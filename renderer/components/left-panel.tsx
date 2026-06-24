@@ -419,7 +419,7 @@ const LeftPanel = ({
           }}
         >
           {isUpscaling ? (
-            <span>{pct !== null ? `Traitement… ${pct.toFixed(0)}%` : "Traitement…"}</span>
+            <span>Traitement…</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
@@ -427,34 +427,20 @@ const LeftPanel = ({
         {isUpscaling && (
           <div style={{ marginTop: 10 }}>
             <div style={{ height: 6, borderRadius: 999, background: "var(--border-2)", overflow: "hidden", position: "relative" }}>
-              {pct !== null ? (
-                <div
-                  style={{
-                    height: "100%",
-                    width: `${pct}%`,
-                    background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
-                    borderRadius: 999,
-                    transition: "width 0.3s ease",
-                  }}
-                />
-              ) : (
-                <div
-                  className="symp-progress-indeterminate"
-                  style={{
-                    height: "100%",
-                    width: "35%",
-                    background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
-                    borderRadius: 999,
-                  }}
-                />
-              )}
+              <div
+                className="symp-progress-indeterminate"
+                style={{
+                  height: "100%",
+                  width: "35%",
+                  background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
+                  borderRadius: 999,
+                }}
+              />
             </div>
             <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              {pct !== null ? (
-                <span style={{ fontSize: 11, color: "var(--ink-3)" }}>{pct.toFixed(0)}%</span>
-              ) : (
-                <span style={{ fontSize: 11, color: "var(--ink-3)" }}>Traitement…</span>
-              )}
+              <span style={{ fontSize: 11, color: "var(--ink-3)" }}>
+                {pct !== null ? `Tuile en cours… ${pct.toFixed(0)}%` : "Traitement…"}
+              </span>
               <button
                 onClick={cancelHandler}
                 style={{
