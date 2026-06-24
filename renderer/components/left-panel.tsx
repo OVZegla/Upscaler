@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { ELECTRON_COMMANDS } from "@common/electron-commands";
 import {
@@ -169,6 +169,34 @@ const LeftPanel = ({
     window.electron.send(ELECTRON_COMMANDS.STOP);
     setProgress("");
   };
+
+  // Global progress: 0→90% time-based (asymptotic), snaps to 100% on done.
+  const [globalPct, setGlobalPct] = useState(0);
+  const startTimeRef = useRef<number | null>(null);
+  const wasUpscaling = useRef(false);
+
+  useEffect(() => {
+    if (isUpscaling && !wasUpscaling.current) {
+      startTimeRef.current = Date.now();
+      setGlobalPct(0);
+    } else if (!isUpscaling && wasUpscaling.current && startTimeRef.current !== null) {
+      setGlobalPct(100);
+      const t = setTimeout(() => { setGlobalPct(0); startTimeRef.current = null; }, 700);
+      return () => clearTimeout(t);
+    }
+    wasUpscaling.current = isUpscaling;
+  }, [isUpscaling]);
+
+  useEffect(() => {
+    if (!isUpscaling || startTimeRef.current === null) return;
+    const id = setInterval(() => {
+      const elapsed = (Date.now() - startTimeRef.current!) / 1000;
+      // asymptotic: reaches ~50% at 45s, ~75% at 135s, max 90%
+      const target = 90 * (elapsed / (elapsed + 45));
+      setGlobalPct(prev => Math.max(prev, Math.min(target, 90)));
+    }, 400);
+    return () => clearInterval(id);
+  }, [isUpscaling]);
 
   const [printOptim, setPrintOptim] = useState(false);
   const [smartSharpen, setSmartSharpen] = useState(true);
@@ -419,44 +447,48 @@ const LeftPanel = ({
           }}
         >
           {isUpscaling ? (
-            <span>Traitement…</span>
+            <span>Traitement… {Math.round(globalPct)}%</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
         </button>
-        {isUpscaling && (
+        {(isUpscaling || globalPct > 0) && (
           <div style={{ marginTop: 10 }}>
-            <div style={{ height: 6, borderRadius: 999, background: "var(--border-2)", overflow: "hidden", position: "relative" }}>
+            <div style={{ height: 6, borderRadius: 999, background: "var(--border-2)", overflow: "hidden" }}>
               <div
-                className="symp-progress-indeterminate"
                 style={{
                   height: "100%",
-                  width: "35%",
-                  background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
+                  width: `${globalPct}%`,
+                  background: globalPct === 100
+                    ? "linear-gradient(135deg, #22c55e, #16a34a)"
+                    : "linear-gradient(135deg, #4F46E5, #3B82F6)",
                   borderRadius: 999,
+                  transition: globalPct === 100 ? "width 0.2s ease" : "width 0.8s ease",
                 }}
               />
             </div>
             <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 11, color: "var(--ink-3)" }}>
-                {pct !== null ? `Tuile en cours… ${pct.toFixed(0)}%` : "Traitement…"}
+              <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--symp-mono, monospace)" }}>
+                {globalPct === 100 ? "Terminé ✓" : `${Math.round(globalPct)}%`}
               </span>
-              <button
-                onClick={cancelHandler}
-                style={{
-                  appearance: "none",
-                  background: "transparent",
-                  border: 0,
-                  padding: 0,
-                  fontSize: 11,
-                  color: "var(--ink-3)",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                  fontFamily: fontStack,
-                }}
-              >
-                Annuler
-              </button>
+              {isUpscaling && (
+                <button
+                  onClick={cancelHandler}
+                  style={{
+                    appearance: "none",
+                    background: "transparent",
+                    border: 0,
+                    padding: 0,
+                    fontSize: 11,
+                    color: "var(--ink-3)",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    fontFamily: fontStack,
+                  }}
+                >
+                  Annuler
+                </button>
+              )}
             </div>
           </div>
         )}
