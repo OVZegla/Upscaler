@@ -91,8 +91,8 @@
   --symp-shadow-pop:  0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 14px rgba(14,14,15,0.12), 0 24px 60px rgba(14,14,15,0.18);
   --symp-radius-card: 14px;
   --symp-radius-btn:  10px;
-  --symp-font:        var(--font-geist, "Geist"), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  --symp-mono:        var(--font-geist-mono, "Geist Mono"), ui-monospace, "SF Mono", Menlo, monospace;
+  --symp-font:        "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --symp-mono:        "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 [data-theme="symp-dark"] {

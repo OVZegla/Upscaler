@@ -1,10 +1,5 @@
 import "../styles/globals.css";
-import { Geist, Geist_Mono } from "next/font/google";
 import Head from "next/head";
-
-// Loaded at build time — no network request at runtime (works offline).
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 import { AppProps } from "next/app";
 import { Provider } from "jotai";
 import "react-tooltip/dist/react-tooltip.css";
@@ -29,7 +24,7 @@ try {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <div className={`${geist.variable} ${geistMono.variable}`}>
+    <div>
       <Head>
         <title>Symp&apos;s Upscale</title>
       </Head>
