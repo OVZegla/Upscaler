@@ -191,6 +191,7 @@ function SettingsTab({
       <SystemInfo />
 
       <div style={{ marginTop: "auto", paddingTop: 32, fontSize: 11, color: "var(--symp-ink-3)", lineHeight: 1.7, opacity: 0.7 }}>
+        <div style={{ fontWeight: 700, fontSize: 12, color: "var(--symp-ink-2)", marginBottom: 4 }}>Symp's Upscale v1.1.0</div>
         <div>Basé sur <strong>Upscayl</strong> — licence GNU AGPL-3.0.</div>
         <div>Code source disponible sur GitHub.</div>
         <div>Aucun lien officiel avec le projet Upscayl.</div>
