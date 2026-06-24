@@ -1,0 +1,74 @@
+Symp's Upscale
+==============
+
+This software is a modified version of Upscayl (https://github.com/upscayl/upscayl),
+licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+The full text of the AGPL-3.0 license is provided in the LICENSE file.
+
+As required by the AGPL-3.0, the source code of this modified version is
+publicly available at: https://github.com/OVZegla/Upscaler
+
+Modifications made from the original Upscayl codebase include:
+- Rebranding to "Symp's Upscale"
+- Migration to Tauri 2.x backend
+- Redesigned user interface
+- French language as default
+- Progress bar and cancel improvements
+- Various UX and display fixes
+
+-------------------------------------------------------------------------------
+
+Third-party components bundled in this distribution:
+
+1. upscayl-bin (Real-ESRGAN ncnn Vulkan)
+   Source:  https://github.com/upscayl/upscayl-ncnn
+   License: MIT License
+   Copyright (c) Upscayl Contributors
+
+2. Real-ESRGAN
+   Source:  https://github.com/xinntao/Real-ESRGAN
+   License: BSD 3-Clause License
+   Copyright (c) 2021, Xintao Wang
+
+3. ncnn
+   Source:  https://github.com/Tencent/ncnn
+   License: BSD 3-Clause License
+   Copyright (C) 2017 THL A29 Limited, a Tencent company.
+
+4. Vulkan SDK (runtime, vcomp140.dll on Windows)
+   License: Apache License 2.0 / Microsoft Redistributable License
+
+-------------------------------------------------------------------------------
+
+AI upscaling models bundled in this distribution are provided by Upscayl
+and are subject to their respective licenses. See the Upscayl repository
+for model license details: https://github.com/upscayl/upscayl
+
+-------------------------------------------------------------------------------
+
+This software uses the following open-source JavaScript/TypeScript libraries
+(MIT License unless otherwise noted):
+
+  React                  — MIT  — https://github.com/facebook/react
+  Next.js                — MIT  — https://github.com/vercel/next.js
+  Jotai                  — MIT  — https://github.com/pmndrs/jotai
+  Tailwind CSS           — MIT  — https://github.com/tailwindlabs/tailwindcss
+  daisyUI                — MIT  — https://github.com/saadeghi/daisyui
+  Radix UI               — MIT  — https://github.com/radix-ui/primitives
+  Lucide React           — ISC  — https://github.com/lucide-icons/lucide
+  react-compare-slider   — MIT  — https://github.com/nerdyman/react-compare-slider
+  react-tooltip          — MIT  — https://github.com/ReactTooltip/react-tooltip
+  clsx                   — MIT  — https://github.com/lukeed/clsx
+  class-variance-authority — Apache-2.0 — https://github.com/joe-bell/cva
+
+This software uses the following open-source Rust crates
+(MIT or Apache-2.0 dual-licensed unless otherwise noted):
+
+  tauri         — MIT/Apache-2.0 — https://github.com/tauri-apps/tauri
+  serde         — MIT/Apache-2.0 — https://github.com/serde-rs/serde
+  tokio         — MIT            — https://github.com/tokio-rs/tokio
+  anyhow        — MIT/Apache-2.0 — https://github.com/dtolnay/anyhow
+
+A complete list of Rust crate licenses is available by running:
+  cd src-tauri && cargo license
