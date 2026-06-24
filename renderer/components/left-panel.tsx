@@ -165,23 +165,47 @@ const LeftPanel = ({
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
 
-  const cancelHandler = () => {
-    window.electron.send(ELECTRON_COMMANDS.STOP);
-    setProgress("");
-  };
+  const scaleInt = parseInt(scale) || 4;
+  const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
+  const isUpscaling = progress.length > 0;
 
-  // Global progress: 0→90% time-based (asymptotic), snaps to 100% on done.
+  // Parse real ncnn tile percentage from progress string (e.g. "47.23%")
+  const pctMatch = progress.match(/(\d+(?:\.\d+)?)%/);
+  const tilePct = pctMatch ? parseFloat(pctMatch[1]) : null;
+
+  // Track tile completions: when tilePct jumps from >80 back to <10, a new tile started.
+  const [tilesDone, setTilesDone] = useState(0);
+  const prevTilePct = useRef<number | null>(null);
+  useEffect(() => {
+    if (tilePct !== null) {
+      if (prevTilePct.current !== null && tilePct < 10 && prevTilePct.current > 80) {
+        setTilesDone(n => n + 1);
+      }
+      prevTilePct.current = tilePct;
+    }
+  }, [tilePct]);
+
+  // Global progress bar: real tile data + time-based fallback, never regresses.
+  // Each tile completion gives a visible bump; within a tile the real % drives sub-progress.
   const [globalPct, setGlobalPct] = useState(0);
   const startTimeRef = useRef<number | null>(null);
   const wasUpscaling = useRef(false);
+  const tilesAtStart = useRef(0);
 
   useEffect(() => {
     if (isUpscaling && !wasUpscaling.current) {
       startTimeRef.current = Date.now();
+      tilesAtStart.current = 0;
+      setTilesDone(0);
       setGlobalPct(0);
+      prevTilePct.current = null;
     } else if (!isUpscaling && wasUpscaling.current && startTimeRef.current !== null) {
       setGlobalPct(100);
-      const t = setTimeout(() => { setGlobalPct(0); startTimeRef.current = null; }, 700);
+      const t = setTimeout(() => {
+        setGlobalPct(0);
+        setTilesDone(0);
+        startTimeRef.current = null;
+      }, 700);
       return () => clearTimeout(t);
     }
     wasUpscaling.current = isUpscaling;
@@ -191,19 +215,24 @@ const LeftPanel = ({
     if (!isUpscaling || startTimeRef.current === null) return;
     const id = setInterval(() => {
       const elapsed = (Date.now() - startTimeRef.current!) / 1000;
-      // asymptotic: reaches ~50% at 45s, ~75% at 135s, max 90%
-      const target = 90 * (elapsed / (elapsed + 45));
-      setGlobalPct(prev => Math.max(prev, Math.min(target, 90)));
-    }, 400);
+      // Time-based floor: asymptotic 0→90 over ~90s — ensures bar always moves.
+      const timeBased = 90 * (elapsed / (elapsed + 45));
+      // Tile-based component: each completed tile adds visible progress,
+      // plus a fraction for the current tile's real ncnn %.
+      const tileContrib = tilesDone * 8 + (tilePct !== null ? tilePct * 0.08 : 0);
+      const target = Math.min(Math.max(timeBased, tileContrib), 90);
+      setGlobalPct(prev => Math.max(prev, target));
+    }, 300);
     return () => clearInterval(id);
-  }, [isUpscaling]);
+  }, [isUpscaling, tilesDone, tilePct]);
+
+  const cancelHandler = () => {
+    window.electron.send(ELECTRON_COMMANDS.STOP);
+    setProgress("");
+  };
 
   const [printOptim, setPrintOptim] = useState(false);
   const [smartSharpen, setSmartSharpen] = useState(true);
-
-  const scaleInt = parseInt(scale) || 4;
-  const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
-  const isUpscaling = progress.length > 0;
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
 
@@ -216,9 +245,6 @@ const LeftPanel = ({
     return { width: dimensions.width * factor, height: dimensions.height * factor };
   }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth]);
 
-  // progress percentage parse
-  const pctMatch = progress.match(/(\d+(?:\.\d+)?)%/);
-  const pct = pctMatch ? parseFloat(pctMatch[1]) : null;
 
   return (
     <div
@@ -447,7 +473,7 @@ const LeftPanel = ({
           }}
         >
           {isUpscaling ? (
-            <span>Traitement… {Math.round(globalPct)}%</span>
+            <span>Traitement… {Math.round(globalPct)}%{tilePct !== null ? ` (tuile ${tilesDone + 1})` : ""}</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
@@ -469,7 +495,11 @@ const LeftPanel = ({
             </div>
             <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--symp-mono, monospace)" }}>
-                {globalPct === 100 ? "Terminé ✓" : `${Math.round(globalPct)}%`}
+                {globalPct === 100
+                  ? "Terminé ✓"
+                  : tilePct !== null
+                    ? `${Math.round(globalPct)}% · tuile ${tilesDone + 1} à ${tilePct.toFixed(0)}%`
+                    : `${Math.round(globalPct)}%`}
               </span>
               {isUpscaling && (
                 <button
