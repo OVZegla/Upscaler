@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
+import { ELECTRON_COMMANDS } from "@common/electron-commands";
 import {
   scaleAtom,
   selectedModelIdAtom,
@@ -160,9 +161,14 @@ const LeftPanel = ({
   const [scale, setScale] = useAtom(scaleAtom);
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
-  const progress = useAtomValue(progressAtom);
+  const [progress, setProgress] = useAtom(progressAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
+
+  const cancelHandler = () => {
+    window.electron.send(ELECTRON_COMMANDS.STOP);
+    setProgress("");
+  };
 
   const [printOptim, setPrintOptim] = useState(false);
   const [smartSharpen, setSmartSharpen] = useState(true);
@@ -202,7 +208,7 @@ const LeftPanel = ({
         fontFamily: fontStack,
       }}
     >
-      <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "20px 20px 8px", display: "flex", flexDirection: "column", gap: 22 }}>
+      <div className="no-scrollbar" style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "20px 20px 8px", display: "flex", flexDirection: "column", gap: 22 }}>
         {/* Drop zone */}
         <div
           onClick={selectImageHandler}
@@ -413,29 +419,59 @@ const LeftPanel = ({
           }}
         >
           {isUpscaling ? (
-            <span>{pct !== null ? `Traitement… ${pct.toFixed(0)}%` : progress}</span>
+            <span>{pct !== null ? `Traitement… ${pct.toFixed(0)}%` : "Traitement…"}</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
         </button>
         {isUpscaling && (
           <div style={{ marginTop: 10 }}>
-            <div style={{ height: 6, borderRadius: 999, background: "var(--border-2)", overflow: "hidden" }}>
-              <div
-                style={{
-                  height: "100%",
-                  width: pct !== null ? `${pct}%` : "40%",
-                  background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
-                  borderRadius: 999,
-                  transition: "width 0.3s ease",
-                }}
-              />
+            <div style={{ height: 6, borderRadius: 999, background: "var(--border-2)", overflow: "hidden", position: "relative" }}>
+              {pct !== null ? (
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${pct}%`,
+                    background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
+                    borderRadius: 999,
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              ) : (
+                <div
+                  className="symp-progress-indeterminate"
+                  style={{
+                    height: "100%",
+                    width: "35%",
+                    background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
+                    borderRadius: 999,
+                  }}
+                />
+              )}
             </div>
-            {pct !== null && (
-              <div style={{ marginTop: 6, fontSize: 11, color: "var(--ink-3)", textAlign: "right" }}>
-                {pct.toFixed(0)}%
-              </div>
-            )}
+            <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              {pct !== null ? (
+                <span style={{ fontSize: 11, color: "var(--ink-3)" }}>{pct.toFixed(0)}%</span>
+              ) : (
+                <span style={{ fontSize: 11, color: "var(--ink-3)" }}>Traitement…</span>
+              )}
+              <button
+                onClick={cancelHandler}
+                style={{
+                  appearance: "none",
+                  background: "transparent",
+                  border: 0,
+                  padding: 0,
+                  fontSize: 11,
+                  color: "var(--ink-3)",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  fontFamily: fontStack,
+                }}
+              >
+                Annuler
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -324,6 +324,23 @@
   100% { transform: translateX(200%); }
 }
 
+@keyframes symp-indeterminate {
+  0%   { transform: translateX(-200%); }
+  100% { transform: translateX(500%); }
+}
+
+.symp-progress-indeterminate {
+  animation: symp-indeterminate 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes symp-pulse {
   0%, 100% { opacity: 1; transform: skewX(-15deg) scaleY(1); }
   50%       { opacity: 0.5; transform: skewX(-15deg) scaleY(0.55); }
