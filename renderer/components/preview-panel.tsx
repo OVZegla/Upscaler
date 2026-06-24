@@ -75,6 +75,7 @@ const PreviewPanel = ({
   const doubleUpscayl = useAtomValue(doubleUpscaylAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
+  const [detailMode, setDetailMode] = useState(false);
 
   const scaleInt = parseInt(scale) || 4;
 
@@ -151,11 +152,36 @@ const PreviewPanel = ({
       ) : null}
 
       {/* Before / After columns (hidden when comparison active) */}
-      {!showComparison && <div style={{ flex: 1, display: "flex", gap: 16, padding: 20, overflow: "hidden", minHeight: 0 }}>
+      {!showComparison && <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minHeight: 0 }}>
+        {/* Detail mode toggle */}
+        {upscaledImagePath && (
+          <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 20px 0" }}>
+            <button
+              onClick={() => setDetailMode(v => !v)}
+              title={detailMode ? "Revenir à la vue complète" : "Comparer les pixels à 1:1 pour voir l'amélioration IA"}
+              style={{
+                appearance: "none",
+                border: `1px solid ${detailMode ? "var(--accent)" : "var(--border-2)"}`,
+                borderRadius: 7,
+                background: detailMode ? "var(--accent-tint)" : "transparent",
+                color: detailMode ? "var(--accent)" : "var(--ink-3)",
+                padding: "3px 10px",
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: fontStack,
+                letterSpacing: "0.02em",
+              }}
+            >
+              {detailMode ? "Vue complète" : "Détail 1:1"}
+            </button>
+          </div>
+        )}
+        <div style={{ flex: 1, display: "flex", gap: 16, padding: "12px 20px 20px", overflow: "hidden", minHeight: 0 }}>
         {/* AVANT */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "var(--ink-3)", textTransform: "uppercase" }}>
-            Avant
+            {detailMode ? "Avant · pixels natifs" : "Avant"}
           </div>
           <div
             style={{
@@ -170,7 +196,16 @@ const PreviewPanel = ({
             }}
           >
             {imagePath ? (
-              <ImageViewer imagePath={imagePath} setDimensions={setDimensions} />
+              detailMode ? (
+                <img
+                  src={userFileUrl(imagePath)}
+                  draggable={false}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "none", objectPosition: "center" }}
+                />
+              ) : (
+                <ImageViewer imagePath={imagePath} setDimensions={setDimensions} />
+              )
             ) : (
               placeholder
             )}
@@ -186,10 +221,10 @@ const PreviewPanel = ({
           </div>
         </div>
 
-        {/* APRÈS (ESTIMÉ) */}
+        {/* APRÈS */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "var(--red)", textTransform: "uppercase" }}>
-            Après (estimé)
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: upscaledImagePath ? "var(--accent)" : "var(--red)", textTransform: "uppercase" }}>
+            {detailMode ? "Après · IA 1:1" : upscaledImagePath ? "Après" : "Après (estimé)"}
           </div>
           <div
             style={{
@@ -209,7 +244,12 @@ const PreviewPanel = ({
                 src={userFileUrl(upscaledImagePath)}
                 draggable={false}
                 alt=""
-                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: detailMode ? "none" : "contain",
+                  objectPosition: "center",
+                }}
               />
             ) : (
               placeholder
@@ -228,6 +268,7 @@ const PreviewPanel = ({
               ) : null}
             </span>
           </div>
+        </div>
         </div>
       </div>}
 
