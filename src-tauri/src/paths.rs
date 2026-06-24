@@ -12,6 +12,19 @@
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
+// Windows: resource_dir() can return \\?\C:\... (extended-length prefix).
+// upscayl-bin.exe uses ncnn which calls fopen() and doesn't handle \\?\ paths.
+fn strip_unc_prefix(path: PathBuf) -> PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        let s = path.to_string_lossy();
+        if let Some(stripped) = s.strip_prefix(r"\\?\") {
+            return PathBuf::from(stripped);
+        }
+    }
+    path
+}
+
 fn bin_name() -> &'static str {
     if cfg!(target_os = "windows") {
         "upscayl-bin.exe"
@@ -33,7 +46,7 @@ fn os_folder() -> &'static str {
 /// Absolute path to the upscayl-ncnn executable.
 pub fn exec_path(app: &AppHandle) -> PathBuf {
     if let Ok(resource_dir) = app.path().resource_dir() {
-        let bundled = resource_dir
+        let bundled = strip_unc_prefix(resource_dir)
             .join("resources")
             .join("bin")
             .join(bin_name());
@@ -51,7 +64,7 @@ pub fn exec_path(app: &AppHandle) -> PathBuf {
 /// Absolute path to the bundled default models directory.
 pub fn models_path(app: &AppHandle) -> PathBuf {
     if let Ok(resource_dir) = app.path().resource_dir() {
-        let bundled = resource_dir.join("resources").join("models");
+        let bundled = strip_unc_prefix(resource_dir).join("resources").join("models");
         if bundled.exists() {
             return bundled;
         }
