@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
-
 @font-face {
   font-family: "Poppins";
   src: url("../fonts/poppins/Poppins-Regular.ttf");
@@ -93,8 +91,8 @@
   --symp-shadow-pop:  0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 14px rgba(14,14,15,0.12), 0 24px 60px rgba(14,14,15,0.18);
   --symp-radius-card: 14px;
   --symp-radius-btn:  10px;
-  --symp-font:        "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  --symp-mono:        "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --symp-font:        var(--font-geist, "Geist"), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --symp-mono:        var(--font-geist-mono, "Geist Mono"), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 [data-theme="symp-dark"] {
