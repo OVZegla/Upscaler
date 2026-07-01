@@ -42,7 +42,11 @@
     "resources": [
       "resources/models/*",
       "resources/bin/*"
-    ]
+    ],
+    "macOS": {
+      "signingIdentity": "-",
+      "minimumSystemVersion": "10.15"
+    }
   },
   "plugins": {}
 }

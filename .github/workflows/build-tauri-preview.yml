@@ -62,6 +62,22 @@ jobs:
       - name: Build Tauri app
         run: npm run tauri:build
 
+      - name: Ad-hoc codesign (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          APP=$(find src-tauri/target/release/bundle/macos -maxdepth 1 -name "*.app" | head -1)
+          if [ -n "$APP" ]; then
+            echo "Ad-hoc signing $APP"
+            # Sign bundled binaries first (deep), then the app itself.
+            # Ad-hoc signature (-s -) lets Apple Silicon actually launch the app.
+            # Without it, macOS reports the app as "damaged" and refuses to open.
+            codesign --force --deep --sign - "$APP"
+            codesign --verify --deep --verbose=2 "$APP" || true
+          else
+            echo "No .app bundle found to sign"
+          fi
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
