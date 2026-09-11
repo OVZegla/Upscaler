@@ -285,9 +285,11 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.UPSCAYL_PROGRESS,
       (_, data: string) => {
-        const percentMatch = data.match(/\d+(?:\.\d+)?%/);
-        if (percentMatch) {
-          setProgress(percentMatch[0]);
+        // A single stderr chunk can contain several "PROGRESS: xx%" lines.
+        // Take the LAST one so the bar reflects the most recent value.
+        const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
+        if (percentMatches) {
+          setProgress(percentMatches[percentMatches.length - 1]);
         } else if (data.includes("converting")) {
           setProgress(t("APP.PROGRESS.SCALING_CONVERTING_TITLE"));
         } else if (data.includes("Successful")) {
@@ -301,11 +303,11 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
       (_, data: string) => {
-        const percentMatch = data.match(/\d+(?:\.\d+)?%/);
+        const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
         if (data.includes("Successful")) {
           setProgress(t("APP.PROGRESS.SUCCESS_TITLE"));
-        } else if (percentMatch) {
-          setProgress(percentMatch[0]);
+        } else if (percentMatches) {
+          setProgress(percentMatches[percentMatches.length - 1]);
         }
         handleErrors(data);
         logit(`🚧 PROGRESS: `, data);
@@ -315,12 +317,13 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.DOUBLE_UPSCAYL_PROGRESS,
       (_, data: string) => {
-        const percentMatch = data.match(/\d+(?:\.\d+)?%/);
-        if (percentMatch) {
-          if (percentMatch[0] === "0.00%") {
+        const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
+        if (percentMatches) {
+          const last = percentMatches[percentMatches.length - 1];
+          if (percentMatches.includes("0.00%")) {
             setDoubleUpscaylCounter(doubleUpscaylCounter + 1);
           }
-          setProgress(percentMatch[0]);
+          setProgress(last);
         }
         handleErrors(data);
         logit(`🚧 PROGRESS: `, data);
