@@ -242,9 +242,23 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+
+        // Bake EXIF orientation into a temp copy so the output isn't rotated.
+        let decoded_input_dir = percent_decode(&input_dir);
+        let decoded_file = percent_decode(&file_name_with_ext);
+        let full_input = format!("{decoded_input_dir}{}{decoded_file}", sep());
+        let oriented = orientation::normalized_input(&full_input);
+        let (arg_input_dir, arg_file) = match &oriented {
+            Some(tmp) => (
+                directory_from_path(&tmp.to_string_lossy()),
+                filename_from_path(&tmp.to_string_lossy()),
+            ),
+            None => (decoded_input_dir.clone(), decoded_file.clone()),
+        };
+
         let args = single_image_args(&SingleArgs {
-            input_dir: &percent_decode(&input_dir),
-            file_name_with_ext: &percent_decode(&file_name_with_ext),
+            input_dir: &arg_input_dir,
+            file_name_with_ext: &arg_file,
             out_file: &out_file,
             models_path: &models,
             model: &payload.model,
@@ -258,6 +272,10 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
         });
 
         let failed = spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS);
+        // Clean up the temporary orientation-normalized input, if any.
+        if let Some(tmp) = &oriented {
+            let _ = fs::remove_file(tmp);
+        }
         if !failed && !st.stopped.load(Ordering::Relaxed) {
             let _ = app.emit(events::UPSCAYL_DONE, out_file);
             notify(&app, "Symp's Upscale", "Image upscaled successfully!");
@@ -299,10 +317,22 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
 
+        // Bake EXIF orientation into a temp copy so the output isn't rotated.
+        let decoded_file = percent_decode(&full_file_name);
+        let full_input = format!("{input_dir}{}{decoded_file}", sep());
+        let oriented = orientation::normalized_input(&full_input);
+        let (arg_input_dir, arg_file) = match &oriented {
+            Some(tmp) => (
+                directory_from_path(&tmp.to_string_lossy()),
+                filename_from_path(&tmp.to_string_lossy()),
+            ),
+            None => (input_dir.clone(), decoded_file.clone()),
+        };
+
         // FIRST PASS
         let args1 = double_first_pass_args(&DoubleFirstArgs {
-            input_dir: &input_dir,
-            full_file_name: &percent_decode(&full_file_name),
+            input_dir: &arg_input_dir,
+            full_file_name: &arg_file,
             out_file: &out_file,
             models_path: &models,
             model: &payload.model,
@@ -313,6 +343,10 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             tile_size: payload.tile_size,
         });
         let failed1 = spawn_stream(&app, st, &bin, &args1, events::DOUBLE_UPSCAYL_PROGRESS);
+        // Clean up the temporary orientation-normalized input, if any.
+        if let Some(tmp) = &oriented {
+            let _ = fs::remove_file(tmp);
+        }
         if failed1 || st.stopped.load(Ordering::Relaxed) {
             return;
         }
