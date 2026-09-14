@@ -1,17 +1,14 @@
-import SelectTheme from "./select-theme";
 import { SaveOutputFolderToggle } from "./save-output-folder-toggle";
 import { InputGpuId } from "./input-gpu-id";
 import { CustomModelsFolderSelect } from "./select-custom-models-folder";
 import { LogArea } from "./log-area";
 import { SelectImageScale } from "./select-image-scale";
 import { SelectImageFormat } from "./select-image-format";
-import { DonateButton } from "./donate-button";
 import React, { useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { customModelsPathAtom, scaleAtom } from "@/atoms/user-settings-atom";
 import { InputCompression } from "./input-compression";
 import OverwriteToggle from "./overwrite-toggle";
-import { UpscaylCloudModal } from "@/components/upscayl-cloud-modal";
 import { ResetSettingsButton } from "./reset-settings-button";
 import { FEATURE_FLAGS } from "@common/feature-flags";
 import TurnOffNotificationsToggle from "./turn-off-notifications-toggle";
@@ -36,9 +33,6 @@ interface IProps {
   gpuId: string;
   setGpuId: React.Dispatch<React.SetStateAction<string>>;
   logData: string[];
-  show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  setDontShowCloudModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function SettingsTab({
@@ -50,9 +44,6 @@ function SettingsTab({
   saveImageAs,
   setSaveImageAs,
   logData,
-  show,
-  setShow,
-  setDontShowCloudModal,
 }: IProps) {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -104,8 +95,8 @@ function SettingsTab({
   };
 
   const upscaylVersion = navigator?.userAgent?.match(
-    /Upscayl\/([\d\.]+\d+)/,
-  )[1];
+    /(?:Upscayl|Symps?[\s-]?Upscale)\/([\d.]+)/i,
+  )?.[1] ?? "";
 
   function disableScrolling() {
     if (timeoutId !== null) {
@@ -140,39 +131,17 @@ function SettingsTab({
         enableScrolling();
       }}
     >
-      <div className="flex flex-col gap-2 text-sm font-medium uppercase">
-        <p>{t("SETTINGS.SUPPORT.TITLE")}</p>
-        <a
-          className="btn btn-primary"
-          href="https://docs.upscayl.org/"
-          target="_blank"
-        >
-          {t("SETTINGS.SUPPORT.DOCS_BUTTON_TITLE")}
-        </a>
-        {FEATURE_FLAGS.APP_STORE_BUILD && (
-          <button
-            className="btn btn-primary"
-            onClick={async () => {
-              const systemInfo = await window.electron.getSystemInfo();
-              const appVersion = await window.electron.getAppVersion();
-              const mailToUrl = `mailto:support@upscayl.org?subject=Upscayl%20Issue%3A%20%3CWRITE%20HERE%3E&body=Hi%20Nayam!%0AI'm%20having%20an%20issue%20with%20Upscayl%20${appVersion}%0A%0A%3CPLEASE%20DESCRIBE%20ISSUE%20HERE%3E%0A%0A---%0ALOGS%3A%0A${logData.join("\n")}%0A%0ADEVICE%20DETAILS%3A%20${JSON.stringify(systemInfo)}`;
-              window.open(mailToUrl, "_blank");
-            }}
-          >
-            {t("SETTINGS.SUPPORT.EMAIL_BUTTON_TITLE")}
-          </button>
-        )}
-        {!FEATURE_FLAGS.APP_STORE_BUILD && <DonateButton />}
-      </div>
+      <details>
+        <summary style={{ cursor: "pointer", fontSize: 12, color: "var(--symp-ink-3)", userSelect: "none" }}>
+          Logs
+        </summary>
+        <LogArea
+          copyOnClickHandler={copyOnClickHandler}
+          isCopied={isCopied}
+          logData={logData}
+        />
+      </details>
 
-      <LogArea
-        copyOnClickHandler={copyOnClickHandler}
-        isCopied={isCopied}
-        logData={logData}
-      />
-
-      {/* THEME SELECTOR */}
-      <SelectTheme />
 
       <LanguageSwitcher />
 
@@ -219,26 +188,15 @@ function SettingsTab({
       {/* RESET SETTINGS */}
       <ResetSettingsButton />
 
-      {FEATURE_FLAGS.SHOW_UPSCAYL_CLOUD_INFO && (
-        <>
-          <button
-            className="mx-5 mb-5 animate-pulse rounded-btn bg-success p-1 text-sm text-slate-50 shadow-lg shadow-success/40"
-            onClick={() => {
-              setShow(true);
-            }}
-          >
-            {t("INTRO")}
-          </button>
-
-          <UpscaylCloudModal
-            show={show}
-            setShow={setShow}
-            setDontShowCloudModal={setDontShowCloudModal}
-          />
-        </>
-      )}
-
       <SystemInfo />
+
+      <div style={{ marginTop: "auto", paddingTop: 32, fontSize: 11, color: "var(--symp-ink-3)", lineHeight: 1.7, opacity: 0.7 }}>
+        <div style={{ fontWeight: 700, fontSize: 12, color: "var(--symp-ink-2)", marginBottom: 4 }}>Symp's Upscale v1.1.0</div>
+        <div>Basé sur <strong>Upscayl</strong> — licence GNU AGPL-3.0.</div>
+        <div>Code source disponible sur GitHub.</div>
+        <div>Aucun lien officiel avec le projet Upscayl.</div>
+        <div>Le support Symp's ne s'applique qu'aux builds officiels Symp's.</div>
+      </div>
     </div>
   );
 }

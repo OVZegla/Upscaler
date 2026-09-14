@@ -48,13 +48,14 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
   const fileNameWithExt = getFilenameFromPath(imagePath);
   const fileName = parse(fileNameWithExt).name;
 
+  const modelLabel = model.replace(/^upscayl-/i, "");
   const outFile =
     outputDir +
     slash +
     fileName +
-    "_upscayl_" +
+    "_upscaled_" +
     (useCustomWidth ? `${customWidth}px_` : `${scale}x_`) +
-    model +
+    modelLabel +
     "." +
     saveImageAs;
 
@@ -172,7 +173,7 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
           }
         }
         mainWindow.webContents.send(ELECTRON_COMMANDS.UPSCAYL_DONE, outFile);
-        showNotification("Upscayl", "Image upscayled successfully!");
+        showNotification("Symp's Upscale", "Image upscaled successfully!");
       }
     };
 

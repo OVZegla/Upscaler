@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
-
 @font-face {
   font-family: "Poppins";
   src: url("../fonts/poppins/Poppins-Regular.ttf");
@@ -41,6 +39,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Redesign theme tokens (light / dark) ─────────────────────────── */
+:root,
+[data-theme="light"] {
+  --bg: #F4F6FA;
+  --bg-card: #FFFFFF;
+  --ink: #1A1A2E;
+  --ink-2: #3A3A5C;
+  --ink-3: #8888A8;
+  --border: rgba(26,26,46,0.08);
+  --border-2: rgba(26,26,46,0.14);
+  --accent: #4F46E5;
+  --accent-tint: rgba(79,70,229,0.08);
+  --accent-2: #3B82F6;
+  --red: #E53E3E;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --radius: 12px;
+}
+
+[data-theme="dark"] {
+  --bg: #0F0F1A;
+  --bg-card: #1A1A2E;
+  --ink: #F0F0FF;
+  --ink-2: #C0C0D8;
+  --ink-3: #7070A0;
+  --border: rgba(240,240,255,0.08);
+  --border-2: rgba(240,240,255,0.14);
+  --accent: #6366F1;
+  --accent-tint: rgba(99,102,241,0.12);
+  --accent-2: #60A5FA;
+  --red: #FC8181;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+}
+
 /* ── Symp design tokens ───────────────────────────────────────────── */
 :root,
 [data-theme="symp"] {
@@ -53,9 +84,9 @@
   --symp-ink-3:       #6F6F75;
   --symp-line:        rgba(14,14,15,0.08);
   --symp-line-2:      rgba(14,14,15,0.14);
-  --symp-accent:      #E84C26;
-  --symp-accent-2:    #FF6A3D;
-  --symp-accent-tint: rgba(232,76,38,0.10);
+  --symp-accent:      #0055A4;
+  --symp-accent-2:    #1A6FCA;
+  --symp-accent-tint: rgba(0,85,164,0.10);
   --symp-shadow-soft: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 2px rgba(14,14,15,0.05), 0 8px 24px rgba(14,14,15,0.06);
   --symp-shadow-pop:  0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 14px rgba(14,14,15,0.12), 0 24px 60px rgba(14,14,15,0.18);
   --symp-radius-card: 14px;
@@ -74,7 +105,7 @@
   --symp-ink-3:       #84827E;
   --symp-line:        rgba(244,243,240,0.08);
   --symp-line-2:      rgba(244,243,240,0.16);
-  --symp-accent-tint: rgba(232,76,38,0.18);
+  --symp-accent-tint: rgba(0,85,164,0.18);
   --symp-shadow-soft: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.5), 0 12px 28px rgba(0,0,0,0.5);
   --symp-shadow-pop:  0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 20px rgba(0,0,0,0.55), 0 30px 70px rgba(0,0,0,0.65);
 }
@@ -176,7 +207,7 @@
   }
 
   ::selection {
-    background: #E84C26;
+    background: #0055A4;
     color: #fff;
   }
 }
@@ -189,32 +220,8 @@
     @apply mb-2 font-semibold;
   }
 
-  .react-select-container {
-    @apply w-40;
-  }
   .full-width {
     @apply w-full;
-  }
-  .react-select-container .react-select__control {
-    @apply h-12 cursor-pointer rounded-btn !border-0 !border-none !border-transparent bg-primary shadow-none;
-  }
-  .react-select-container .react-select__control--menu-is-open {
-    @apply bg-primary text-primary-content;
-  }
-  .react-select-container .react-select__single-value {
-    @apply text-sm font-semibold uppercase text-primary-content;
-  }
-  .react-select-container .react-select__input-container {
-    @apply text-sm font-semibold uppercase text-primary-content;
-  }
-  .react-select-container .react-select__menu {
-    @apply rounded-lg bg-primary p-1 text-sm font-semibold uppercase;
-  }
-  .react-select-container .react-select__option {
-    @apply my-1 cursor-pointer break-all rounded-md bg-primary text-primary-content hover:bg-primary-content/20 hover:text-primary-content;
-  }
-  .react-select-container .react-select__option--is-selected {
-    @apply bg-accent text-accent-content;
   }
 
   .outline-title {
@@ -262,31 +269,6 @@
 
 [data-theme="symp"] input[type="range"],
 [data-theme="symp-dark"] input[type="range"] {
-  @apply rounded-full;
-}
-
-[data-theme="symp"] .react-select-container .react-select__control,
-[data-theme="symp-dark"] .react-select-container .react-select__control {
-  @apply h-10 cursor-pointer rounded-btn !border-0 !border-none !border-transparent bg-primary shadow-none;
-}
-[data-theme="symp"] .react-select-container .react-select__single-value,
-[data-theme="symp-dark"] .react-select-container .react-select__single-value {
-  @apply font-medium normal-case text-primary-content;
-}
-[data-theme="symp"] .react-select-container .react-select__input-container,
-[data-theme="symp-dark"] .react-select-container .react-select__input-container {
-  @apply text-xs font-medium normal-case text-primary-content;
-}
-[data-theme="symp"] .react-select-container .react-select__menu,
-[data-theme="symp-dark"] .react-select-container .react-select__menu {
-  @apply rounded-lg bg-primary p-1 font-medium normal-case;
-}
-
-/* keep legacy upscayl theme working */
-[data-theme="upscayl"] .btn {
-  @apply h-10 !min-h-min px-3 py-2 font-medium normal-case;
-}
-[data-theme="upscayl"] input[type="range"] {
   @apply rounded-full;
 }
 
@@ -338,6 +320,23 @@
 @keyframes symp-sweep {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(200%); }
+}
+
+@keyframes symp-indeterminate {
+  0%   { transform: translateX(-200%); }
+  100% { transform: translateX(500%); }
+}
+
+.symp-progress-indeterminate {
+  animation: symp-indeterminate 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes symp-pulse {

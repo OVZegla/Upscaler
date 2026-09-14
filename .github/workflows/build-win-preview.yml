@@ -1,0 +1,41 @@
+name: Build Windows Preview (Symp's Upscale)
+
+on:
+  push:
+    branches:
+      - claude/symp-mac-preview
+  workflow_dispatch:
+
+jobs:
+  win-preview:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Windows installer + zip (unsigned)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx tsc
+          npm run build
+          npx electron-builder build --win nsis zip --publish never
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: symps-upscale-win
+          path: |
+            dist/*.exe
+            dist/*.zip
+          retention-days: 30
+          if-no-files-found: error

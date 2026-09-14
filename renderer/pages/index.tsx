@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ELECTRON_COMMANDS } from "@common/electron-commands";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { customModelIdsAtom } from "../atoms/models-list-atom";
 import {
   batchModeAtom,
@@ -9,20 +9,25 @@ import {
   progressAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
+  compressionAtom,
+  gpuIdAtom,
+  saveImageAsAtom,
 } from "../atoms/user-settings-atom";
 import useLogger from "../components/hooks/use-logger";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import UpscaylSVGLogo from "@/components/icons/upscayl-logo-svg";
 import { translationAtom } from "@/atoms/translations-atom";
 import Sidebar from "@/components/sidebar";
-import MainContent from "@/components/main-content";
+import TopBar from "@/components/top-bar";
+import LeftPanel from "@/components/left-panel";
+import PreviewPanel from "@/components/preview-panel";
+import SettingsTab from "@/components/sidebar/settings-tab";
 import getDirectoryFromPath from "@common/get-directory-from-path";
 import { FEATURE_FLAGS } from "@common/feature-flags";
 import { ImageFormat, VALID_IMAGE_FORMATS } from "@/lib/valid-formats";
 import { initCustomModels } from "@/components/hooks/use-custom-models";
-import { OnboardingDialog } from "@/components/main-content/onboarding-dialog";
 import useSystemInfo from "@/components/hooks/use-system-info";
+import { logAtom } from "@/atoms/log-atom";
 
 const Home = () => {
   const t = useAtomValue(translationAtom);
@@ -48,6 +53,85 @@ const Home = () => {
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
+
+  const [selectedTab, setSelectedTab] = useState(0);
+  const upscaylHandlerRef = useRef<(() => Promise<void>) | null>(null);
+  const handleUpscaylHandlerReady = (handler: () => Promise<void>) => {
+    upscaylHandlerRef.current = handler;
+  };
+  const upscaylHandler = () => upscaylHandlerRef.current?.();
+
+  // UI redesign state
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [zoomAmount, setZoomAmount] = useState("100");
+  const [dragActive, setDragActive] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+
+  // DRAG AND DROP HANDLERS
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    resetImagePaths();
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) {
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    const file = files[0];
+    // Use Electron 32+ webUtils.getPathForFile (exposed via preload), fallback to legacy .path
+    let filePath = "";
+    try {
+      filePath = (window as any).electron?.getPathForFile?.(file) || (file as any).path || "";
+    } catch {
+      filePath = (file as any).path || "";
+    }
+    const extension = (filePath.split(/[\\/]/).pop()?.split(".").pop() || file.name.split(".").pop() || "").toLowerCase() as ImageFormat;
+
+    if (!filePath) {
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    if (!VALID_IMAGE_FORMATS.includes(extension)) {
+      toast({
+        title: t("ERRORS.INVALID_IMAGE_ERROR.TITLE"),
+        description: t("ERRORS.INVALID_IMAGE_ERROR.ADDITIONAL_DESCRIPTION"),
+      });
+      return;
+    }
+
+    logit("🖼 Drop: setting image path: ", filePath);
+    setImagePath(filePath);
+    if (!FEATURE_FLAGS.APP_STORE_BUILD && !rememberOutputFolder) {
+      setOutputPath(getDirectoryFromPath(filePath));
+    }
+    validateImagePath(filePath);
+  };
+
+  const [compression, setCompression] = useAtom(compressionAtom);
+  const [gpuId, setGpuId] = useAtom(gpuIdAtom);
+  const [saveImageAs, setSaveImageAs] = useAtom(saveImageAsAtom);
+  const logData = useAtomValue(logAtom);
 
   const selectImageHandler = async () => {
     resetImagePaths();
@@ -201,43 +285,48 @@ const Home = () => {
     window.electron.on(
       ELECTRON_COMMANDS.UPSCAYL_PROGRESS,
       (_, data: string) => {
-        if (data.length > 0 && data.length < 10) {
-          setProgress(data);
+        // A single stderr chunk can contain several "PROGRESS: xx%" lines.
+        // Take the LAST one so the bar reflects the most recent value.
+        const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
+        if (percentMatches) {
+          setProgress(percentMatches[percentMatches.length - 1]);
         } else if (data.includes("converting")) {
           setProgress(t("APP.PROGRESS.SCALING_CONVERTING_TITLE"));
         } else if (data.includes("Successful")) {
           setProgress(t("APP.PROGRESS.SUCCESS_TITLE"));
         }
         handleErrors(data);
-        logit(`🚧 UPSCAYL_PROGRESS: `, data);
+        logit(`🚧 PROGRESS: `, data);
       },
     );
     // FOLDER UPSCAYL PROGRESS
     window.electron.on(
       ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
       (_, data: string) => {
+        const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
         if (data.includes("Successful")) {
           setProgress(t("APP.PROGRESS.SUCCESS_TITLE"));
-        }
-        if (data.length > 0 && data.length < 10) {
-          setProgress(data);
+        } else if (percentMatches) {
+          setProgress(percentMatches[percentMatches.length - 1]);
         }
         handleErrors(data);
-        logit(`🚧 FOLDER_UPSCAYL_PROGRESS: `, data);
+        logit(`🚧 PROGRESS: `, data);
       },
     );
     // DOUBLE UPSCAYL PROGRESS
     window.electron.on(
       ELECTRON_COMMANDS.DOUBLE_UPSCAYL_PROGRESS,
       (_, data: string) => {
-        if (data.length > 0 && data.length < 10) {
-          if (data === "0.00%") {
+        const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
+        if (percentMatches) {
+          const last = percentMatches[percentMatches.length - 1];
+          if (percentMatches.includes("0.00%")) {
             setDoubleUpscaylCounter(doubleUpscaylCounter + 1);
           }
-          setProgress(data);
+          setProgress(last);
         }
         handleErrors(data);
-        logit(`🚧 DOUBLE_UPSCAYL_PROGRESS: `, data);
+        logit(`🚧 PROGRESS: `, data);
       },
     );
     // UPSCAYL DONE
@@ -261,7 +350,7 @@ const Home = () => {
       (_, data: string) => {
         setProgress("");
         setUpscaledBatchFolderPath(data);
-        logit(`💯 FOLDER_UPSCAYL_DONE: `, data);
+        logit(`💯 DONE: `, data);
         setUserStats((prev) => ({
           ...prev,
           lastUpscaylDuration: new Date().getTime() - prev.lastUsedAt,
@@ -356,7 +445,7 @@ const Home = () => {
               display: "inline-block",
               width: 6,
               height: 22,
-              background: "#E84C26",
+              background: "#0055A4",
               transform: "skewX(-15deg)",
               borderRadius: 2,
             }}
@@ -368,33 +457,89 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen w-screen flex-row overflow-hidden"
-      style={{ background: "var(--symp-bg, #FAF9F7)" }}
+      data-theme={theme}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+        background: "var(--bg)",
+        color: "var(--ink)",
+        fontFamily: "var(--symp-font, Geist, -apple-system, sans-serif)",
+      }}
       onPaste={(e) => console.log(e)}
     >
-      <Sidebar
-        imagePath={imagePath}
-        dimensions={dimensions}
-        setUpscaledImagePath={setUpscaledImagePath}
-        batchFolderPath={batchFolderPath}
-        setUpscaledBatchFolderPath={setUpscaledBatchFolderPath}
-        selectImageHandler={selectImageHandler}
-        selectFolderHandler={selectFolderHandler}
+      {/* Hidden Sidebar: provides upscaylHandler IPC wiring */}
+      <div style={{ display: "none" }}>
+        <Sidebar
+          imagePath={imagePath}
+          dimensions={dimensions}
+          setUpscaledImagePath={setUpscaledImagePath}
+          batchFolderPath={batchFolderPath}
+          setUpscaledBatchFolderPath={setUpscaledBatchFolderPath}
+          selectImageHandler={selectImageHandler}
+          selectFolderHandler={selectFolderHandler}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          onUpscaylHandlerReady={handleUpscaylHandlerReady}
+        />
+      </div>
+
+      <TopBar
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+        theme={theme}
+        setTheme={setTheme}
+        zoomAmount={zoomAmount}
+        setZoomAmount={setZoomAmount}
+        showComparison={showComparison}
+        setShowComparison={setShowComparison}
       />
-      <MainContent
-        imagePath={imagePath}
-        resetImagePaths={resetImagePaths}
-        upscaledBatchFolderPath={upscaledBatchFolderPath}
-        setImagePath={setImagePath}
-        validateImagePath={validateImagePath}
-        selectFolderHandler={selectFolderHandler}
-        selectImageHandler={selectImageHandler}
-        batchFolderPath={batchFolderPath}
-        upscaledImagePath={upscaledImagePath}
-        doubleUpscaylCounter={doubleUpscaylCounter}
-        setDimensions={setDimensions}
-      />
-      <OnboardingDialog />
+
+      {selectedTab === 1 ? (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
+          <SettingsTab
+            batchMode={batchMode}
+            saveImageAs={saveImageAs}
+            setSaveImageAs={setSaveImageAs}
+            compression={compression}
+            setCompression={setCompression}
+            gpuId={gpuId}
+            setGpuId={setGpuId}
+            logData={logData}
+          />
+        </div>
+      ) : (
+        <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
+          <LeftPanel
+            imagePath={imagePath}
+            batchFolderPath={batchFolderPath}
+            dimensions={dimensions}
+            selectImageHandler={selectImageHandler}
+            selectFolderHandler={selectFolderHandler}
+            resetImagePaths={resetImagePaths}
+            validateImagePath={validateImagePath}
+            setImagePath={setImagePath}
+            upscaylHandler={upscaylHandler}
+            dragActive={dragActive}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+          />
+          <PreviewPanel
+            imagePath={imagePath}
+            upscaledImagePath={upscaledImagePath}
+            dimensions={dimensions}
+            doubleUpscaylCounter={doubleUpscaylCounter}
+            setDimensions={setDimensions}
+            zoomAmount={zoomAmount}
+            showComparison={showComparison}
+          />
+        </div>
+      )}
+
     </div>
   );
 };

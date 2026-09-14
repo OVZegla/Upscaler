@@ -13,7 +13,9 @@
   },
   "SETTINGS": {
     "TITLE": "الاعدادات",
-    "CHANGE_LANGUAGE": { "TITLE": "تغيير اللغة" },
+    "CHANGE_LANGUAGE": {
+      "TITLE": "تغيير اللغة"
+    },
     "IMAGE_COMPRESSION": {
       "TITLE": "اختزال الصورة",
       "DESCRIPTION": "صيغة png , ربما لن تؤثر على حجم الملف بشكل كبير و عملية الضغط القوية قد يؤثر على الاداء, JPG و WEBP صيغ تفقد جودتها"
@@ -311,5 +313,3 @@
     }
   }
 }
-
-

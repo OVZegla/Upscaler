@@ -7,9 +7,13 @@ export function sanitizePath(filePath: string) {
   // Split the file path into segments based on forward slashes
   const pathSegments = normalizedFilePath.split("/");
 
-  // Encode each segment separately using encodeURIComponent
-  const encodedPathSegments = pathSegments.map((segment) =>
-    encodeURIComponent(segment),
+  // Encode each segment separately using encodeURIComponent, but leave a
+  // leading Windows drive letter (e.g. "C:") untouched — encoding its colon
+  // to %3A produces a file:// URL Chromium doesn't recognize as a drive letter
+  const encodedPathSegments = pathSegments.map((segment, index) =>
+    index === 0 && /^[a-zA-Z]:$/.test(segment)
+      ? segment
+      : encodeURIComponent(segment),
   );
 
   // Join the encoded segments back together with forward slashes

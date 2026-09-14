@@ -1,0 +1,39 @@
+[package]
+name = "symps-upscale"
+version = "1.1.0"
+description = "Symp's Upscale - AI Image Upscaler"
+authors = ["Symp"]
+license = "AGPL-3.0"
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "symps_upscale_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# `devtools` keeps the WebView inspector (F12 / right-click → Inspect) available
+# in release builds too, so preview testers can diagnose a blank screen.
+tauri = { version = "2", features = ["protocol-asset", "devtools"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.33"
+base64 = "0.22"
+# Image loading/rotation + EXIF reading, used to bake the source's EXIF
+# orientation into the pixels before upscaling (ncnn ignores EXIF, which
+# otherwise makes phone photos come out rotated a quarter turn).
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
+kamadak-exif = "0.5"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
