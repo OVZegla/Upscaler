@@ -108,6 +108,34 @@ mod tests {
     }
 
     #[test]
+    fn factor_mode_6x_and_8x_chain_and_land_exactly() {
+        // The slider's 6x and 8x: the binary caps `-s` at 4, so these only
+        // become real by chaining.
+        for (src, factor) in [(4000u32, 6u32), (4000, 8), (1200, 6), (1200, 8)] {
+            let target = src * factor;
+            let p = plan(src, target);
+            assert!(p.len() >= 2, "{factor}x must chain, got {p:?}");
+            assert_eq!(*p.last().unwrap(), target, "{factor}x must land exactly");
+            let mut w = src as f64;
+            for step in &p {
+                assert!(
+                    w * MODEL_SCALE >= *step as f64,
+                    "{factor}x: x4 from {w} cannot reach {step}"
+                );
+                w = *step as f64;
+            }
+        }
+    }
+
+    #[test]
+    fn factors_up_to_model_scale_need_no_chain() {
+        // 2x/3x/4x are handled natively by `-s`, so a single pass is enough.
+        for f in [2u32, 3, 4] {
+            assert_eq!(plan(4000, 4000 * f).len(), 1, "{f}x should be one pass");
+        }
+    }
+
+    #[test]
     fn pass_count_is_capped() {
         // An absurd factor must not spawn an unbounded chain.
         assert!(plan(100, 10_000_000).len() as u32 <= MAX_PASSES);
