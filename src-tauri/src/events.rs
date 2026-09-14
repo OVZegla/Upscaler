@@ -13,6 +13,11 @@ pub const DOUBLE_UPSCAYL_DONE: &str = "double-upscayl-done";
 pub const FOLDER_UPSCAYL_PROGRESS: &str = "folder-upscayl-progress";
 pub const FOLDER_UPSCAYL_DONE: &str = "folder-upscayl-done";
 
+/// Emitted at the start of each pass of a chained upscale, as
+/// `{"current":1,"total":2}`, so the UI can show overall progress rather
+/// than restarting at 0% on every pass.
+pub const UPSCAYL_PASS: &str = "upscayl-pass";
+
 pub const SCALING_AND_CONVERTING: &str = "scaling-and-converting";
 pub const CUSTOM_MODEL_FILES_LIST: &str = "custom-model-files-list";
 pub const METADATA_ERROR: &str = "metadata-error";

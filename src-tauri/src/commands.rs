@@ -13,6 +13,7 @@ use tauri_plugin_notification::NotificationExt;
 
 use crate::events;
 use crate::orientation;
+use crate::passes;
 use crate::resolution;
 use crate::paths::{exec_path, models_path};
 use crate::state::AppState;
@@ -206,6 +207,86 @@ fn resolve_models_path(app: &AppHandle, state: &AppState, model: &str) -> String
     models_path(app).to_string_lossy().to_string()
 }
 
+/// Runs a chain of x4 inference passes, each resized down to its planned
+/// width so the last one lands exactly on the target. Intermediates are
+/// temporary PNGs (lossless, so repeated passes don't stack JPEG artefacts)
+/// and are always cleaned up. Returns true if the run failed or was stopped.
+#[allow(clippy::too_many_arguments)]
+fn run_pass_chain(
+    app: &AppHandle,
+    st: &AppState,
+    bin: &Path,
+    plan: &[u32],
+    first_input: &str,
+    final_out: &str,
+    models: &str,
+    model: &str,
+    gpu_id: &str,
+    save_image_as: &str,
+    compression: &str,
+    tile_size: i64,
+    tta_mode: bool,
+    progress_event: &str,
+) -> bool {
+    let total = plan.len();
+    let mut current_input = first_input.to_string();
+    let mut temps: Vec<String> = Vec::new();
+    let mut failed = false;
+
+    for (idx, width) in plan.iter().enumerate() {
+        if st.stopped.load(Ordering::Relaxed) {
+            failed = true;
+            break;
+        }
+        let is_last = idx + 1 == total;
+
+        // Let the UI show overall progress instead of restarting at 0%.
+        let _ = app.emit(
+            events::UPSCAYL_PASS,
+            serde_json::json!({ "current": idx + 1, "total": total }),
+        );
+
+        let (out_path, format) = if is_last {
+            (final_out.to_string(), save_image_as)
+        } else {
+            let nanos = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0);
+            let mut p = std::env::temp_dir();
+            p.push(format!("symps_pass{}_{}.png", idx + 1, nanos));
+            let p = p.to_string_lossy().to_string();
+            temps.push(p.clone());
+            (p, "png")
+        };
+
+        let args = crate::upscale::chain_pass_args(&crate::upscale::ChainPassArgs {
+            in_file: &current_input,
+            out_file: &out_path,
+            models_path: models,
+            model,
+            gpu_id,
+            save_image_as: format,
+            width: *width,
+            // Only compress the final output; intermediates stay lossless.
+            compression: if is_last { compression } else { "" },
+            tile_size,
+            tta_mode,
+        });
+
+        if spawn_stream(app, st, bin, &args, progress_event) {
+            failed = true;
+            break;
+        }
+        current_input = out_path;
+    }
+
+    for t in &temps {
+        let _ = fs::remove_file(t);
+    }
+    failed
+}
+
 // ── Upscale commands ────────────────────────────────────────────────────────
 
 #[tauri::command]
@@ -264,22 +345,56 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             None => (decoded_input_dir.clone(), decoded_file.clone()),
         };
 
-        let args = single_image_args(&SingleArgs {
-            input_dir: &arg_input_dir,
-            file_name_with_ext: &arg_file,
-            out_file: &out_file,
-            models_path: &models,
-            model: &payload.model,
-            scale: &payload.scale,
-            gpu_id: &payload.gpu_id,
-            save_image_as: &payload.save_image_as,
-            custom_width: &custom_width,
-            compression: &payload.compression,
-            tile_size: payload.tile_size,
-            tta_mode: payload.tta_mode,
-        });
+        // Reaching a target width bigger than one x4 pass needs a chain of
+        // passes: the binary caps `-s` at 4 and its `-w` only resizes with a
+        // classic filter, so a single pass would be x4 of real detail plus
+        // plain interpolation on top.
+        let full_input = format!("{arg_input_dir}{}{arg_file}", sep());
+        let pass_plan: Vec<u32> = custom_width
+            .parse::<u32>()
+            .ok()
+            .filter(|w| *w > 0)
+            .and_then(|target| {
+                image::image_dimensions(&full_input)
+                    .ok()
+                    .map(|(src_w, _)| passes::plan(src_w, target))
+            })
+            .unwrap_or_default();
 
-        let failed = spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS);
+        let failed = if pass_plan.len() > 1 {
+            run_pass_chain(
+                &app,
+                st,
+                &bin,
+                &pass_plan,
+                &full_input,
+                &out_file,
+                &models,
+                &payload.model,
+                &payload.gpu_id,
+                &payload.save_image_as,
+                &payload.compression,
+                payload.tile_size,
+                payload.tta_mode,
+                events::UPSCAYL_PROGRESS,
+            )
+        } else {
+            let args = single_image_args(&SingleArgs {
+                input_dir: &arg_input_dir,
+                file_name_with_ext: &arg_file,
+                out_file: &out_file,
+                models_path: &models,
+                model: &payload.model,
+                scale: &payload.scale,
+                gpu_id: &payload.gpu_id,
+                save_image_as: &payload.save_image_as,
+                custom_width: &custom_width,
+                compression: &payload.compression,
+                tile_size: payload.tile_size,
+                tta_mode: payload.tta_mode,
+            });
+            spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS)
+        };
         // Clean up the temporary orientation-normalized input, if any.
         if let Some(tmp) = &oriented {
             let _ = fs::remove_file(tmp);
