@@ -12,6 +12,7 @@ import {
   usePrintSizeAtom,
   printWidthCmAtom,
   printDpiAtom,
+  upscalePassAtom,
 } from "../atoms/user-settings-atom";
 import { estimatePrint, formatSize } from "@/lib/print-size";
 
@@ -244,6 +245,7 @@ const LeftPanel = ({
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
+  const upscalePass = useAtomValue(upscalePassAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
   const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
@@ -281,7 +283,14 @@ const LeftPanel = ({
     wasUpscaling.current = isUpscaling;
   }, [isUpscaling]);
 
-  const globalPct = done ? 100 : (tilePct ?? 0);
+  // A chained job runs several x4 passes, each reporting 0->100%. Spread
+  // each pass over its share so the bar advances across the whole job.
+  const rawPct = tilePct ?? 0;
+  const globalPct = done
+    ? 100
+    : upscalePass && upscalePass.total > 1
+      ? ((upscalePass.current - 1) * 100 + rawPct) / upscalePass.total
+      : rawPct;
 
   const cancelHandler = () => {
     window.electron.send(ELECTRON_COMMANDS.STOP);
@@ -713,7 +722,11 @@ const LeftPanel = ({
             </div>
             <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--symp-mono, monospace)" }}>
-                {done ? "Terminé ✓" : `${globalPct.toFixed(1)}%`}
+                {done
+                ? "Terminé ✓"
+                : upscalePass && upscalePass.total > 1
+                  ? `${globalPct.toFixed(1)}% · passe ${upscalePass.current}/${upscalePass.total}`
+                  : `${globalPct.toFixed(1)}%`}
               </span>
               {isUpscaling && (
                 <button

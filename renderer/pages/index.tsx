@@ -7,6 +7,7 @@ import {
   batchModeAtom,
   savedOutputPathAtom,
   progressAtom,
+  upscalePassAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
   compressionAtom,
@@ -50,6 +51,7 @@ const Home = () => {
   const [batchFolderPath, setBatchFolderPath] = useState("");
   const [upscaledBatchFolderPath, setUpscaledBatchFolderPath] = useState("");
   const setProgress = useSetAtom(progressAtom);
+  const setUpscalePass = useSetAtom(upscalePassAtom);
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
@@ -281,6 +283,17 @@ const Home = () => {
       });
       resetImagePaths();
     });
+    // CHAINED UPSCALE: which pass is running
+    window.electron.on(ELECTRON_COMMANDS.UPSCAYL_PASS, (_, data: any) => {
+      try {
+        const d = typeof data === "string" ? JSON.parse(data) : data;
+        if (d && typeof d.current === "number" && typeof d.total === "number") {
+          setUpscalePass({ current: d.current, total: d.total });
+        }
+      } catch {
+        /* a malformed pass event must never break the run */
+      }
+    });
     // UPSCAYL PROGRESS
     window.electron.on(
       ELECTRON_COMMANDS.UPSCAYL_PROGRESS,
@@ -332,6 +345,7 @@ const Home = () => {
     // UPSCAYL DONE
     window.electron.on(ELECTRON_COMMANDS.UPSCAYL_DONE, (_, data: string) => {
       setProgress("");
+      setUpscalePass(null);
       setUpscaledImagePath(data);
       setUserStats((prev) => ({
         ...prev,

@@ -34,6 +34,11 @@ export const savedOutputPathAtom = atomWithStorage<string | null>(
 
 export const progressAtom = atom<string>("");
 
+/** Which pass of a chained upscale is running, so progress can be shown
+ *  across the whole job instead of restarting at 0% on each pass. */
+export type UpscalePass = { current: number; total: number } | null;
+export const upscalePassAtom = atom(null as UpscalePass);
+
 export const rememberOutputFolderAtom = atomWithStorage<boolean>(
   "rememberOutputFolder",
   false,
