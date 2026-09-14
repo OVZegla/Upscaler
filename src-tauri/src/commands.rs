@@ -350,16 +350,27 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
         // classic filter, so a single pass would be x4 of real detail plus
         // plain interpolation on top.
         let full_input = format!("{arg_input_dir}{}{arg_file}", sep());
-        let pass_plan: Vec<u32> = custom_width
-            .parse::<u32>()
-            .ok()
-            .filter(|w| *w > 0)
-            .and_then(|target| {
-                image::image_dimensions(&full_input)
-                    .ok()
-                    .map(|(src_w, _)| passes::plan(src_w, target))
-            })
-            .unwrap_or_default();
+        let src_dims = image::image_dimensions(&full_input).ok();
+
+        let target_width: Option<u32> = if !custom_width.is_empty() {
+            // Print mode: the width is the target.
+            custom_width.parse::<u32>().ok().filter(|w| *w > 0)
+        } else {
+            // Factor mode: only factors beyond one pass need chaining. 2x/3x/4x
+            // are handled natively by `-s`; 6x and 8x are not (the binary
+            // silently falls back to x4), so derive a width and chain.
+            payload
+                .scale
+                .parse::<u32>()
+                .ok()
+                .filter(|s| *s > 4)
+                .and_then(|s| src_dims.map(|(w, _)| w.saturating_mul(s)))
+        };
+
+        let pass_plan: Vec<u32> = match (target_width, src_dims) {
+            (Some(target), Some((src_w, _))) => passes::plan(src_w, target),
+            _ => Vec::new(),
+        };
 
         let failed = if pass_plan.len() > 1 {
             run_pass_chain(
