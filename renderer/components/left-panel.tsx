@@ -9,7 +9,11 @@ import {
   progressAtom,
   customWidthAtom,
   useCustomWidthAtom,
+  usePrintSizeAtom,
+  printWidthCmAtom,
+  printDpiAtom,
 } from "../atoms/user-settings-atom";
+import { estimatePrint, formatSize } from "@/lib/print-size";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
 
@@ -162,8 +166,27 @@ const LeftPanel = ({
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
-  const customWidth = useAtomValue(customWidthAtom);
-  const useCustomWidth = useAtomValue(useCustomWidthAtom);
+  const [customWidth, setCustomWidth] = useAtom(customWidthAtom);
+  const [useCustomWidth, setUseCustomWidth] = useAtom(useCustomWidthAtom);
+  const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
+  const [printWidthCm, setPrintWidthCm] = useAtom(printWidthCmAtom);
+  const [printDpi, setPrintDpi] = useAtom(printDpiAtom);
+
+  // Target printed size -> pixel width for the upscaler.
+  const printEstimate = estimatePrint(
+    dimensions.width,
+    dimensions.height,
+    printWidthCm,
+    printDpi,
+  );
+
+  // Drive the existing custom-width pipeline from the print size, so the
+  // backend needs no changes: it already passes `-w <px>` to the binary.
+  useEffect(() => {
+    if (!usePrintSize) return;
+    setUseCustomWidth(true);
+    if (printEstimate) setCustomWidth(printEstimate.widthPx);
+  }, [usePrintSize, printEstimate?.widthPx, setUseCustomWidth, setCustomWidth]);
 
   const scaleInt = parseInt(scale) || 4;
   const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
@@ -309,11 +332,165 @@ const LeftPanel = ({
           )}
         </div>
 
-        {/* Scale slider */}
+        {/* Format d'impression */}
         <div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
+            <SectionLabel info>Format d'impression</SectionLabel>
+            <PillToggle
+              on={usePrintSize}
+              onChange={(on) => {
+                setUsePrintSize(on);
+                // Turning it off must also release the custom-width pipeline,
+                // otherwise the pixel width set here would silently persist.
+                if (!on) setUseCustomWidth(false);
+              }}
+            />
+          </div>
+
+          {!usePrintSize ? (
+            <div style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.4 }}>
+              Définissez la taille du mur en centimètres plutôt qu'un facteur.
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Largeur + DPI */}
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+                <label style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
+                  <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>Largeur du mur</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <input
+                      type="number"
+                      min={1}
+                      max={2000}
+                      value={printWidthCm}
+                      onChange={(e) => setPrintWidthCm(Math.max(0, parseFloat(e.target.value) || 0))}
+                      style={{
+                        width: "100%",
+                        padding: "7px 9px",
+                        borderRadius: 8,
+                        border: "1px solid var(--border-2)",
+                        background: "var(--bg-card)",
+                        color: "var(--ink)",
+                        fontSize: 13.5,
+                        fontWeight: 600,
+                        fontFamily: "var(--symp-mono, monospace)",
+                      }}
+                    />
+                    <span style={{ fontSize: 12, color: "var(--ink-3)" }}>cm</span>
+                  </div>
+                </label>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                  <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>Résolution</span>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {[300, 150].map((dpi) => (
+                      <button
+                        key={dpi}
+                        onClick={() => setPrintDpi(dpi)}
+                        style={{
+                          padding: "7px 11px",
+                          borderRadius: 8,
+                          border: printDpi === dpi ? "1px solid transparent" : "1px solid var(--border-2)",
+                          background: printDpi === dpi ? "var(--accent)" : "transparent",
+                          color: printDpi === dpi ? "#fff" : "var(--ink-2)",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          fontFamily: fontStack,
+                        }}
+                      >
+                        {dpi}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Résultat du calcul */}
+              {printEstimate ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div style={{ fontSize: 12.5, color: "var(--ink-2)" }}>
+                    <span style={{ fontFamily: "var(--symp-mono, monospace)", fontWeight: 700, color: "var(--accent)" }}>
+                      {printEstimate.widthPx.toLocaleString("fr-FR")} × {printEstimate.heightPx.toLocaleString("fr-FR")} px
+                    </span>
+                    <span style={{ marginLeft: 8, color: "var(--ink-3)" }}>
+                      ({printWidthCm} × {printEstimate.heightCm.toFixed(0)} cm)
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11.5, color: "var(--ink-3)" }}>
+                    Facteur {printEstimate.factor.toFixed(1)}× · {printEstimate.megapixels.toFixed(0)} Mpx · ~{formatSize(printEstimate.estimatedBytes)}
+                  </div>
+
+                  {printEstimate.isHeavy && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 7,
+                        padding: "9px 11px",
+                        borderRadius: 9,
+                        border: "1px solid var(--border-2)",
+                        background: "var(--accent-tint)",
+                      }}
+                    >
+                      <span style={{ fontSize: 11.5, color: "var(--ink-2)", lineHeight: 1.45 }}>
+                        Traitement très gourmand à {printDpi} DPI. Passer à 150 DPI
+                        divise le poids par quatre — vous pourrez toujours
+                        réaugmenter la résolution dans Photoshop.
+                      </span>
+                      {printDpi !== 150 && (
+                        <button
+                          onClick={() => setPrintDpi(150)}
+                          style={{
+                            alignSelf: "flex-start",
+                            padding: "5px 11px",
+                            borderRadius: 7,
+                            border: "none",
+                            background: "var(--accent)",
+                            color: "#fff",
+                            fontSize: 11.5,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            fontFamily: fontStack,
+                          }}
+                        >
+                          Passer à 150 DPI
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {printEstimate.isOverStretched && (
+                    <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
+                      Facteur {printEstimate.factor.toFixed(1)}× : au-delà de 8×,
+                      l'IA invente des détails plutôt que d'en restituer. Une
+                      source plus grande donnerait un bien meilleur résultat.
+                    </span>
+                  )}
+
+                  {printEstimate.exceedsJpegLimit && (
+                    <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
+                      Au-delà de 65 535 px, le format JPG est impossible :
+                      choisissez PNG.
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>
+                  Chargez une image pour calculer la taille de sortie.
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Scale slider */}
+        <div style={{ opacity: usePrintSize ? 0.45 : 1, pointerEvents: usePrintSize ? "none" : "auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
             <SectionLabel info>Niveau d'upscale</SectionLabel>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>{scaleInt}x</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>
+              {usePrintSize ? "auto" : `${scaleInt}x`}
+            </span>
           </div>
           <input
             type="range"
