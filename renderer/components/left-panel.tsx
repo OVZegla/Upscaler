@@ -244,27 +244,22 @@ const LeftPanel = ({
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
-  const [customWidth, setCustomWidth] = useAtom(customWidthAtom);
-  const [useCustomWidth, setUseCustomWidth] = useAtom(useCustomWidthAtom);
+  const customWidth = useAtomValue(customWidthAtom);
+  const useCustomWidth = useAtomValue(useCustomWidthAtom);
   const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
   const [printWidthCm, setPrintWidthCm] = useAtom(printWidthCmAtom);
   const [printDpi, setPrintDpi] = useAtom(printDpiAtom);
 
-  // Target printed size -> pixel width for the upscaler.
+  // Target printed size -> pixel width for the upscaler. Kept separate from
+  // customWidthAtom on purpose: that atom is owned by the "custom resolution"
+  // setting, and writing to it from here would silently clobber the user's
+  // own value. The pixel width is derived again when the job is sent.
   const printEstimate = estimatePrint(
     dimensions.width,
     dimensions.height,
     printWidthCm,
     printDpi,
   );
-
-  // Drive the existing custom-width pipeline from the print size, so the
-  // backend needs no changes: it already passes `-w <px>` to the binary.
-  useEffect(() => {
-    if (!usePrintSize) return;
-    setUseCustomWidth(true);
-    if (printEstimate) setCustomWidth(printEstimate.widthPx);
-  }, [usePrintSize, printEstimate?.widthPx, setUseCustomWidth, setCustomWidth]);
 
   const scaleInt = parseInt(scale) || 4;
   const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
@@ -296,16 +291,26 @@ const LeftPanel = ({
   const [printOptim, setPrintOptim] = useState(false);
   const [smartSharpen, setSmartSharpen] = useState(true);
 
+  // In print mode the job is only launchable once a real size is known —
+  // otherwise the backend silently falls back to the scale factor.
+  const printSizeReady = !usePrintSize || (printWidthCm > 0 && !!printEstimate);
+  const canUpscale = !isUpscaling && printSizeReady;
+
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
 
   const outputDimensions = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
+    if (usePrintSize) {
+      return printEstimate
+        ? { width: printEstimate.widthPx, height: printEstimate.heightPx }
+        : null;
+    }
     if (useCustomWidth && customWidth > 0) {
       return { width: customWidth, height: Math.round(customWidth * (dimensions.height / dimensions.width)) };
     }
     const factor = doubleUpscayl ? scaleInt * scaleInt : scaleInt;
     return { width: dimensions.width * factor, height: dimensions.height * factor };
-  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth]);
+  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printEstimate]);
 
 
   return (
@@ -417,13 +422,7 @@ const LeftPanel = ({
           </div>
           <SegmentedControl
             value={usePrintSize ? "print" : "factor"}
-            onChange={(v) => {
-              const on = v === "print";
-              setUsePrintSize(on);
-              // Leaving print mode must release the custom-width pipeline,
-              // otherwise the pixel width set here would silently persist.
-              if (!on) setUseCustomWidth(false);
-            }}
+            onChange={(v) => setUsePrintSize(v === "print")}
             options={[
               { value: "factor", label: "Facteur" },
               { value: "print", label: "Taille d'impression" },
@@ -670,7 +669,7 @@ const LeftPanel = ({
       <div style={{ padding: "12px 20px 20px", borderTop: "1px solid var(--border)" }}>
         <button
           onClick={upscaylHandler}
-          disabled={isUpscaling}
+          disabled={!canUpscale}
           style={{
             width: "100%",
             height: 52,
@@ -680,9 +679,9 @@ const LeftPanel = ({
             borderRadius: 12,
             fontWeight: 700,
             fontSize: 16,
-            cursor: isUpscaling ? "default" : "pointer",
+            cursor: canUpscale ? "pointer" : "default",
             fontFamily: fontStack,
-            opacity: isUpscaling ? 0.85 : 1,
+            opacity: canUpscale ? 1 : 0.85,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -691,6 +690,8 @@ const LeftPanel = ({
         >
           {isUpscaling ? (
             <span>Traitement… {Math.round(globalPct)}%</span>
+          ) : !printSizeReady ? (
+            <span>Indiquez la taille du mur</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
