@@ -2,6 +2,7 @@ mod commands;
 mod events;
 mod orientation;
 mod paths;
+mod resolution;
 mod state;
 mod upscale;
 

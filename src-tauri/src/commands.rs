@@ -13,6 +13,7 @@ use tauri_plugin_notification::NotificationExt;
 
 use crate::events;
 use crate::orientation;
+use crate::resolution;
 use crate::paths::{exec_path, models_path};
 use crate::state::AppState;
 use crate::upscale::{
@@ -59,6 +60,8 @@ pub struct ImageUpscaylPayload {
     pub tta_mode: bool,
     #[serde(default)]
     pub copy_metadata: bool,
+    #[serde(default)]
+    pub output_dpi: Option<u32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -83,6 +86,8 @@ pub struct DoubleUpscaylPayload {
     pub tta_mode: bool,
     #[serde(default)]
     pub copy_metadata: bool,
+    #[serde(default)]
+    pub output_dpi: Option<u32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -107,6 +112,8 @@ pub struct BatchUpscaylPayload {
     pub tta_mode: bool,
     #[serde(default)]
     pub copy_metadata: bool,
+    #[serde(default)]
+    pub output_dpi: Option<u32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -278,6 +285,11 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             let _ = fs::remove_file(tmp);
         }
         if !failed && !st.stopped.load(Ordering::Relaxed) {
+            // Stamp the print resolution so the file opens at its intended
+            // physical size instead of defaulting to 72 DPI.
+            if let Some(dpi) = payload.output_dpi {
+                resolution::write_dpi(&out_file, dpi);
+            }
             let _ = app.emit(events::UPSCAYL_DONE, out_file);
             notify(&app, "Symp's Upscale", "Image upscaled successfully!");
         }
@@ -367,6 +379,11 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
         });
         let failed2 = spawn_stream(&app, st, &bin, &args2, events::DOUBLE_UPSCAYL_PROGRESS);
         if !failed2 && !st.stopped.load(Ordering::Relaxed) {
+            // Stamp the print resolution so the file opens at its intended
+            // physical size instead of defaulting to 72 DPI.
+            if let Some(dpi) = payload.output_dpi {
+                resolution::write_dpi(&out_file, dpi);
+            }
             let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file);
             notify(&app, "Symp's Upscale", "Image upscayled successfully!");
         }
