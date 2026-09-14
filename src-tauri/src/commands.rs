@@ -12,6 +12,7 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_notification::NotificationExt;
 
 use crate::events;
+use crate::orientation;
 use crate::paths::{exec_path, models_path};
 use crate::state::AppState;
 use crate::upscale::{
