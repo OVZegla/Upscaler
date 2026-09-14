@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { cmToPixels } from "@/lib/print-size";
 import {
   batchModeAtom,
   compressionAtom,
@@ -22,6 +23,7 @@ import {
   copyMetadataAtom,
   usePrintSizeAtom,
   printDpiAtom,
+  printWidthCmAtom,
 } from "../../atoms/user-settings-atom";
 import useLogger from "../hooks/use-logger";
 import {
@@ -88,8 +90,22 @@ const Sidebar = ({
   const [copyMetadata] = useAtom(copyMetadataAtom);
   const usePrintSize = useAtomValue(usePrintSizeAtom);
   const printDpi = useAtomValue(printDpiAtom);
+  const printWidthCm = useAtomValue(printWidthCmAtom);
   // Only stamp a resolution when the user sized the job in real-world units.
   const outputDpi = usePrintSize ? printDpi : null;
+
+  // Print mode derives the pixel width here rather than writing into
+  // customWidthAtom, which belongs to the "custom resolution" setting —
+  // sharing it would clobber whatever the user set there.
+  const printWidthPx = usePrintSize ? cmToPixels(printWidthCm, printDpi) : 0;
+  const effectiveUseCustomWidth = usePrintSize ? true : useCustomWidth;
+  const effectiveCustomWidth = usePrintSize
+    ? printWidthPx > 0
+      ? printWidthPx.toString()
+      : null
+    : customWidth > 0
+      ? customWidth.toString()
+      : null;
 
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");
@@ -109,8 +125,8 @@ const Sidebar = ({
             scale,
             noImageProcessing,
             compression: compression.toString(),
-            customWidth: customWidth > 0 ? customWidth.toString() : null,
-            useCustomWidth,
+            customWidth: effectiveCustomWidth,
+            useCustomWidth: effectiveUseCustomWidth,
             tileSize,
             ttaMode,
             copyMetadata,
@@ -138,8 +154,8 @@ const Sidebar = ({
             scale,
             noImageProcessing,
             compression: compression.toString(),
-            customWidth: customWidth > 0 ? customWidth.toString() : null,
-            useCustomWidth,
+            customWidth: effectiveCustomWidth,
+            useCustomWidth: effectiveUseCustomWidth,
             tileSize,
             ttaMode,
             copyMetadata,
@@ -164,8 +180,8 @@ const Sidebar = ({
           overwrite,
           noImageProcessing,
           compression: compression.toString(),
-          customWidth: customWidth > 0 ? customWidth.toString() : null,
-          useCustomWidth,
+          customWidth: effectiveCustomWidth,
+          useCustomWidth: effectiveUseCustomWidth,
           tileSize,
           ttaMode,
           copyMetadata,
@@ -190,7 +206,9 @@ const Sidebar = ({
 
   useEffect(() => {
     onUpscaylHandlerReady(upscaylHandler);
-  }, [imagePath, batchFolderPath, outputPath, selectedModelId, doubleUpscayl, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite]);
+    // Print-mode values belong here too: without them the registered handler
+    // keeps a stale width/DPI and the job runs with the previous size.
+  }, [imagePath, batchFolderPath, outputPath, selectedModelId, doubleUpscayl, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite, usePrintSize, printDpi, printWidthCm]);
 
   return (
     <LeftNav

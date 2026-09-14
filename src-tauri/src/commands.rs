@@ -443,6 +443,10 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
 
         let failed = spawn_stream(&app, st, &bin, &args, events::FOLDER_UPSCAYL_PROGRESS);
         if !failed && !st.stopped.load(Ordering::Relaxed) {
+            // Stamp every result so the whole batch opens at the right size.
+            if let Some(dpi) = payload.output_dpi {
+                resolution::write_dpi_in_dir(&output_folder, dpi);
+            }
             let _ = app.emit(events::FOLDER_UPSCAYL_DONE, output_folder);
             notify(&app, "Symp's Upscale", "Images upscaled successfully!");
         }

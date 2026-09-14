@@ -37,6 +37,35 @@ pub fn write_dpi(path: &str, dpi: u32) -> bool {
     }
 }
 
+/// Stamps every PNG/JPEG directly inside `dir`. Used for batch runs, which
+/// write into a dedicated output folder, so only this run's results are
+/// touched. Returns how many files were updated.
+pub fn write_dpi_in_dir(dir: &str, dpi: u32) -> usize {
+    let entries = match fs::read_dir(dir) {
+        Ok(e) => e,
+        Err(_) => return 0,
+    };
+    let mut count = 0;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if !path.is_file() {
+            continue;
+        }
+        let ext = path
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        if !matches!(ext.as_str(), "png" | "jpg" | "jpeg" | "jfif") {
+            continue;
+        }
+        if write_dpi(&path.to_string_lossy(), dpi) {
+            count += 1;
+        }
+    }
+    count
+}
+
 fn is_png(b: &[u8]) -> bool {
     b.len() > 8 && b[..8] == [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]
 }
