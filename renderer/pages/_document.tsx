@@ -44,6 +44,15 @@ const diagnosticScript = `
     var t = e.target || e.srcElement;
     if (t && (t.src || t.href)) {
       var url = String(t.src || t.href);
+      var tag = String(t.tagName || "").toUpperCase();
+      // ONLY the bundle can black-screen the app: a missing <script> or
+      // stylesheet means the JS never runs. Content resources (user images
+      // via the Tauri asset protocol, icons, media) failing is a normal,
+      // recoverable condition — the app still works, so never cover it with
+      // a full-screen panel. Doing so WAS the "black screen".
+      var isBundleAsset = tag === "SCRIPT" ||
+                          (tag === "LINK" && String(t.rel || "") === "stylesheet");
+      if (!isBundleAsset) return;
       // Ignore failures from external/CDN URLs — Google Fonts, etc.
       // Only surface failures for local app assets (tauri://, localhost, file://).
       var isLocal = url.indexOf("tauri://") === 0 ||
@@ -52,7 +61,7 @@ const diagnosticScript = `
                     url.indexOf("file://") === 0 ||
                     url.indexOf("/") === 0;
       if (!isLocal) return;
-      paint("Asset introuvable (404 / chemin invalide)", (t.tagName || "?") + " -> " + url + "\\n\\nC'est la cause de l'ecran noir : le bundle ne se charge pas.");
+      paint("Asset introuvable (404 / chemin invalide)", tag + " -> " + url + "\\n\\nC'est la cause de l'ecran noir : le bundle ne se charge pas.");
     } else if (e.message) {
       paint("Erreur JavaScript", e.message + "\\n  " + (e.filename || "") + ":" + (e.lineno || "") + ":" + (e.colno || ""));
     }

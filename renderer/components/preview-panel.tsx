@@ -76,6 +76,13 @@ const PreviewPanel = ({
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
   const [detailMode, setDetailMode] = useState(false);
+  // Set when the upscaled image fails to load (missing file, asset-protocol
+  // rejection). Shown inline instead of failing silently.
+  const [outputLoadError, setOutputLoadError] = useState(false);
+
+  useEffect(() => {
+    setOutputLoadError(false);
+  }, [upscaledImagePath]);
 
   const scaleInt = parseInt(scale) || 4;
 
@@ -240,17 +247,43 @@ const PreviewPanel = ({
             }}
           >
             {upscaledImagePath ? (
-              <img
-                src={userFileUrl(upscaledImagePath)}
-                draggable={false}
-                alt=""
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: detailMode ? "none" : "contain",
-                  objectPosition: "center",
-                }}
-              />
+              outputLoadError ? (
+                <div
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    padding: 16,
+                    textAlign: "center",
+                  }}
+                >
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--red)" }}>
+                    Image générée mais impossible à afficher
+                  </span>
+                  <span style={{ fontSize: 11, color: "var(--ink-3)", wordBreak: "break-all", lineHeight: 1.5 }}>
+                    {upscaledImagePath}
+                  </span>
+                  <span style={{ fontSize: 11, color: "var(--ink-3)" }}>
+                    Le fichier est peut-être absent ou son chemin trop long.
+                  </span>
+                </div>
+              ) : (
+                <img
+                  src={userFileUrl(upscaledImagePath)}
+                  draggable={false}
+                  alt=""
+                  onError={() => setOutputLoadError(true)}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: detailMode ? "none" : "contain",
+                    objectPosition: "center",
+                  }}
+                />
+              )
             ) : (
               placeholder
             )}
