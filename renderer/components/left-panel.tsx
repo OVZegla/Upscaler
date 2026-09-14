@@ -126,6 +126,84 @@ function PillToggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => v
   );
 }
 
+/**
+ * Two-option segmented control: a pill-shaped track with a sliding thumb
+ * under the active label.
+ */
+function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((o) => o.value === value),
+  );
+  return (
+    <div
+      role="tablist"
+      style={{
+        position: "relative",
+        display: "grid",
+        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
+        gap: 2,
+        padding: 3,
+        borderRadius: 11,
+        background: "var(--border-2)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      {/* Sliding thumb */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 3,
+          bottom: 3,
+          left: `calc(${(activeIndex * 100) / options.length}% + 3px)`,
+          width: `calc(${100 / options.length}% - 6px)`,
+          borderRadius: 8,
+          background: "var(--bg-card)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.16)",
+          transition: "left 0.22s cubic-bezier(0.32, 0.72, 0, 1)",
+        }}
+      />
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <button
+            key={o.value}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(o.value)}
+            style={{
+              position: "relative",
+              appearance: "none",
+              border: "none",
+              background: "transparent",
+              padding: "7px 4px",
+              borderRadius: 8,
+              fontSize: 12.5,
+              fontWeight: active ? 700 : 600,
+              color: active ? "var(--ink)" : "var(--ink-3)",
+              cursor: "pointer",
+              fontFamily: fontStack,
+              transition: "color 0.18s ease",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 const MODE_CARDS = [
   { id: "upscayl-lite-4x", label: "Rapide", sub: "Traitement plus rapide", icon: <BoltIcon /> },
   { id: "upscayl-standard-4x", label: "Standard", sub: "Meilleure qualité", icon: <ClockIcon /> },
@@ -332,27 +410,28 @@ const LeftPanel = ({
           )}
         </div>
 
-        {/* Format d'impression */}
+        {/* Mode de redimensionnement */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
-            <SectionLabel info>Format d'impression</SectionLabel>
-            <PillToggle
-              on={usePrintSize}
-              onChange={(on) => {
-                setUsePrintSize(on);
-                // Turning it off must also release the custom-width pipeline,
-                // otherwise the pixel width set here would silently persist.
-                if (!on) setUseCustomWidth(false);
-              }}
-            />
+          <div style={{ marginBottom: 10 }}>
+            <SectionLabel info>Redimensionnement</SectionLabel>
           </div>
+          <SegmentedControl
+            value={usePrintSize ? "print" : "factor"}
+            onChange={(v) => {
+              const on = v === "print";
+              setUsePrintSize(on);
+              // Leaving print mode must release the custom-width pipeline,
+              // otherwise the pixel width set here would silently persist.
+              if (!on) setUseCustomWidth(false);
+            }}
+            options={[
+              { value: "factor", label: "Facteur" },
+              { value: "print", label: "Taille d'impression" },
+            ]}
+          />
 
-          {!usePrintSize ? (
-            <div style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.4 }}>
-              Définissez la taille du mur en centimètres plutôt qu'un facteur.
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {usePrintSize && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>
               {/* Largeur + DPI */}
               <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
                 <label style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
@@ -484,29 +563,29 @@ const LeftPanel = ({
           )}
         </div>
 
-        {/* Scale slider */}
-        <div style={{ opacity: usePrintSize ? 0.45 : 1, pointerEvents: usePrintSize ? "none" : "auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <SectionLabel info>Niveau d'upscale</SectionLabel>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>
-              {usePrintSize ? "auto" : `${scaleInt}x`}
-            </span>
+        {/* Scale slider — only in factor mode; print mode derives the scale */}
+        {!usePrintSize && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <SectionLabel info>Niveau d'upscale</SectionLabel>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>{scaleInt}x</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={4}
+              step={1}
+              value={scaleIdx}
+              onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
+              style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
+            />
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+              {SCALE_TICKS.map((tick) => (
+                <span key={tick} style={{ fontSize: 10, color: "var(--ink-3)" }}>{tick}</span>
+              ))}
+            </div>
           </div>
-          <input
-            type="range"
-            min={0}
-            max={4}
-            step={1}
-            value={scaleIdx}
-            onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
-            style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
-          />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-            {SCALE_TICKS.map((tick) => (
-              <span key={tick} style={{ fontSize: 10, color: "var(--ink-3)" }}>{tick}</span>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Double upscale */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>

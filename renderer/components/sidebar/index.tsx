@@ -20,6 +20,8 @@ import {
   userStatsAtom,
   ttaModeAtom,
   copyMetadataAtom,
+  usePrintSizeAtom,
+  printDpiAtom,
 } from "../../atoms/user-settings-atom";
 import useLogger from "../hooks/use-logger";
 import {
@@ -84,6 +86,10 @@ const Sidebar = ({
   const setUserStats = useSetAtom(userStatsAtom);
   const ttaMode = useAtomValue(ttaModeAtom);
   const [copyMetadata] = useAtom(copyMetadataAtom);
+  const usePrintSize = useAtomValue(usePrintSizeAtom);
+  const printDpi = useAtomValue(printDpiAtom);
+  // Only stamp a resolution when the user sized the job in real-world units.
+  const outputDpi = usePrintSize ? printDpi : null;
 
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");
@@ -108,6 +114,7 @@ const Sidebar = ({
             tileSize,
             ttaMode,
             copyMetadata,
+            outputDpi,
           },
         );
         setUserStats((prev) => ({
@@ -136,6 +143,7 @@ const Sidebar = ({
             tileSize,
             ttaMode,
             copyMetadata,
+            outputDpi,
           },
         );
         setUserStats((prev) => ({
@@ -161,6 +169,7 @@ const Sidebar = ({
           tileSize,
           ttaMode,
           copyMetadata,
+          outputDpi,
         });
         setUserStats((prev) => ({
           ...prev,
