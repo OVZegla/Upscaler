@@ -92,6 +92,43 @@ pub fn single_image_args(a: &SingleArgs) -> Vec<String> {
     args.into_vec()
 }
 
+pub struct ChainPassArgs<'a> {
+    /// Full path of this pass's input.
+    pub in_file: &'a str,
+    /// Full path this pass writes to.
+    pub out_file: &'a str,
+    pub models_path: &'a str,
+    pub model: &'a str,
+    pub gpu_id: &'a str,
+    /// Output format for this pass (PNG for intermediates — lossless).
+    pub save_image_as: &'a str,
+    /// Width this pass must end at. The binary infers at x4 then resizes
+    /// down to this, so it is always a reduction.
+    pub width: u32,
+    pub compression: &'a str,
+    pub tile_size: i64,
+    pub tta_mode: bool,
+}
+
+/// Args for one pass of a chained upscale. No `-s`: the model always infers
+/// at its native scale, and the width is what pins the result.
+pub fn chain_pass_args(a: &ChainPassArgs) -> Vec<String> {
+    let mut args = Args::new();
+    args.pair("-i", a.in_file);
+    args.pair("-o", a.out_file);
+    args.pair("-m", a.models_path);
+    args.pair("-n", a.model);
+    args.pair("-g", a.gpu_id);
+    args.pair("-f", a.save_image_as);
+    args.pair("-w", a.width.to_string());
+    args.pair("-c", a.compression);
+    if a.tile_size != 0 {
+        args.pair("-t", a.tile_size.to_string());
+    }
+    args.flag("-x", a.tta_mode);
+    args.into_vec()
+}
+
 pub struct DoubleFirstArgs<'a> {
     pub input_dir: &'a str,
     pub full_file_name: &'a str,

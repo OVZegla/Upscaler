@@ -9,7 +9,12 @@ import {
   progressAtom,
   customWidthAtom,
   useCustomWidthAtom,
+  usePrintSizeAtom,
+  printWidthCmAtom,
+  printDpiAtom,
+  upscalePassAtom,
 } from "../atoms/user-settings-atom";
+import { estimatePrint, formatSize } from "@/lib/print-size";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
 
@@ -122,6 +127,84 @@ function PillToggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => v
   );
 }
 
+/**
+ * Two-option segmented control: a pill-shaped track with a sliding thumb
+ * under the active label.
+ */
+function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((o) => o.value === value),
+  );
+  return (
+    <div
+      role="tablist"
+      style={{
+        position: "relative",
+        display: "grid",
+        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
+        gap: 2,
+        padding: 3,
+        borderRadius: 11,
+        background: "var(--border-2)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      {/* Sliding thumb */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 3,
+          bottom: 3,
+          left: `calc(${(activeIndex * 100) / options.length}% + 3px)`,
+          width: `calc(${100 / options.length}% - 6px)`,
+          borderRadius: 8,
+          background: "var(--bg-card)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.16)",
+          transition: "left 0.22s cubic-bezier(0.32, 0.72, 0, 1)",
+        }}
+      />
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <button
+            key={o.value}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(o.value)}
+            style={{
+              position: "relative",
+              appearance: "none",
+              border: "none",
+              background: "transparent",
+              padding: "7px 4px",
+              borderRadius: 8,
+              fontSize: 12.5,
+              fontWeight: active ? 700 : 600,
+              color: active ? "var(--ink)" : "var(--ink-3)",
+              cursor: "pointer",
+              fontFamily: fontStack,
+              transition: "color 0.18s ease",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 const MODE_CARDS = [
   { id: "upscayl-lite-4x", label: "Rapide", sub: "Traitement plus rapide", icon: <BoltIcon /> },
   { id: "upscayl-standard-4x", label: "Standard", sub: "Meilleure qualité", icon: <ClockIcon /> },
@@ -162,8 +245,23 @@ const LeftPanel = ({
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
+  const upscalePass = useAtomValue(upscalePassAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
+  const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
+  const [printWidthCm, setPrintWidthCm] = useAtom(printWidthCmAtom);
+  const [printDpi, setPrintDpi] = useAtom(printDpiAtom);
+
+  // Target printed size -> pixel width for the upscaler. Kept separate from
+  // customWidthAtom on purpose: that atom is owned by the "custom resolution"
+  // setting, and writing to it from here would silently clobber the user's
+  // own value. The pixel width is derived again when the job is sent.
+  const printEstimate = estimatePrint(
+    dimensions.width,
+    dimensions.height,
+    printWidthCm,
+    printDpi,
+  );
 
   const scaleInt = parseInt(scale) || 4;
   const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
@@ -185,7 +283,14 @@ const LeftPanel = ({
     wasUpscaling.current = isUpscaling;
   }, [isUpscaling]);
 
-  const globalPct = done ? 100 : (tilePct ?? 0);
+  // A chained job runs several x4 passes, each reporting 0->100%. Spread
+  // each pass over its share so the bar advances across the whole job.
+  const rawPct = tilePct ?? 0;
+  const globalPct = done
+    ? 100
+    : upscalePass && upscalePass.total > 1
+      ? ((upscalePass.current - 1) * 100 + rawPct) / upscalePass.total
+      : rawPct;
 
   const cancelHandler = () => {
     window.electron.send(ELECTRON_COMMANDS.STOP);
@@ -195,16 +300,26 @@ const LeftPanel = ({
   const [printOptim, setPrintOptim] = useState(false);
   const [smartSharpen, setSmartSharpen] = useState(true);
 
+  // In print mode the job is only launchable once a real size is known —
+  // otherwise the backend silently falls back to the scale factor.
+  const printSizeReady = !usePrintSize || (printWidthCm > 0 && !!printEstimate);
+  const canUpscale = !isUpscaling && printSizeReady;
+
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
 
   const outputDimensions = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
+    if (usePrintSize) {
+      return printEstimate
+        ? { width: printEstimate.widthPx, height: printEstimate.heightPx }
+        : null;
+    }
     if (useCustomWidth && customWidth > 0) {
       return { width: customWidth, height: Math.round(customWidth * (dimensions.height / dimensions.width)) };
     }
     const factor = doubleUpscayl ? scaleInt * scaleInt : scaleInt;
     return { width: dimensions.width * factor, height: dimensions.height * factor };
-  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth]);
+  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printEstimate]);
 
 
   return (
@@ -309,27 +424,176 @@ const LeftPanel = ({
           )}
         </div>
 
-        {/* Scale slider */}
+        {/* Mode de redimensionnement */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <SectionLabel info>Niveau d'upscale</SectionLabel>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>{scaleInt}x</span>
+          <div style={{ marginBottom: 10 }}>
+            <SectionLabel info>Redimensionnement</SectionLabel>
           </div>
-          <input
-            type="range"
-            min={0}
-            max={4}
-            step={1}
-            value={scaleIdx}
-            onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
-            style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
+          <SegmentedControl
+            value={usePrintSize ? "print" : "factor"}
+            onChange={(v) => setUsePrintSize(v === "print")}
+            options={[
+              { value: "factor", label: "Facteur" },
+              { value: "print", label: "Taille d'impression" },
+            ]}
           />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-            {SCALE_TICKS.map((tick) => (
-              <span key={tick} style={{ fontSize: 10, color: "var(--ink-3)" }}>{tick}</span>
-            ))}
-          </div>
+
+          {usePrintSize && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>
+              {/* Largeur + DPI */}
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+                <label style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
+                  <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>Largeur du mur</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <input
+                      type="number"
+                      min={1}
+                      max={2000}
+                      value={printWidthCm}
+                      onChange={(e) => setPrintWidthCm(Math.max(0, parseFloat(e.target.value) || 0))}
+                      style={{
+                        width: "100%",
+                        padding: "7px 9px",
+                        borderRadius: 8,
+                        border: "1px solid var(--border-2)",
+                        background: "var(--bg-card)",
+                        color: "var(--ink)",
+                        fontSize: 13.5,
+                        fontWeight: 600,
+                        fontFamily: "var(--symp-mono, monospace)",
+                      }}
+                    />
+                    <span style={{ fontSize: 12, color: "var(--ink-3)" }}>cm</span>
+                  </div>
+                </label>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                  <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>Résolution</span>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {[300, 150].map((dpi) => (
+                      <button
+                        key={dpi}
+                        onClick={() => setPrintDpi(dpi)}
+                        style={{
+                          padding: "7px 11px",
+                          borderRadius: 8,
+                          border: printDpi === dpi ? "1px solid transparent" : "1px solid var(--border-2)",
+                          background: printDpi === dpi ? "var(--accent)" : "transparent",
+                          color: printDpi === dpi ? "#fff" : "var(--ink-2)",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          fontFamily: fontStack,
+                        }}
+                      >
+                        {dpi}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Résultat du calcul */}
+              {printEstimate ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div style={{ fontSize: 12.5, color: "var(--ink-2)" }}>
+                    <span style={{ fontFamily: "var(--symp-mono, monospace)", fontWeight: 700, color: "var(--accent)" }}>
+                      {printEstimate.widthPx.toLocaleString("fr-FR")} × {printEstimate.heightPx.toLocaleString("fr-FR")} px
+                    </span>
+                    <span style={{ marginLeft: 8, color: "var(--ink-3)" }}>
+                      ({printWidthCm} × {printEstimate.heightCm.toFixed(0)} cm)
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11.5, color: "var(--ink-3)" }}>
+                    Facteur {printEstimate.factor.toFixed(1)}× · {printEstimate.megapixels.toFixed(0)} Mpx · ~{formatSize(printEstimate.estimatedBytes)}
+                  </div>
+
+                  {printEstimate.isHeavy && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 7,
+                        padding: "9px 11px",
+                        borderRadius: 9,
+                        border: "1px solid var(--border-2)",
+                        background: "var(--accent-tint)",
+                      }}
+                    >
+                      <span style={{ fontSize: 11.5, color: "var(--ink-2)", lineHeight: 1.45 }}>
+                        Traitement très gourmand à {printDpi} DPI. Passer à 150 DPI
+                        divise le poids par quatre — vous pourrez toujours
+                        réaugmenter la résolution dans Photoshop.
+                      </span>
+                      {printDpi !== 150 && (
+                        <button
+                          onClick={() => setPrintDpi(150)}
+                          style={{
+                            alignSelf: "flex-start",
+                            padding: "5px 11px",
+                            borderRadius: 7,
+                            border: "none",
+                            background: "var(--accent)",
+                            color: "#fff",
+                            fontSize: 11.5,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            fontFamily: fontStack,
+                          }}
+                        >
+                          Passer à 150 DPI
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {printEstimate.isOverStretched && (
+                    <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
+                      Facteur {printEstimate.factor.toFixed(1)}× : au-delà de 8×,
+                      l'IA invente des détails plutôt que d'en restituer. Une
+                      source plus grande donnerait un bien meilleur résultat.
+                    </span>
+                  )}
+
+                  {printEstimate.exceedsJpegLimit && (
+                    <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
+                      Au-delà de 65 535 px, le format JPG est impossible :
+                      choisissez PNG.
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>
+                  Chargez une image pour calculer la taille de sortie.
+                </span>
+              )}
+            </div>
+          )}
         </div>
+
+        {/* Scale slider — only in factor mode; print mode derives the scale */}
+        {!usePrintSize && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <SectionLabel info>Niveau d'upscale</SectionLabel>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>{scaleInt}x</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={4}
+              step={1}
+              value={scaleIdx}
+              onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
+              style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
+            />
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+              {SCALE_TICKS.map((tick) => (
+                <span key={tick} style={{ fontSize: 10, color: "var(--ink-3)" }}>{tick}</span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Double upscale */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -414,7 +678,7 @@ const LeftPanel = ({
       <div style={{ padding: "12px 20px 20px", borderTop: "1px solid var(--border)" }}>
         <button
           onClick={upscaylHandler}
-          disabled={isUpscaling}
+          disabled={!canUpscale}
           style={{
             width: "100%",
             height: 52,
@@ -424,9 +688,9 @@ const LeftPanel = ({
             borderRadius: 12,
             fontWeight: 700,
             fontSize: 16,
-            cursor: isUpscaling ? "default" : "pointer",
+            cursor: canUpscale ? "pointer" : "default",
             fontFamily: fontStack,
-            opacity: isUpscaling ? 0.85 : 1,
+            opacity: canUpscale ? 1 : 0.85,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -435,6 +699,8 @@ const LeftPanel = ({
         >
           {isUpscaling ? (
             <span>Traitement… {Math.round(globalPct)}%</span>
+          ) : !printSizeReady ? (
+            <span>Indiquez la taille du mur</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
@@ -456,7 +722,11 @@ const LeftPanel = ({
             </div>
             <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--symp-mono, monospace)" }}>
-                {done ? "Terminé ✓" : `${globalPct.toFixed(1)}%`}
+                {done
+                ? "Terminé ✓"
+                : upscalePass && upscalePass.total > 1
+                  ? `${globalPct.toFixed(1)}% · passe ${upscalePass.current}/${upscalePass.total}`
+                  : `${globalPct.toFixed(1)}%`}
               </span>
               {isUpscaling && (
                 <button

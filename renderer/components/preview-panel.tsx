@@ -6,7 +6,11 @@ import {
   doubleUpscaylAtom,
   customWidthAtom,
   useCustomWidthAtom,
+  usePrintSizeAtom,
+  printWidthCmAtom,
+  printDpiAtom,
 } from "../atoms/user-settings-atom";
+import { estimatePrint } from "@/lib/print-size";
 import { userFileUrl } from "@/lib/asset-url";
 import ImageViewer from "./main-content/image-viewer";
 import SliderView from "./main-content/slider-view";
@@ -35,11 +39,35 @@ type PreviewPanelProps = {
 function useFileSize(filePath: string) {
   const [size, setSize] = useState<number | null>(null);
   useEffect(() => {
-    if (!filePath) { setSize(null); return; }
-    try {
-      const fs = (window as any).require("fs");
-      setSize(fs.statSync(filePath).size);
-    } catch { setSize(null); }
+    let cancelled = false;
+    if (!filePath) {
+      setSize(null);
+      return;
+    }
+    // Under Tauri there is no `require("fs")`, so the old path always threw
+    // and the size never showed. Ask the backend instead; fall back to fs
+    // when running under Electron.
+    const tauri = (window as any).__TAURI__;
+    if (tauri?.core?.invoke) {
+      tauri.core
+        .invoke("get_file_size", { path: filePath })
+        .then((bytes: number | null) => {
+          if (!cancelled) setSize(typeof bytes === "number" ? bytes : null);
+        })
+        .catch(() => {
+          if (!cancelled) setSize(null);
+        });
+    } else {
+      try {
+        const fs = (window as any).require("fs");
+        setSize(fs.statSync(filePath).size);
+      } catch {
+        setSize(null);
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
   }, [filePath]);
   return size;
 }
@@ -75,6 +103,9 @@ const PreviewPanel = ({
   const doubleUpscayl = useAtomValue(doubleUpscaylAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
+  const usePrintSize = useAtomValue(usePrintSizeAtom);
+  const printWidthCm = useAtomValue(printWidthCmAtom);
+  const printDpi = useAtomValue(printDpiAtom);
   const [detailMode, setDetailMode] = useState(false);
   // Set when the upscaled image fails to load (missing file, asset-protocol
   // rejection). Shown inline instead of failing silently.
@@ -88,6 +119,17 @@ const PreviewPanel = ({
 
   const outputDimensions = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
+    if (usePrintSize) {
+      const est = estimatePrint(
+        dimensions.width,
+        dimensions.height,
+        printWidthCm,
+        printDpi,
+      );
+      return est
+        ? { width: est.widthPx, height: est.heightPx, factor: est.factor }
+        : null;
+    }
     if (useCustomWidth && customWidth > 0) {
       return {
         width: customWidth,
@@ -101,7 +143,7 @@ const PreviewPanel = ({
       height: dimensions.height * factor,
       factor,
     };
-  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth]);
+  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printWidthCm, printDpi]);
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
   const ext = imagePath ? (imagePath.split(".").pop() || "").toUpperCase() : "";
