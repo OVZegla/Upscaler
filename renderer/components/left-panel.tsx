@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { ELECTRON_COMMANDS } from "@common/electron-commands";
 import {
@@ -65,6 +65,26 @@ const PrinterIcon = () => (
 const SparkleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2l2.4 7.2L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" />
+  </svg>
+);
+
+/** Rotating ring shown while a job runs. */
+const Spinner = () => (
+  <svg
+    width="17"
+    height="17"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden
+    style={{ animation: "symp-spin 0.9s linear infinite", flexShrink: 0 }}
+  >
+    <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
+    <path
+      d="M21 12a9 9 0 0 0-9-9"
+      stroke="#fff"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
@@ -267,54 +287,9 @@ const LeftPanel = ({
   const scaleIdx = SCALE_VALUES.indexOf(scaleInt) >= 0 ? SCALE_VALUES.indexOf(scaleInt) : 2;
   const isUpscaling = progress.length > 0;
 
-  // Parse real ncnn percentage from progress string (e.g. "PROGRESS: 37.50%")
-  const pctMatch = progress.match(/(\d+(?:\.\d+)?)%/);
-  const tilePct = pctMatch ? parseFloat(pctMatch[1]) : null;
-
-  // Flash 100% for 700ms when upscaling finishes
-  const [done, setDone] = useState(false);
-  // Last percentage actually reported. The binary ends its stream with
-  // "Upscayled Successfully!", which replaces the percentage with text;
-  // without holding this value the bar would drop to 0 right before
-  // finishing — once per pass, which is what made it look like it kept
-  // restarting.
-  const [heldPct, setHeldPct] = useState(0);
-  const wasUpscaling = useRef(false);
-
-  useEffect(() => {
-    if (isUpscaling && !wasUpscaling.current) {
-      // New job: start from zero rather than the previous job's value.
-      setHeldPct(0);
-      setDone(false);
-    } else if (!isUpscaling && wasUpscaling.current) {
-      setDone(true);
-      const t = setTimeout(() => {
-        setDone(false);
-        setHeldPct(0);
-      }, 700);
-      wasUpscaling.current = isUpscaling;
-      return () => clearTimeout(t);
-    }
-    wasUpscaling.current = isUpscaling;
-  }, [isUpscaling]);
-
-  useEffect(() => {
-    if (tilePct !== null) setHeldPct(tilePct);
-  }, [tilePct]);
-
-  // Each pass of a chained job counts from 0 again.
-  useEffect(() => {
-    setHeldPct(0);
-  }, [upscalePass?.current]);
-
-  // A chained job runs several x4 passes, each reporting 0->100%. Spread
-  // each pass over its share so the bar advances across the whole job.
-  const rawPct = tilePct ?? heldPct;
-  const globalPct = done
-    ? 100
-    : upscalePass && upscalePass.total > 1
-      ? ((upscalePass.current - 1) * 100 + rawPct) / upscalePass.total
-      : rawPct;
+  // No percentage is shown. The binary reports per-run progress that does
+  // not map cleanly onto a whole job, and a number that lies is worse than
+  // no number: show which pass is running and that work is happening.
 
   const cancelHandler = () => {
     window.electron.send(ELECTRON_COMMANDS.STOP);
@@ -707,6 +682,8 @@ const LeftPanel = ({
           onClick={upscaylHandler}
           disabled={!canUpscale}
           style={{
+            position: "relative",
+            overflow: "hidden",
             width: "100%",
             height: 52,
             background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
@@ -721,59 +698,75 @@ const LeftPanel = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 8,
+            gap: 10,
           }}
         >
+          {/* Light sweeping across the button: shows the app is working
+              without implying a measurable amount of progress. */}
+          {isUpscaling && (
+            <span
+              aria-hidden
+              className="symp-progress-indeterminate"
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                width: "35%",
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent)",
+                pointerEvents: "none",
+              }}
+            />
+          )}
           {isUpscaling ? (
-            <span>Traitement… {Math.round(globalPct)}%</span>
+            <>
+              <Spinner />
+              <span>Upscale en cours, patientez…</span>
+            </>
           ) : !printSizeReady ? (
             <span>Indiquez la taille du mur</span>
           ) : (
             <span>Lancer l'upscale</span>
           )}
         </button>
-        {(isUpscaling || globalPct > 0) && (
-          <div style={{ marginTop: 10 }}>
-            <div style={{ height: 6, borderRadius: 999, background: "var(--border-2)", overflow: "hidden" }}>
-              <div
-                style={{
-                  height: "100%",
-                  width: `${globalPct}%`,
-                  background: globalPct === 100
-                    ? "linear-gradient(135deg, #22c55e, #16a34a)"
-                    : "linear-gradient(135deg, #4F46E5, #3B82F6)",
-                  borderRadius: 999,
-                  transition: globalPct === 100 ? "width 0.2s ease" : "width 0.8s ease",
-                }}
-              />
-            </div>
-            <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--symp-mono, monospace)" }}>
-                {done
-                ? "Terminé ✓"
-                : upscalePass && upscalePass.total > 1
-                  ? `${globalPct.toFixed(1)}% · passe ${upscalePass.current}/${upscalePass.total}`
-                  : `${globalPct.toFixed(1)}%`}
-              </span>
-              {isUpscaling && (
-                <button
-                  onClick={cancelHandler}
-                  style={{
-                    appearance: "none",
-                    background: "transparent",
-                    border: 0,
-                    padding: 0,
-                    fontSize: 11,
-                    color: "var(--ink-3)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    fontFamily: fontStack,
-                  }}
-                >
-                  Annuler
-                </button>
-              )}
-            </div>
+
+        {isUpscaling && (
+          <div
+            style={{
+              marginTop: 10,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11.5,
+                color: "var(--ink-3)",
+                fontFamily: "var(--symp-mono, monospace)",
+              }}
+            >
+              {upscalePass && upscalePass.total > 1
+                ? `Passe ${upscalePass.current} / ${upscalePass.total}`
+                : "Traitement en cours"}
+            </span>
+            <button
+              onClick={cancelHandler}
+              style={{
+                appearance: "none",
+                background: "transparent",
+                border: 0,
+                padding: 0,
+                fontSize: 11.5,
+                color: "var(--ink-3)",
+                cursor: "pointer",
+                textDecoration: "underline",
+                fontFamily: fontStack,
+              }}
+            >
+              Annuler
+            </button>
           </div>
         )}
       </div>
