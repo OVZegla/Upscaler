@@ -24,6 +24,7 @@ import {
   usePrintSizeAtom,
   printDpiAtom,
   printWidthCmAtom,
+  upscalePassAtom,
 } from "../../atoms/user-settings-atom";
 import useLogger from "../hooks/use-logger";
 import {
@@ -78,6 +79,7 @@ const Sidebar = ({
   const outputPath = useAtomValue(savedOutputPathAtom);
   const [compression] = useAtom(compressionAtom);
   const setProgress = useSetAtom(progressAtom);
+  const setUpscalePass = useSetAtom(upscalePassAtom);
   const [batchMode, setBatchMode] = useAtom(batchModeAtom);
   const [scale] = useAtom(scaleAtom);
   const setDontShowCloudModal = useSetAtom(dontShowCloudModalAtom);
@@ -110,6 +112,9 @@ const Sidebar = ({
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");
     setUpscaledImagePath("");
+    // Clear any pass state left by a previous job — a run that errored out
+    // never emits UPSCAYL_DONE, so it would otherwise skew this one.
+    setUpscalePass(null);
     setUpscaledBatchFolderPath("");
     if (imagePath !== "" || batchFolderPath !== "") {
       setProgress(t("APP.PROGRESS.WAIT_TITLE"));

@@ -481,6 +481,13 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             custom_width: &custom_width,
             tile_size: payload.tile_size,
         });
+        // Double upscale is two runs of the binary, each counting 0->100%.
+        // Announce them so the bar spans the whole job instead of filling
+        // up twice.
+        let _ = app.emit(
+            events::UPSCAYL_PASS,
+            serde_json::json!({ "current": 1, "total": 2 }),
+        );
         let failed1 = spawn_stream(&app, st, &bin, &args1, events::DOUBLE_UPSCAYL_PROGRESS);
         // Clean up the temporary orientation-normalized input, if any.
         if let Some(tmp) = &oriented {
@@ -503,6 +510,10 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             tile_size: payload.tile_size,
             tta_mode: payload.tta_mode,
         });
+        let _ = app.emit(
+            events::UPSCAYL_PASS,
+            serde_json::json!({ "current": 2, "total": 2 }),
+        );
         let failed2 = spawn_stream(&app, st, &bin, &args2, events::DOUBLE_UPSCAYL_PROGRESS);
         if !failed2 && !st.stopped.load(Ordering::Relaxed) {
             // Stamp the print resolution so the file opens at its intended
