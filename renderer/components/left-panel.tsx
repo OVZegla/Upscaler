@@ -273,19 +273,43 @@ const LeftPanel = ({
 
   // Flash 100% for 700ms when upscaling finishes
   const [done, setDone] = useState(false);
+  // Last percentage actually reported. The binary ends its stream with
+  // "Upscayled Successfully!", which replaces the percentage with text;
+  // without holding this value the bar would drop to 0 right before
+  // finishing — once per pass, which is what made it look like it kept
+  // restarting.
+  const [heldPct, setHeldPct] = useState(0);
   const wasUpscaling = useRef(false);
+
   useEffect(() => {
-    if (!isUpscaling && wasUpscaling.current) {
+    if (isUpscaling && !wasUpscaling.current) {
+      // New job: start from zero rather than the previous job's value.
+      setHeldPct(0);
+      setDone(false);
+    } else if (!isUpscaling && wasUpscaling.current) {
       setDone(true);
-      const t = setTimeout(() => setDone(false), 700);
+      const t = setTimeout(() => {
+        setDone(false);
+        setHeldPct(0);
+      }, 700);
+      wasUpscaling.current = isUpscaling;
       return () => clearTimeout(t);
     }
     wasUpscaling.current = isUpscaling;
   }, [isUpscaling]);
 
+  useEffect(() => {
+    if (tilePct !== null) setHeldPct(tilePct);
+  }, [tilePct]);
+
+  // Each pass of a chained job counts from 0 again.
+  useEffect(() => {
+    setHeldPct(0);
+  }, [upscalePass?.current]);
+
   // A chained job runs several x4 passes, each reporting 0->100%. Spread
   // each pass over its share so the bar advances across the whole job.
-  const rawPct = tilePct ?? 0;
+  const rawPct = tilePct ?? heldPct;
   const globalPct = done
     ? 100
     : upscalePass && upscalePass.total > 1
