@@ -30,6 +30,8 @@ base64 = "0.22"
 # otherwise makes phone photos come out rotated a quarter turn).
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 kamadak-exif = "0.5"
+# CRC for the PNG pHYs chunk written by resolution.rs
+crc32fast = "1"
 
 [profile.release]
 panic = "abort"

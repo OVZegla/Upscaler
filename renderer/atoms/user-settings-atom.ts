@@ -34,6 +34,11 @@ export const savedOutputPathAtom = atomWithStorage<string | null>(
 
 export const progressAtom = atom<string>("");
 
+/** Which pass of a chained upscale is running, so progress can be shown
+ *  across the whole job instead of restarting at 0% on each pass. */
+export type UpscalePass = { current: number; total: number } | null;
+export const upscalePassAtom = atom(null as UpscalePass);
+
 export const rememberOutputFolderAtom = atomWithStorage<boolean>(
   "rememberOutputFolder",
   false,
@@ -75,6 +80,21 @@ export const useCustomWidthAtom = atomWithStorage<boolean>(
 );
 
 export const tileSizeAtom = atomWithStorage<number | null>("tileSize", null);
+
+// ── Print sizing (wall printing) ──────────────────────────────────────
+// Lets the user think in centimetres instead of pixels: target physical
+// width + output DPI drive the pixel width handed to the upscaler.
+export const usePrintSizeAtom = atomWithStorage<boolean>(
+  "usePrintSize",
+  false,
+);
+
+/** Target printed width, in centimetres. */
+export const printWidthCmAtom = atomWithStorage<number>("printWidthCm", 320);
+
+/** Output resolution. 300 is the house standard; 150 is the fallback for
+ *  jobs that would otherwise be too heavy (still re-scalable afterwards). */
+export const printDpiAtom = atomWithStorage<number>("printDpi", 300);
 
 // CLIENT SIDE ONLY
 export const showSidebarAtom = atomWithStorage("showSidebar", true);

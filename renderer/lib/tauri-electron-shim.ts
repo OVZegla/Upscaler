@@ -41,6 +41,7 @@ const PAYLOAD_COMMANDS = new Set<string>([
 // src-tauri/src/events.rs.
 const COMMAND_TO_EVENT: Record<string, string> = {
   [ELECTRON_COMMANDS.UPSCAYL_PROGRESS]: "upscayl-progress",
+  [ELECTRON_COMMANDS.UPSCAYL_PASS]: "upscayl-pass",
   [ELECTRON_COMMANDS.UPSCAYL_DONE]: "upscayl-done",
   [ELECTRON_COMMANDS.UPSCAYL_ERROR]: "upscayl-error",
   [ELECTRON_COMMANDS.UPSCAYL_WARNING]: "upscayl-warning",

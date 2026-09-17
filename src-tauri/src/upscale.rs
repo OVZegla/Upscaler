@@ -92,6 +92,43 @@ pub fn single_image_args(a: &SingleArgs) -> Vec<String> {
     args.into_vec()
 }
 
+pub struct ChainPassArgs<'a> {
+    /// Full path of this pass's input.
+    pub in_file: &'a str,
+    /// Full path this pass writes to.
+    pub out_file: &'a str,
+    pub models_path: &'a str,
+    pub model: &'a str,
+    pub gpu_id: &'a str,
+    /// Output format for this pass (PNG for intermediates — lossless).
+    pub save_image_as: &'a str,
+    /// Width this pass must end at. The binary infers at x4 then resizes
+    /// down to this, so it is always a reduction.
+    pub width: u32,
+    pub compression: &'a str,
+    pub tile_size: i64,
+    pub tta_mode: bool,
+}
+
+/// Args for one pass of a chained upscale. No `-s`: the model always infers
+/// at its native scale, and the width is what pins the result.
+pub fn chain_pass_args(a: &ChainPassArgs) -> Vec<String> {
+    let mut args = Args::new();
+    args.pair("-i", a.in_file);
+    args.pair("-o", a.out_file);
+    args.pair("-m", a.models_path);
+    args.pair("-n", a.model);
+    args.pair("-g", a.gpu_id);
+    args.pair("-f", a.save_image_as);
+    args.pair("-w", a.width.to_string());
+    args.pair("-c", a.compression);
+    if a.tile_size != 0 {
+        args.pair("-t", a.tile_size.to_string());
+    }
+    args.flag("-x", a.tta_mode);
+    args.into_vec()
+}
+
 pub struct DoubleFirstArgs<'a> {
     pub input_dir: &'a str,
     pub full_file_name: &'a str,
@@ -234,11 +271,41 @@ pub fn spawn_stream(
 
     let mut failed = false;
     let mut buf = [0u8; 4096];
+    // Raw reads land wherever the pipe happens to fill up, which routinely
+    // cuts a line in half: "PROGRESS: 3" | "7.50%". Emitting those halves
+    // made the UI read 7.50% out of a 37.50% message and the bar jump
+    // backwards. Buffer instead, and only ever emit whole lines.
+    let mut pending: Vec<u8> = Vec::new();
+    // Safety valve: if the binary ever emits a huge run without a line
+    // break, flush rather than growing without bound.
+    const MAX_PENDING: usize = 64 * 1024;
+
     loop {
         match stderr.read(&mut buf) {
             Ok(0) => break,
             Ok(n) => {
-                let s = String::from_utf8_lossy(&buf[..n]).to_string();
+                pending.extend_from_slice(&buf[..n]);
+
+                // ncnn ends progress lines with \r (it overwrites in place)
+                // and regular output with \n, so both count as boundaries.
+                let cut = pending
+                    .iter()
+                    .rposition(|b| *b == b'\n' || *b == b'\r')
+                    .map(|p| p + 1)
+                    .unwrap_or(if pending.len() >= MAX_PENDING {
+                        pending.len()
+                    } else {
+                        0
+                    });
+                if cut == 0 {
+                    continue; // nothing complete yet — wait for the rest
+                }
+
+                let complete: Vec<u8> = pending.drain(..cut).collect();
+                // Decode only whole lines, so a multi-byte char is never
+                // split across two decodes.
+                let s = String::from_utf8_lossy(&complete).to_string();
+
                 let _ = app.emit(progress_event, s.clone());
                 if s.contains("Error") || s.contains("failed") {
                     failed = true;
@@ -253,6 +320,12 @@ pub fn spawn_stream(
             }
             Err(_) => break,
         }
+    }
+
+    // A final line without a trailing separator would otherwise be dropped.
+    if !failed && !pending.is_empty() {
+        let s = String::from_utf8_lossy(&pending).to_string();
+        let _ = app.emit(progress_event, s);
     }
 
     if let Ok(mut c) = shared.lock() {
