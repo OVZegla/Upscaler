@@ -245,7 +245,7 @@ const LeftPanel = ({
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
-  const upscalePass = useAtomValue(upscalePassAtom);
+  const [upscalePass, setUpscalePass] = useAtom(upscalePassAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
   const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
@@ -295,6 +295,9 @@ const LeftPanel = ({
   const cancelHandler = () => {
     window.electron.send(ELECTRON_COMMANDS.STOP);
     setProgress("");
+    // Must clear too: a cancelled chained job would otherwise leave a stale
+    // pass count behind and skew the next job's progress.
+    setUpscalePass(null);
   };
 
   const [printOptim, setPrintOptim] = useState(false);
