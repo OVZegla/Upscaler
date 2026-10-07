@@ -131,6 +131,10 @@
       "AFTER": "Depois",
       "ZOOM": "Zoom",
       "MODELS": {
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
+        },
         "upscayl-standard-4x": {
           "NAME": "Standard",
           "DESCRIPTION": "Adequado para a maioria das imagens."

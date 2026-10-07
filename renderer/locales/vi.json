@@ -131,6 +131,10 @@
       "AFTER": "Sau",
       "ZOOM": "Phóng to",
       "MODELS": {
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
+        },
         "upscayl-standard-4x": {
           "NAME": "Standard",
           "DESCRIPTION": "Phù hợp với hầu hết các hình ảnh."

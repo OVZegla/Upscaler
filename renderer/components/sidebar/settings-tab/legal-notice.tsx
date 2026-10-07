@@ -164,23 +164,51 @@ export default function LegalNotice() {
 
       <Section id="ai" title="Modèle d'intelligence artificielle">
         <p style={p}>
-          L&apos;agrandissement s&apos;appuie sur <strong>Real-ESRGAN</strong>,
-          un modèle de super-résolution open source publié par Xintao Wang et
-          ses co-auteurs (Tencent ARC Lab), exécuté via le moteur{" "}
-          <strong>ncnn</strong> de Tencent avec accélération Vulkan.
+          L&apos;agrandissement s&apos;appuie sur des modèles de
+          super-résolution open source, exécutés par le moteur{" "}
+          <strong>ncnn</strong> de Tencent avec accélération Vulkan. Trois
+          modèles sont fournis&nbsp;:
         </p>
-        <p style={{ ...p, marginTop: 8 }}>
-          Deux variantes sont fournies&nbsp;:
-        </p>
-        <ul style={{ marginTop: 6, paddingLeft: 18, listStyle: "disc" }}>
+        <ul style={{ marginTop: 8, paddingLeft: 18, listStyle: "disc" }}>
           <li style={li}>
-            <strong>Rapide</strong> — modèle compact, traitement plus court.
+            <strong>Précision</strong> — <em>4xLSDIRCompactC3</em>, par{" "}
+            <strong>Philip Hofmann</strong> (Phhofm), architecture SRVGGNet
+            «&nbsp;Compact&nbsp;». Distribué sous licence{" "}
+            <strong>Creative Commons Attribution 4.0 International (CC BY
+            4.0)</strong>{" "}
+            —{" "}
+            <span style={{ wordBreak: "break-all" }}>
+              creativecommons.org/licenses/by/4.0/
+            </span>
+            . Modèle d&apos;origine&nbsp;:{" "}
+            <span style={{ wordBreak: "break-all" }}>
+              github.com/Phhofm/models
+            </span>
+            . Modification apportée&nbsp;: conversion au format ncnn, réalisée
+            par le projet Upscayl&nbsp;; Symp&apos;s le redistribue sans aucune
+            modification supplémentaire. Fourni par son auteur en l&apos;état,
+            sans garantie. Philip Hofmann n&apos;approuve ni ne cautionne
+            Symp&apos;s Upscale, et aucune affiliation n&apos;est
+            sous-entendue.
           </li>
           <li style={li}>
-            <strong>Standard</strong> — modèle complet, meilleure restitution
-            des détails.
+            <strong>Classique</strong> — <em>upscayl-standard-4x</em>, hérité du
+            projet Upscayl, réputé dérivé de <strong>Real-ESRGAN</strong>{" "}
+            (Xintao Wang, licence BSD 3-Clause).
+          </li>
+          <li style={li}>
+            <strong>Léger</strong> — <em>upscayl-lite-4x</em>, hérité du projet
+            Upscayl, même filiation présumée.
           </li>
         </ul>
+        <p style={{ ...p, marginTop: 8 }}>
+          Précision d&apos;honnêteté sur les deux derniers&nbsp;: le projet
+          Upscayl ne publie pas de fichier de licence pour les poids de ses
+          modèles, et ces fichiers ne portent aucune métadonnée de licence. La
+          filiation Real-ESRGAN est très probable mais n&apos;est pas établie
+          par une déclaration accompagnant les fichiers. Le détail, avec les
+          empreintes SHA-256, figure dans le fichier NOTICE.
+        </p>
         <p style={{ ...p, marginTop: 8 }}>
           Ces modèles sont pré-entraînés et utilisés tels quels&nbsp;; ils ne
           sont ni entraînés ni modifiés par Symp&apos;s, et sont distribués
@@ -230,6 +258,10 @@ export default function LegalNotice() {
 
       <Section id="third" title="Composants tiers">
         <ul style={{ paddingLeft: 18, listStyle: "disc" }}>
+          <li style={li}>
+            <strong>4xLSDIRCompactC3</strong> — licence CC BY 4.0 — © Philip
+            Hofmann
+          </li>
           <li style={li}>
             <strong>Real-ESRGAN</strong> — licence BSD 3-Clause — © 2021 Xintao
             Wang
