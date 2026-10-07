@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-
-const APP_VERSION = "1.5.0";
+import { APP_VERSION } from "@common/app-version";
 
 const card: React.CSSProperties = {
   border: "1px solid var(--symp-line, rgba(14,14,15,0.08))",
@@ -195,7 +194,7 @@ export default function LegalNotice() {
         <p style={{ ...p, marginTop: 8 }}>
           Un seul modèle est fourni, et sa licence est documentée chez son
           auteur. Les deux modèles hérités du projet Upscayl ont été retirés en
-          version 1.5 après mesure sur un banc d&apos;essai de 32 images. Leur
+          version 2.0 après mesure sur un banc d&apos;essai de 32 images. Leur
           provenance, longtemps incertaine, a depuis été établie par empreinte
           numérique&nbsp;: c&apos;étaient les modèles Real-ESRGAN officiels
           (licence BSD 3-Clause, © 2021 Xintao Wang), simplement renommés. Le
