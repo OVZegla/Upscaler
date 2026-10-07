@@ -183,9 +183,21 @@ export default function LegalNotice() {
         </ul>
         <p style={{ ...p, marginTop: 8 }}>
           Ces modèles sont pré-entraînés et utilisés tels quels&nbsp;; ils ne
-          sont ni entraînés ni modifiés par Symp&apos;s. Tout le traitement
-          s&apos;effectue <strong>localement</strong>, sur votre machine&nbsp;:
-          aucune image n&apos;est transmise à un serveur.
+          sont ni entraînés ni modifiés par Symp&apos;s, et sont distribués
+          octet pour octet tels que publiés par le projet Upscayl (empreintes
+          SHA-256 dans le fichier NOTICE). Tout le traitement s&apos;effectue{" "}
+          <strong>localement</strong>, sur votre machine&nbsp;: aucune image
+          n&apos;est transmise à un serveur.
+        </p>
+        <p style={{ ...p, marginTop: 8 }}>
+          Si vous chargez vos propres modèles via l&apos;option «&nbsp;modèles
+          personnalisés&nbsp;», ceux-ci ne sont pas fournis avec ce logiciel et
+          restent soumis aux conditions fixées par leur auteur. Plusieurs
+          modèles d&apos;agrandissement très répandus sont publiés sous licence{" "}
+          <strong>CC BY-NC</strong>, qui <strong>interdit l&apos;usage
+          commercial</strong>&nbsp;: préparer un fichier destiné à une
+          impression facturée en relève. Vérifiez la licence avant de les
+          employer dans un cadre professionnel.
         </p>
       </Section>
 
@@ -198,9 +210,21 @@ export default function LegalNotice() {
           source est disponible publiquement.
         </p>
         <p style={{ ...p, marginTop: 8 }}>
-          Aucun lien officiel, partenariat ou approbation du projet Upscayl
-          n&apos;est sous-entendu. Le support Symp&apos;s ne s&apos;applique
-          qu&apos;aux versions officielles Symp&apos;s.
+          Le moteur d&apos;inférence (<strong>upscayl-ncnn</strong>) est lui
+          aussi distribué sous AGPL-3.0 et embarqué sans modification. Le code
+          source correspondant à cette version, ainsi que les scripts
+          nécessaires à sa compilation, sont accessibles publiquement.
+        </p>
+        <p style={{ ...p, marginTop: 8 }}>
+          Ce logiciel est fourni <strong>sans aucune garantie</strong>, pas même
+          la garantie implicite de qualité marchande ou d&apos;adéquation à un
+          usage particulier.
+        </p>
+        <p style={{ ...p, marginTop: 8 }}>
+          Aucun lien officiel, partenariat ou approbation du projet Upscayl, ni
+          d&apos;aucun des auteurs cités, n&apos;est sous-entendu. Le support
+          Symp&apos;s ne s&apos;applique qu&apos;aux versions officielles
+          Symp&apos;s.
         </p>
       </Section>
 
@@ -217,6 +241,10 @@ export default function LegalNotice() {
           <li style={li}>
             <strong>Upscayl</strong> — licence GNU AGPL-3.0 — © Upscayl
             Contributors
+          </li>
+          <li style={li}>
+            <strong>upscayl-ncnn</strong> (moteur d&apos;inférence) — licence
+            GNU AGPL-3.0 — © Upscayl Contributors
           </li>
           <li style={li}>
             <strong>Tauri</strong>, <strong>React</strong>,{" "}
