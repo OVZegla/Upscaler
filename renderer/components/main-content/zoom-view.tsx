@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useRef, useState } from "react";
 import { userFileUrl } from "@/lib/asset-url";
+import { ZOOM_MAX, ZOOM_MIN } from "@common/zoom";
 
 /**
  * A pannable, zoomable image pane.
@@ -28,8 +29,8 @@ export default function ZoomView({
   setZoom,
   onDimensions,
   onError,
-  minZoom = 100,
-  maxZoom = 1600,
+  minZoom = ZOOM_MIN,
+  maxZoom = ZOOM_MAX,
 }: {
   imagePath: string;
   /** "fit", or a percentage of the fitted size: 400 means four times into it. */

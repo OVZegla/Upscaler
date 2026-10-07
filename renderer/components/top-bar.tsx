@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { publicAssetUrl } from "@/lib/asset-url";
+import { ZOOM_MAX, ZOOM_MIN, ZOOM_STOPS } from "@common/zoom";
 
 type TopBarProps = {
   theme: "light" | "dark";
@@ -54,9 +55,7 @@ const ChevronDown = () => (
 /** Zoom is a multiplier on the fitted size: 100% is the whole picture,
  *  400% is four times into it. Both panes use the same value, which is what
  *  keeps them framing the same detail despite very different resolutions. */
-const ZOOM_STOPS = [100, 200, 400, 800, 1600];
-const ZOOM_MIN = ZOOM_STOPS[0];
-const ZOOM_MAX = ZOOM_STOPS[ZOOM_STOPS.length - 1];
+
 
 /** Slider position <-> zoom, on a log scale: a linear 25..1600 slider would
  *  spend four fifths of its travel above 400%. */
@@ -233,8 +232,10 @@ const TopBar = ({
             </div>
 
             <p style={{ marginTop: 10, fontSize: 11, lineHeight: 1.45, color: "var(--ink-3)" }}>
-              Glissez l&apos;image pour vous déplacer, double-clic pour recentrer.
-              Au-delà de 200&#8239;% les pixels ne sont plus lissés.
+              Glissez l&apos;image pour vous déplacer, double-clic pour
+              recentrer. Les pixels cessent d&apos;être lissés dès qu&apos;une
+              vue dépasse sa propre définition, pour montrer ce que le modèle a
+              réellement produit.
             </p>
           </div>
         )}
