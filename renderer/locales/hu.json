@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "A legtöbb képhez alkalmas."
-        },
         "upscayl-lite-4x": {
           "NAME": "Lite",
           "DESCRIPTION": "A legtöbb képhez alkalmas. Nagysebességű felnagyítás minimális minőségvesztéssel."

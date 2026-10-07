@@ -98,8 +98,8 @@ const SECTIONS: Section[] = [
     title: "La qualité",
     entries: [
       {
-        term: "Précision, Classique, Léger",
-        text: "Trois modèles d'IA. « Précision » est celui à utiliser par défaut : sur nos mesures il reste le plus proche de l'image d'origine, tout en étant dix à vingt fois plus rapide que les deux autres. « Classique » donne le rendu Upscayl historique, plus accentué, plus lent. « Léger » n'a d'intérêt que sur une machine très modeste.",
+        term: "Précision et Léger",
+        text: "Deux modèles d'IA. « Précision » est celui à utiliser : mesuré sur 32 images de référence, c'est lui qui reste le plus proche de l'original, et c'est aussi le plus rapide. « Léger » tient un peu mieux sur les images très lisses — eau, ciel, peau — où il adoucit davantage.",
       },
       {
         term: "Pourquoi « plus accentué » n'est pas « meilleur »",

@@ -1,5 +1,9 @@
 import { ImageFormat } from "@/lib/valid-formats";
-import { ModelId } from "@common/models-list";
+import {
+  DEFAULT_MODEL_ID,
+  ModelId,
+  RETIRED_MODEL_IDS,
+} from "@common/models-list";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
@@ -9,12 +13,25 @@ export const customModelsPathAtom = atomWithStorage<string | null>(
 );
 
 /** Default for new installs. 4xLSDIRCompactC3 measured both more faithful
- *  and markedly faster than the previous default; an existing choice is kept,
- *  since this is persisted storage. */
+ *  and markedly faster than the models it replaced. */
 export const selectedModelIdAtom = atomWithStorage<ModelId | string>(
   "selectedModelId",
-  "4xLSDIRCompactC3",
+  DEFAULT_MODEL_ID,
 );
+
+/**
+ * Migrates a stored choice naming a model that no longer ships.
+ *
+ * Without this, an install that had picked a retired model keeps asking the
+ * backend for a file that is not on disk: the run fails with nothing useful
+ * on screen, and the setting looks fine. Only ids we actually retired are
+ * reset — an unknown id may well be one of the user's own custom models.
+ */
+export const migrateRetiredModelAtom = atom(null, (get, set) => {
+  if (RETIRED_MODEL_IDS.includes(get(selectedModelIdAtom) as string)) {
+    set(selectedModelIdAtom, DEFAULT_MODEL_ID);
+  }
+});
 export const doubleUpscaylAtom = atomWithStorage("doubleUpscayl", false);
 export const gpuIdAtom = atomWithStorage("gpuId", "");
 export const saveImageAsAtom = atomWithStorage<ImageFormat>(
