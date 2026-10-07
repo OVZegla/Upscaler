@@ -33,7 +33,6 @@ type PreviewPanelProps = {
   dimensions: { width: number | null; height: number | null };
   doubleUpscaylCounter: number;
   setDimensions: (d: { width: number; height: number }) => void;
-  zoomAmount: string;
   showComparison?: boolean;
   fileInfo?: { size?: number; format?: string };
 };
@@ -96,7 +95,6 @@ const PreviewPanel = ({
   upscaledImagePath,
   dimensions,
   setDimensions,
-  zoomAmount,
   showComparison,
 }: PreviewPanelProps) => {
   const scale = useAtomValue(scaleAtom);
