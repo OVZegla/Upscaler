@@ -89,6 +89,7 @@ function Item({
       className="symp-press"
       style={{
         position: "relative",
+        width: "100%",
         height: ITEM_H,
         display: "flex",
         flexDirection: "column",
@@ -260,9 +261,16 @@ export default function SectionRail({
 
       <div style={{ flex: 1 }} />
 
-      <div style={{ borderTop: "1px solid var(--border)", paddingTop: 6 }}>
+      <div
+        style={{
+          borderTop: "1px solid var(--border)",
+          paddingTop: 6,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Item icon={<HelpIcon />} label="Aide" active={false} onClick={onOpenHelp} />
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
           {settingsOpen && (
             <span
               aria-hidden
