@@ -180,3 +180,11 @@ export const etaTextAtom = atom(null as string | null);
  *  the two sizing modes; "strips" is an add-on that applies on top of either. */
 export type PanelSection = "upscale" | "print" | "strips";
 export const panelSectionAtom = atom("upscale" as PanelSection);
+
+/** Opens the factor slider past 16x, up to the chain's full 256x reach.
+ *  Off by default: those factors are an escape hatch for line art, not a
+ *  setting anyone should land on by dragging too far. */
+export const allowHugeFactorsAtom = atomWithStorage<boolean>(
+  "allowHugeFactors",
+  false,
+);

@@ -11,6 +11,7 @@ import {
   usePrintSizeAtom,
   printWidthCmAtom,
   printDpiAtom,
+  allowHugeFactorsAtom,
   upscalePassAtom,
   etaTextAtom,
   panelSectionAtom,
@@ -313,9 +314,15 @@ const MODE_CARDS = [
  *  the slider's, not the engine's. Measured, the model stops paying for itself
  *  past 8x on photographic content but line art holds up, so the stops go
  *  further and the panel says what it costs rather than refusing. */
-const SCALE_VALUES = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 128, 256];
+/** The slider stops at 16x unless the user opens it up. The chain reaches
+ *  256x, but past 8x the model already loses to a plain resize on anything
+ *  photographic, so those factors are an escape hatch rather than a place to
+ *  arrive by dragging too far. */
+const SCALE_VALUES_BASE = [1, 2, 3, 4, 6, 8, 12, 16];
+const SCALE_VALUES_HUGE = [24, 32, 48, 64, 128, 256];
 /** Only a few get a label: fourteen under a 350px track is unreadable. */
-const SCALE_TICK_AT = [1, 4, 16, 64, 256];
+const SCALE_TICKS_BASE = [1, 4, 8, 16];
+const SCALE_TICKS_HUGE = [1, 4, 16, 64, 256];
 /** Above this the measured advantage over a plain resize is gone. */
 const SCALE_WARN_ABOVE = 8;
 
@@ -358,6 +365,18 @@ const LeftPanel = ({
   const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
   const [printWidthCm, setPrintWidthCm] = useAtom(printWidthCmAtom);
   const [printDpi, setPrintDpi] = useAtom(printDpiAtom);
+  const [allowHuge, setAllowHuge] = useAtom(allowHugeFactorsAtom);
+
+  const SCALE_VALUES = allowHuge
+    ? [...SCALE_VALUES_BASE, ...SCALE_VALUES_HUGE]
+    : SCALE_VALUES_BASE;
+  const SCALE_TICK_AT = allowHuge ? SCALE_TICKS_HUGE : SCALE_TICKS_BASE;
+
+  const MAX_BASE = SCALE_VALUES_BASE[SCALE_VALUES_BASE.length - 1];
+  const toggleHuge = (on: boolean) => {
+    setAllowHuge(on);
+    if (!on && (parseInt(scale) || 4) > MAX_BASE) setScale(String(MAX_BASE));
+  };
 
   // Target printed size -> pixel width for the upscaler. Kept separate from
   // customWidthAtom on purpose: that atom is owned by the "custom resolution"
@@ -754,6 +773,27 @@ const LeftPanel = ({
                   </span>
                 );
               })}
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: 12,
+                marginTop: 14,
+              }}
+            >
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 12.5, color: "var(--ink-2)", fontWeight: 600 }}>
+                  Autoriser les très grands facteurs
+                </div>
+                <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>
+                  Ouvre le curseur jusqu&apos;à 256×. Utile pour un logo ou un
+                  dessin au trait, pas pour une photo.
+                </div>
+              </div>
+              <PillToggle on={allowHuge} onChange={toggleHuge} />
             </div>
 
             {factorEstimate && (
