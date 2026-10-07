@@ -929,10 +929,15 @@ const LeftPanel = ({
                   background: "var(--red-tint)",
                 }}
               >
-                Au-delà de 8×, nos mesures montrent que l&apos;IA n&apos;apporte
-                plus rien sur une photo&nbsp;: à 16× le résultat est moins bon
-                qu&apos;un simple agrandissement, pour bien plus de temps de
-                calcul. Le dessin au trait et les logos tiennent mieux.
+                <strong>L&apos;image sera plus grande, pas plus détaillée.</strong>{" "}
+                L&apos;IA ne sait agrandir que par 4. Au-delà, elle repasse sur
+                ce qu&apos;elle a elle-même inventé à la passe précédente&nbsp;:
+                elle ajoute du détail plausible, pas du détail réel. Sur une
+                photo, le résultat devient alors moins fidèle que si vous aviez
+                simplement étiré l&apos;image, pour bien plus de temps et de
+                poids. Les logos et dessins au trait tiennent mieux. Pour
+                vraiment gagner en qualité, c&apos;est l&apos;image de départ
+                qu&apos;il faut plus grande.
               </div>
             )}
           </div>
