@@ -1,25 +1,16 @@
 import { SaveOutputFolderToggle } from "./save-output-folder-toggle";
-import { InputGpuId } from "./input-gpu-id";
-import { CustomModelsFolderSelect } from "./select-custom-models-folder";
 import { LogArea } from "./log-area";
-import { SelectImageScale } from "./select-image-scale";
 import { SelectImageFormat } from "./select-image-format";
 import React, { useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { customModelsPathAtom, scaleAtom } from "@/atoms/user-settings-atom";
-import { InputCompression } from "./input-compression";
 import OverwriteToggle from "./overwrite-toggle";
 import { ResetSettingsButton } from "./reset-settings-button";
 import { FEATURE_FLAGS } from "@common/feature-flags";
 import TurnOffNotificationsToggle from "./turn-off-notifications-toggle";
 import { cn } from "@/lib/utils";
-import { InputCustomResolution } from "./input-custom-resolution";
-import { InputTileSize } from "./input-tile-size";
 import LanguageSwitcher from "./language-switcher";
 import { translationAtom } from "@/atoms/translations-atom";
 import { ImageFormat } from "@/lib/valid-formats";
-import EnableContributionToggle from "./enable-contributions-toggle";
-import AutoUpdateToggle from "./auto-update-toggle";
 import TTAModeToggle from "./tta-mode-toggle";
 import SystemInfo from "./system-info";
 import CopyMetadataToggle from "./copy-metadata-toggle";
@@ -48,8 +39,6 @@ function SettingsTab({
 }: IProps) {
   const [isCopied, setIsCopied] = useState(false);
 
-  const [customModelsPath, setCustomModelsPath] = useAtom(customModelsPathAtom);
-  const [scale, setScale] = useAtom(scaleAtom);
   const [enableScrollbar, setEnableScrollbar] = useState(true);
   const [timeoutId, setTimeoutId] = useState(null);
   const t = useAtomValue(translationAtom);
@@ -57,10 +46,6 @@ function SettingsTab({
   // HANDLERS
   const setExportType = (format: ImageFormat) => {
     setSaveImageAs(format);
-  };
-
-  const handleCompressionChange = (e) => {
-    setCompression(e.target.value);
   };
 
   const handleGpuIdChange = (e) => {
@@ -156,33 +141,10 @@ function SettingsTab({
       {/* COPY METADATA TOGGLE */}
       <CopyMetadataToggle saveImageAs={saveImageAs} setExportType={setExportType} />
 
-      {/* IMAGE SCALE */}
-      <SelectImageScale scale={scale} setScale={setScale} />
-
-      <InputCustomResolution />
-
-      <InputCompression
-        compression={compression}
-        handleCompressionChange={handleCompressionChange}
-      />
-
       <SaveOutputFolderToggle />
 
       <OverwriteToggle />
       <TurnOffNotificationsToggle />
-      <AutoUpdateToggle />
-      <EnableContributionToggle />
-
-      {/* GPU ID INPUT */}
-      <InputGpuId gpuId={gpuId} handleGpuIdChange={handleGpuIdChange} />
-
-      <InputTileSize />
-
-      {/* CUSTOM MODEL */}
-      <CustomModelsFolderSelect
-        customModelsPath={customModelsPath}
-        setCustomModelsPath={setCustomModelsPath}
-      />
 
       <TTAModeToggle />
 
