@@ -46,18 +46,7 @@ const InfoIcon = () => (
   </svg>
 );
 
-const BoltIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-  </svg>
-);
 
-const ClockIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <path d="M12 6v6l4 2" />
-  </svg>
-);
 
 const SparkleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -369,12 +358,6 @@ const MODE_CARDS = [
     sub: "Le plus fidèle aux détails d'origine, et de loin le plus rapide.",
     icon: <SparkleIcon />,
     badge: "Recommandé",
-  },
-  {
-    id: "upscayl-lite-4x",
-    label: "Léger",
-    sub: "Modèle minimal, pour les machines les plus modestes.",
-    icon: <BoltIcon />,
   },
 ];
 
@@ -811,7 +794,8 @@ const LeftPanel = ({
           <PillToggle on={doubleUpscayl} onChange={setDoubleUpscayl} />
         </div>
 
-        {/* Mode */}
+        {/* Mode — only worth showing while there is something to choose. */}
+        {MODE_CARDS.length > 1 && (
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "120ms" }}>
           <div style={{ marginBottom: 12 }}>
             <SectionLabel>Mode</SectionLabel>
@@ -888,6 +872,7 @@ const LeftPanel = ({
             })}
           </div>
         </div>
+        )}
 
         {/* Découpe en bandes */}
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "160ms" }}>

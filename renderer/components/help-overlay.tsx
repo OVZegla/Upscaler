@@ -98,8 +98,8 @@ const SECTIONS: Section[] = [
     title: "La qualité",
     entries: [
       {
-        term: "Précision et Léger",
-        text: "Deux modèles d'IA. « Précision » est celui à utiliser : mesuré sur 32 images de référence, c'est lui qui reste le plus proche de l'original, et c'est aussi le plus rapide. « Léger » tient un peu mieux sur les images très lisses — eau, ciel, peau — où il adoucit davantage.",
+        term: "Le modèle d'IA",
+        text: "Un seul modèle est fourni, parce qu'il n'y avait pas de raison d'en proposer d'autres : sur un banc d'essai de 32 images de référence, c'est lui qui reste le plus proche de l'original, et c'est aussi le plus rapide. Les deux modèles proposés auparavant ont été retirés après mesure.",
       },
       {
         term: "Pourquoi « plus accentué » n'est pas « meilleur »",

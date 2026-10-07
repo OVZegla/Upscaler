@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-lite-4x": {
-          "NAME": "ابسكيل المخفف",
-          "DESCRIPTION": "مناسب لاغلب الصور لاكن اسرع مع بعض خسائر في الجودة"
-        },
         "remacri-4x": {
           "NAME": "Remacri (Non-Commercial)",
           "DESCRIPTION": "للصور الطبيعة اضافة حدة "

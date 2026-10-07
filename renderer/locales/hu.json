@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "A legtöbb képhez alkalmas. Nagysebességű felnagyítás minimális minőségvesztéssel."
-        },
         "remacri-4x": {
           "NAME": "Remacri (Nem Kereskedelmi)",
           "DESCRIPTION": "Természetes képekhez. Élesítés és részletgazdagítás. Nem kereskedelmi használatra."

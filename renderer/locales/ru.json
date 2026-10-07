@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Подходит для большинства изображений. Высокоскоростное увеличение с минимальной потерей качества."
-        },
         "remacri-4x": {
           "NAME": "Remacri (не для коммерции)",
           "DESCRIPTION": "Для натуральных изображений. Добавляет резкость и детализацию. Не для коммерческого использования."
