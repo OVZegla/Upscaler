@@ -20,7 +20,6 @@ import {
   stripResultAtom,
 } from "../atoms/user-settings-atom";
 import { estimatePrint, formatSize } from "@/lib/print-size";
-import HelpOverlay from "./help-overlay";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
 
@@ -391,15 +390,9 @@ const LeftPanel = ({
   const [stripCount, setStripCount] = useAtom(stripCountAtom);
   const [stripOverlapCm, setStripOverlapCm] = useAtom(stripOverlapCmAtom);
   const [stripResult, setStripResult] = useAtom(stripResultAtom);
-  const [showHelp, setShowHelp] = useState(false);
-  const [section, setSection] = useAtom(panelSectionAtom);
+  const section = useAtomValue(panelSectionAtom);
 
   // The rail's first two entries ARE the sizing mode, so choosing one sets it.
-  const goTo = (next: typeof section) => {
-    setSection(next);
-    if (next === "upscale") setUsePrintSize(false);
-    if (next === "print") setUsePrintSize(true);
-  };
 
   // In print mode the job is only launchable once a real size is known —
   // otherwise the backend silently falls back to the scale factor.
@@ -448,33 +441,15 @@ const LeftPanel = ({
   }, [dimensions, scaleInt, useCustomWidth, customWidth, usePrintSize, printEstimate]);
 
 
-  const SECTIONS: {
-    id: typeof section;
-    label: string;
-    sub: string;
-    icon: React.ReactNode;
-    dot?: boolean;
-  }[] = [
-    { id: "upscale", label: "Upscale", sub: "par facteur", icon: <ScaleIcon /> },
-    { id: "print", label: "Taille", sub: "du mur", icon: <WallWidthIcon /> },
-    {
-      id: "strips",
-      label: "Découpe",
-      sub: "en bandes",
-      icon: <StripsIcon />,
-      dot: cutStrips,
-    },
-  ];
-
   return (
     <div
       style={{
-        width: 468,
-        minWidth: 468,
-        maxWidth: 468,
+        width: 372,
+        minWidth: 372,
+        maxWidth: 372,
         height: "100%",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         background: "var(--bg)",
         borderRight: "1px solid var(--border)",
         flexShrink: 0,
@@ -482,76 +457,7 @@ const LeftPanel = ({
         fontFamily: fontStack,
       }}
     >
-      {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
-
-      {/* Section rail. The first two entries are the sizing mode itself, so
-          there is no second control deciding the same thing. */}
-      <nav
-        style={{
-          width: 96,
-          flexShrink: 0,
-          borderRight: "1px solid var(--border)",
-          background: "var(--bg-card)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 4,
-          padding: "14px 8px",
-        }}
-      >
-        {SECTIONS.map((sec) => {
-          const on = section === sec.id;
-          return (
-            <button
-              key={sec.id}
-              onClick={() => goTo(sec.id)}
-              aria-current={on}
-              className="symp-press"
-              style={{
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 5,
-                padding: "11px 4px 10px",
-                borderRadius: 10,
-                border: "none",
-                background: on ? "var(--accent-tint)" : "transparent",
-                color: on ? "var(--accent)" : "var(--ink-3)",
-                cursor: "pointer",
-                fontFamily: fontStack,
-                textAlign: "center",
-              }}
-            >
-              {sec.icon}
-              <span style={{ fontSize: 11.5, fontWeight: on ? 700 : 600, lineHeight: 1.15 }}>
-                {sec.label}
-                <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.8 }}>
-                  {sec.sub}
-                </span>
-              </span>
-              {sec.dot && (
-                <span
-                  aria-label="actif"
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: "var(--red)",
-                  }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-
-      {/* Panel header — the guide has to be one obvious click away, not
-          buried in the settings tab. */}
+      {/* Panel header, naming the section the rail selected. */}
       <div
         style={{
           display: "flex",
@@ -577,27 +483,6 @@ const LeftPanel = ({
               ? "Taille du mur"
               : "Découpe en bandes"}
         </span>
-        <button
-          onClick={() => setShowHelp(true)}
-          className="symp-press symp-lift"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "6px 11px",
-            borderRadius: 9,
-            border: "1px solid var(--border-2)",
-            background: "var(--bg-card)",
-            color: "var(--ink-2)",
-            fontSize: 12.5,
-            fontWeight: 600,
-            cursor: "pointer",
-            fontFamily: fontStack,
-          }}
-        >
-          <HelpIcon />
-          Aide
-        </button>
       </div>
 
       <div className="no-scrollbar" style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "14px 20px 8px", display: "flex", flexDirection: "column", gap: 22 }}>
@@ -1291,7 +1176,6 @@ const LeftPanel = ({
             </button>
           </div>
         )}
-      </div>
       </div>
     </div>
   );

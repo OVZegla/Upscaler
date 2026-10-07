@@ -27,6 +27,8 @@ import { translationAtom } from "@/atoms/translations-atom";
 import Sidebar from "@/components/sidebar";
 import TopBar from "@/components/top-bar";
 import LeftPanel from "@/components/left-panel";
+import SectionRail from "@/components/section-rail";
+import HelpOverlay from "@/components/help-overlay";
 import PreviewPanel from "@/components/preview-panel";
 import SettingsTab from "@/components/sidebar/settings-tab";
 import getDirectoryFromPath from "@common/get-directory-from-path";
@@ -78,6 +80,7 @@ const Home = () => {
   const setUserStats = useSetAtom(userStatsAtom);
 
   const [selectedTab, setSelectedTab] = useState(0);
+  const [showHelp, setShowHelp] = useState(false);
   const upscaylHandlerRef = useRef<(() => Promise<void>) | null>(null);
   const handleUpscaylHandlerReady = (handler: () => Promise<void>) => {
     upscaylHandlerRef.current = handler;
@@ -569,8 +572,6 @@ const Home = () => {
       </div>
 
       <TopBar
-        selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
         theme={theme}
         setTheme={setTheme}
         zoomAmount={zoomAmount}
@@ -578,6 +579,17 @@ const Home = () => {
         showComparison={showComparison}
         setShowComparison={setShowComparison}
       />
+
+      {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
+        {/* The rail stays put whatever is shown beside it, so Paramètres has
+            somewhere to go back to. */}
+        <SectionRail
+          settingsOpen={selectedTab === 1}
+          onOpenSettings={() => setSelectedTab(selectedTab === 1 ? 0 : 1)}
+          onOpenHelp={() => setShowHelp(true)}
+        />
 
       {selectedTab === 1 ? (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
@@ -620,6 +632,7 @@ const Home = () => {
           />
         </div>
       )}
+      </div>
 
     </div>
   );
