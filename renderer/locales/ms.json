@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "Sesuai untuk kebanyakan imej."
-        },
         "upscayl-lite-4x": {
           "NAME": "Lite",
           "DESCRIPTION": "Sesuai untuk kebanyakan imej. Peningkatan saiz berkelajuan tinggi dengan kehilangan kualiti yang minimum."

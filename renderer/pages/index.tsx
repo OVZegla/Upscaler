@@ -9,6 +9,7 @@ import {
   progressAtom,
   upscalePassAtom,
   stripResultAtom,
+  migrateRetiredModelAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
   compressionAtom,
@@ -54,6 +55,7 @@ const Home = () => {
   const setProgress = useSetAtom(progressAtom);
   const setUpscalePass = useSetAtom(upscalePassAtom);
   const setStripResult = useSetAtom(stripResultAtom);
+  const migrateRetiredModel = useSetAtom(migrateRetiredModelAtom);
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
@@ -187,6 +189,13 @@ const Home = () => {
       resetImagePaths();
     }
   };
+
+  // A stored choice naming a model that no longer ships would send the
+  // backend after a file that is not on disk. Reset it before anything
+  // can be launched.
+  useEffect(() => {
+    migrateRetiredModel();
+  }, []);
 
   // ELECTRON EVENT LISTENERS
   useEffect(() => {

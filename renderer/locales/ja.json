@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "ほとんどの画像に適しています。"
-        },
         "upscayl-lite-4x": {
           "NAME": "Lite",
           "DESCRIPTION": "ほとんどの画像に適しています。最小限の品質損失で高速アップスケーリング。"

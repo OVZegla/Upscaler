@@ -192,22 +192,18 @@ export default function LegalNotice() {
             sous-entendue.
           </li>
           <li style={li}>
-            <strong>Classique</strong> — <em>upscayl-standard-4x</em>, hérité du
-            projet Upscayl, réputé dérivé de <strong>Real-ESRGAN</strong>{" "}
-            (Xintao Wang, licence BSD 3-Clause).
-          </li>
-          <li style={li}>
             <strong>Léger</strong> — <em>upscayl-lite-4x</em>, hérité du projet
-            Upscayl, même filiation présumée.
+            Upscayl, réputé dérivé de <strong>Real-ESRGAN</strong> (Xintao
+            Wang, licence BSD 3-Clause).
           </li>
         </ul>
         <p style={{ ...p, marginTop: 8 }}>
-          Précision d&apos;honnêteté sur les deux derniers&nbsp;: le projet
-          Upscayl ne publie pas de fichier de licence pour les poids de ses
-          modèles, et ces fichiers ne portent aucune métadonnée de licence. La
-          filiation Real-ESRGAN est très probable mais n&apos;est pas établie
-          par une déclaration accompagnant les fichiers. Le détail, avec les
-          empreintes SHA-256, figure dans le fichier NOTICE.
+          Précision d&apos;honnêteté sur le second&nbsp;: le projet Upscayl ne
+          publie pas de fichier de licence pour les poids de ses modèles, et
+          ces fichiers ne portent aucune métadonnée de licence. La filiation
+          Real-ESRGAN est très probable mais n&apos;est pas établie par une
+          déclaration accompagnant les fichiers. Le détail, avec les empreintes
+          SHA-256, figure dans le fichier NOTICE.
         </p>
         <p style={{ ...p, marginTop: 8 }}>
           Ces modèles sont pré-entraînés et utilisés tels quels&nbsp;; ils ne

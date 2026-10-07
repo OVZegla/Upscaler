@@ -135,10 +135,6 @@
           "NAME": "Précision",
           "DESCRIPTION": "Le plus fidèle aux détails d'origine, et de loin le plus rapide."
         },
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "Convient à la plupart des images."
-        },
         "upscayl-lite-4x": {
           "NAME": "Lite",
           "DESCRIPTION": "Convient à la plupart des images. Suréchantillonnage rapide avec une perte de qualité minimale."

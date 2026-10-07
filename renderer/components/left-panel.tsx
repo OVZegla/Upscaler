@@ -371,12 +371,6 @@ const MODE_CARDS = [
     badge: "Recommandé",
   },
   {
-    id: "upscayl-standard-4x",
-    label: "Classique",
-    sub: "Le rendu Upscayl d'origine : plus accentué, nettement plus lent.",
-    icon: <ClockIcon />,
-  },
-  {
     id: "upscayl-lite-4x",
     label: "Léger",
     sub: "Modèle minimal, pour les machines les plus modestes.",
