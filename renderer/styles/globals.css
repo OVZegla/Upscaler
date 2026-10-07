@@ -440,14 +440,54 @@
   transform-origin: top right;
 }
 
-/* Switching section in the left rail: a short slide from the rail's side,
-   enough to show something changed without making the user wait. */
+/* Switching section in the left rail.
+   The panel settles in from the rail's side, slightly small and out of
+   focus, while a thin accent line sweeps down across it once. Short enough
+   that it never delays the click it answers. */
 @keyframes symp-section-in {
-  from { opacity: 0; transform: translateX(10px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(14px) scale(0.985); filter: blur(3px); }
+  60%  { opacity: 1; filter: blur(0); }
+  to   { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
 }
 .symp-section-in {
-  animation: symp-section-in 0.24s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: symp-section-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  position: relative;
+}
+
+@keyframes symp-section-sweep {
+  from { transform: translateY(-100%); opacity: 0; }
+  25%  { opacity: 1; }
+  to   { transform: translateY(1400%); opacity: 0; }
+}
+.symp-section-in::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent) 35%,
+    var(--red) 65%,
+    transparent
+  );
+  animation: symp-section-sweep 0.62s cubic-bezier(0.4, 0, 0.2, 1) both;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Each block arrives just after the one above it. */
+.symp-section-in > * {
+  animation: symp-section-stagger 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.symp-section-in > *:nth-child(1) { animation-delay: 0.03s; }
+.symp-section-in > *:nth-child(2) { animation-delay: 0.08s; }
+.symp-section-in > *:nth-child(3) { animation-delay: 0.13s; }
+@keyframes symp-section-stagger {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Respect users who ask for less motion. */
@@ -461,7 +501,9 @@
   .symp-overlay-in,
   .symp-dialog-in,
   .symp-menu-in,
-  .symp-section-in {
+  .symp-section-in,
+  .symp-section-in > *,
+  .symp-section-in::before {
     animation: none !important;
   }
   .symp-press,

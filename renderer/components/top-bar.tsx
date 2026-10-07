@@ -3,8 +3,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { publicAssetUrl } from "@/lib/asset-url";
 
 type TopBarProps = {
-  selectedTab: number;
-  setSelectedTab: (tab: number) => void;
   theme: "light" | "dark";
   setTheme: (t: "light" | "dark") => void;
   zoomAmount: string;
@@ -89,8 +87,6 @@ const chipStyle = (active: boolean): React.CSSProperties => ({
 });
 
 const TopBar = ({
-  selectedTab,
-  setSelectedTab,
   theme,
   setTheme,
   zoomAmount,
@@ -253,15 +249,6 @@ const TopBar = ({
       >
         <EyeIcon />
         <span>Comparaison</span>
-      </button>
-
-      {/* Paramètres — toggle on/off */}
-      <button
-        style={navButtonStyle(selectedTab === 1)}
-        onClick={() => setSelectedTab(selectedTab === 1 ? 0 : 1)}
-      >
-        <GearIcon />
-        <span>Paramètres</span>
       </button>
 
       {/* Theme toggle — a track with a sliding thumb, so the state is
