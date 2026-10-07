@@ -8,11 +8,20 @@ import { Tooltip } from "react-tooltip";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { installTauriElectronShim } from "@/lib/tauri-electron-shim";
 import { installGlobalErrorOverlay } from "@/lib/global-error-overlay";
+import { migrateSettings } from "@/lib/migrate-settings";
 import SplashScreen from "@/components/splash-screen";
 
 // Make any uncaught error visible instead of a silent black screen. Must run
 // first so it can also catch failures from the shim installation below.
 installGlobalErrorOverlay();
+
+// Stored settings are migrated before any atom can read them — see
+// migrate-settings.ts for why this cannot be an effect.
+try {
+  migrateSettings();
+} catch (err) {
+  console.error("[_app] migrateSettings threw:", err);
+}
 
 // Install the window.electron compatibility shim as early as possible when
 // running under Tauri (no-op under Electron or during static export build).
