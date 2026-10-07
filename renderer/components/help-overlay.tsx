@@ -98,8 +98,12 @@ const SECTIONS: Section[] = [
     title: "La qualité",
     entries: [
       {
-        term: "Rapide / Standard",
-        text: "Deux modèles d'IA. « Rapide » va deux à trois fois plus vite et convient aux images déjà nettes. « Standard » restitue mieux les textures fines (tissu, feuillage, cheveux) mais demande plus de temps.",
+        term: "Précision, Classique, Léger",
+        text: "Trois modèles d'IA. « Précision » est celui à utiliser par défaut : sur nos mesures il reste le plus proche de l'image d'origine, tout en étant dix à vingt fois plus rapide que les deux autres. « Classique » donne le rendu Upscayl historique, plus accentué, plus lent. « Léger » n'a d'intérêt que sur une machine très modeste.",
+      },
+      {
+        term: "Pourquoi « plus accentué » n'est pas « meilleur »",
+        text: "Un modèle qui durcit les contours donne une impression de netteté à l'écran, mais il remplace la vraie texture par du contraste. Sur un mur regardé de près, c'est ce qui donne l'aspect plastique. « Précision » accentue moins et conserve davantage de détail réel.",
       },
       {
         term: "Double Upscale",

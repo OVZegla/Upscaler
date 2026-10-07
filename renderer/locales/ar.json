@@ -131,6 +131,10 @@
       "AFTER": "بعد",
       "ZOOM": "تكبير",
       "MODELS": {
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
+        },
         "upscayl-standard-4x": {
           "NAME": "ابسكيل الاعتيادي",
           "DESCRIPTION": "يفضل لأغلب الصور"

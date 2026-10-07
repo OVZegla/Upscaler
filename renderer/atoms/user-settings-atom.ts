@@ -8,9 +8,12 @@ export const customModelsPathAtom = atomWithStorage<string | null>(
   null,
 );
 
+/** Default for new installs. 4xLSDIRCompactC3 measured both more faithful
+ *  and markedly faster than the previous default; an existing choice is kept,
+ *  since this is persisted storage. */
 export const selectedModelIdAtom = atomWithStorage<ModelId | string>(
   "selectedModelId",
-  "upscayl-standard-4x",
+  "4xLSDIRCompactC3",
 );
 export const doubleUpscaylAtom = atomWithStorage("doubleUpscayl", false);
 export const gpuIdAtom = atomWithStorage("gpuId", "");

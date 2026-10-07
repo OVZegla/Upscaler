@@ -59,6 +59,12 @@ const ClockIcon = () => (
   </svg>
 );
 
+const SparkleIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2l2.4 7.2L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" />
+  </svg>
+);
+
 const HelpIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" />
@@ -352,9 +358,30 @@ function StripPreview({ count, overlap }: { count: number; overlap: boolean }) {
   );
 }
 
+/** Ordered best-first. The descriptions say what was measured, not what
+ *  sounds good: on a 4x round-trip test the Compact model came out closer to
+ *  the original than the other two, while running an order of magnitude
+ *  faster. */
 const MODE_CARDS = [
-  { id: "upscayl-lite-4x", label: "Rapide", sub: "Traitement plus rapide", icon: <BoltIcon /> },
-  { id: "upscayl-standard-4x", label: "Standard", sub: "Meilleure qualité", icon: <ClockIcon /> },
+  {
+    id: "4xLSDIRCompactC3",
+    label: "Précision",
+    sub: "Le plus fidèle aux détails d'origine, et de loin le plus rapide.",
+    icon: <SparkleIcon />,
+    badge: "Recommandé",
+  },
+  {
+    id: "upscayl-standard-4x",
+    label: "Classique",
+    sub: "Le rendu Upscayl d'origine : plus accentué, nettement plus lent.",
+    icon: <ClockIcon />,
+  },
+  {
+    id: "upscayl-lite-4x",
+    label: "Léger",
+    sub: "Modèle minimal, pour les machines les plus modestes.",
+    icon: <BoltIcon />,
+  },
 ];
 
 const SCALE_VALUES = [1, 2, 4, 6, 8];
@@ -795,19 +822,19 @@ const LeftPanel = ({
           <div style={{ marginBottom: 12 }}>
             <SectionLabel>Mode</SectionLabel>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {MODE_CARDS.map((m) => {
               const active = selectedModelId === m.id;
               return (
                 <button
                   key={m.id}
                   onClick={() => setSelectedModelId(m.id)}
-                  className="symp-press symp-lift"
+                  className="symp-press"
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 6,
-                    padding: "14px 14px",
+                    alignItems: "flex-start",
+                    gap: 11,
+                    padding: "12px 13px",
                     borderRadius: "var(--radius)",
                     border: active ? "1px solid transparent" : "1px solid var(--border)",
                     background: active ? "linear-gradient(135deg, #4F46E5, #3B82F6)" : "var(--bg-card)",
@@ -816,11 +843,52 @@ const LeftPanel = ({
                     textAlign: "left",
                     transition: "all 0.15s ease",
                     boxShadow: active ? "var(--shadow)" : "none",
+                    fontFamily: fontStack,
                   }}
                 >
-                  <span style={{ display: "inline-flex", color: active ? "#fff" : "var(--accent)" }}>{m.icon}</span>
-                  <span style={{ fontWeight: 700, fontSize: 14 }}>{m.label}</span>
-                  <span style={{ fontSize: 11.5, opacity: active ? 0.9 : 1, color: active ? "#fff" : "var(--ink-3)" }}>{m.sub}</span>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      marginTop: 1,
+                      flexShrink: 0,
+                      color: active ? "#fff" : "var(--accent)",
+                    }}
+                  >
+                    {m.icon}
+                  </span>
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                      <span style={{ fontWeight: 700, fontSize: 14 }}>{m.label}</span>
+                      {m.badge && (
+                        <span
+                          style={{
+                            fontSize: 9.5,
+                            fontWeight: 700,
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                            padding: "2px 6px",
+                            borderRadius: 999,
+                            background: active ? "rgba(255,255,255,0.22)" : "var(--accent-tint)",
+                            color: active ? "#fff" : "var(--accent)",
+                          }}
+                        >
+                          {m.badge}
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      style={{
+                        display: "block",
+                        marginTop: 3,
+                        fontSize: 11.5,
+                        lineHeight: 1.45,
+                        opacity: active ? 0.92 : 1,
+                        color: active ? "#fff" : "var(--ink-3)",
+                      }}
+                    >
+                      {m.sub}
+                    </span>
+                  </span>
                 </button>
               );
             })}

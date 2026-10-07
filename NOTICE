@@ -34,6 +34,9 @@ original Upscayl codebase:
 - Workload guard rails for large-format jobs
 - Automatic cutting of the finished image into numbered hanging strips
 - Built-in user guide covering every setting
+- Added the 4xLSDIRCompactC3 model (CC BY 4.0, attributed below) as the
+  default, measured both more faithful and far faster than the inherited
+  models
 - Progress, cancel and various UX fixes
 
 The AI models themselves are NOT modified: they are shipped byte-for-byte as
@@ -68,7 +71,35 @@ Vulkan SDK component is redistributed here.
 BUNDLED AI MODELS
 -----------------
 
-Two model files are bundled, taken verbatim from the Upscayl distribution:
+A. 4xLSDIRCompactC3  —  the default model
+
+   Title:    4xLSDIRCompactC3
+   Author:   Philip Hofmann (Phhofm)
+   Model:    https://github.com/Phhofm/models/tree/main/4xLSDIR
+             https://huggingface.co/Phips/4xLSDIRCompactC3
+   License:  Creative Commons Attribution 4.0 International (CC BY 4.0)
+             https://creativecommons.org/licenses/by/4.0/
+
+   Architecture: SRVGGNet ("Compact"), 4x.
+
+   CHANGES: the original weights were published by the author in PyTorch
+   (.pth) form. The file bundled here is the ncnn conversion (.param/.bin)
+   published by the Upscayl project at
+   https://github.com/upscayl/custom-models — redistributed by Symp's
+   byte-for-byte, with no further modification.
+
+     bin   sha256 692aa5e70c86522ce2d72b94f372751339a2fee65f515d06da5d496d8cf93667
+     param sha256 6e3795fb5b6c68b2c39822e78bf83b575c918f96e9db6c36934a79e7d491d5e1
+
+   This model is used under the terms of CC BY 4.0. It is provided by its
+   author "as is", without warranties of any kind. Philip Hofmann does not
+   endorse Symp's or Symp's Upscale, and no affiliation is implied.
+
+
+B. Models inherited from Upscayl
+
+Two further model files are bundled, taken verbatim from the Upscayl
+distribution:
 
    upscayl-standard-4x  (RRDBNet / ESRGAN architecture, 999 layers)
      bin   sha256 713ee713b0353afaa27976f0563a64a5043bd70b9bd8936c2e26e25ebcdbcddf
@@ -81,7 +112,8 @@ Two model files are bundled, taken verbatim from the Upscayl distribution:
 Both are byte-identical to the files published at
 https://github.com/upscayl/upscayl/tree/main/resources/models
 
-PROVENANCE — OPEN ITEM. The Upscayl distribution does not ship a separate
+PROVENANCE — OPEN ITEM (applies to section B only; A is documented above).
+The Upscayl distribution does not ship a separate
 license file for its model weights, and the files themselves carry no embedded
 license metadata. These weights are understood to derive from the Real-ESRGAN
 project (BSD 3-Clause, Copyright (c) 2021 Xintao Wang), whose terms would

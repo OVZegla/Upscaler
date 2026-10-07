@@ -131,6 +131,10 @@
       "AFTER": "升图后",
       "ZOOM": "缩放",
       "MODELS": {
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
+        },
         "upscayl-standard-4x": {
           "NAME": "Standard",
           "DESCRIPTION": "适用于大多数图像。"
