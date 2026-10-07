@@ -1,0 +1,41 @@
+GLOBAL — 32 images, agrandissement 4x
+modèle        PSNR dB    SSIM  netteté  temps s
+Précision       25.02  0.7452     0.73      1.7
+Classique       23.79  0.7185     0.81     35.3
+Léger           23.62  0.7365     0.47      2.8
+Lanczos         24.84  0.7140     0.02      0.0
+
+BÂTIMENT & ARCHITECTURE (10 images)
+  Précision       21.96  0.6911     0.73
+  Classique       20.52  0.6441     1.23
+  Léger           20.50  0.6614     0.58
+  Lanczos         21.77  0.6246     0.02
+
+GRAPHIQUE & TRAIT (3 images)
+  Précision       23.88  0.8364     0.55
+  Classique       22.73  0.8127     0.41
+  Léger           22.42  0.8303     0.38
+  Lanczos         21.31  0.7385     0.02
+
+NATURE & PAYSAGE (9 images)
+  Précision       25.98  0.7015     0.88
+  Classique       25.33  0.6904     0.60
+  Léger           24.85  0.7116     0.47
+  Lanczos         26.30  0.7119     0.03
+
+TEXTE (2 images)
+  Précision       22.40  0.9090     0.62
+  Classique       21.45  0.8976     0.66
+  Léger           21.15  0.8986     0.47
+  Lanczos         20.88  0.8251     0.02
+
+VISAGE (8 images)
+  Précision       28.86  0.7870     0.66
+  Classique       27.13  0.7632     0.73
+  Léger           27.20  0.7827     0.37
+  Lanczos         29.38  0.7910     0.02
+
+MEILLEUR MODÈLE PAR IMAGE (SSIM)
+  Précision    20 / 32
+  Classique     0 / 32
+  Léger        12 / 32
