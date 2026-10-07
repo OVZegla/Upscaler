@@ -1,0 +1,224 @@
+import React, { useState } from "react";
+
+const APP_VERSION = "1.5.0";
+
+const card: React.CSSProperties = {
+  border: "1px solid var(--symp-line, rgba(14,14,15,0.08))",
+  borderRadius: 12,
+  padding: "14px 16px",
+  background: "var(--symp-panel, #fff)",
+};
+
+const h: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  color: "var(--symp-ink-3, #6F6F75)",
+  marginBottom: 8,
+};
+
+const p: React.CSSProperties = {
+  fontSize: 12.5,
+  lineHeight: 1.65,
+  color: "var(--symp-ink-2, #3A3A3D)",
+};
+
+const li: React.CSSProperties = { ...p, marginBottom: 4 };
+
+/**
+ * Legal / about page.
+ *
+ * Deliberately states the upstream project and the AI model plainly — the
+ * AGPL requires it, and being straight about the base is what makes the
+ * list of our own work credible rather than looking like a reskin.
+ */
+export default function LegalNotice() {
+  const [open, setOpen] = useState<string | null>("about");
+
+  const Section = ({
+    id,
+    title,
+    children,
+  }: {
+    id: string;
+    title: string;
+    children: React.ReactNode;
+  }) => {
+    const isOpen = open === id;
+    return (
+      <div style={{ ...card, padding: 0, overflow: "hidden" }}>
+        <button
+          onClick={() => setOpen(isOpen ? null : id)}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            padding: "13px 16px",
+            background: "transparent",
+            border: 0,
+            cursor: "pointer",
+            textAlign: "left",
+          }}
+        >
+          <span
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+              color: "var(--symp-ink, #0E0E0F)",
+            }}
+          >
+            {title}
+          </span>
+          <span
+            aria-hidden
+            style={{
+              display: "inline-flex",
+              color: "var(--symp-ink-3, #6F6F75)",
+              transform: isOpen ? "rotate(90deg)" : "none",
+              transition: "transform 0.22s cubic-bezier(0.32,0.72,0,1)",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </span>
+        </button>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateRows: isOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.28s cubic-bezier(0.32,0.72,0,1)",
+          }}
+        >
+          <div style={{ overflow: "hidden" }}>
+            <div style={{ padding: "0 16px 15px" }}>{children}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div>
+        <div style={h}>À propos &amp; mentions légales</div>
+        <div style={{ fontSize: 19, fontWeight: 800, color: "var(--symp-ink, #0E0E0F)", letterSpacing: "-0.01em" }}>
+          Symp&apos;s Upscale
+        </div>
+        <div style={{ fontSize: 12, color: "var(--symp-ink-3, #6F6F75)", marginTop: 2 }}>
+          Version {APP_VERSION} — agrandissement d&apos;images par IA pour
+          l&apos;impression grand format
+        </div>
+      </div>
+
+      <Section id="about" title="Ce que développe Symp's">
+        <p style={p}>
+          Symp&apos;s Upscale est un logiciel conçu pour un besoin précis&nbsp;:
+          préparer des fichiers destinés à l&apos;impression murale grand
+          format. Les développements suivants sont réalisés par Symp&apos;s et
+          n&apos;existent dans aucun autre outil d&apos;agrandissement&nbsp;:
+        </p>
+        <ul style={{ marginTop: 8, paddingLeft: 18, listStyle: "disc" }}>
+          <li style={li}>
+            <strong>Dimensionnement en centimètres</strong> — on saisit la
+            largeur du mur et la résolution de sortie, le nombre de pixels
+            nécessaire est calculé automatiquement.
+          </li>
+          <li style={li}>
+            <strong>Agrandissement en passes chaînées</strong> — le modèle
+            travaille plusieurs fois de suite pour atteindre exactement la
+            taille demandée, au lieu d&apos;étirer l&apos;image.
+          </li>
+          <li style={li}>
+            <strong>Résolution inscrite dans le fichier</strong> — le document
+            s&apos;ouvre directement à sa taille physique réelle dans
+            Photoshop et sur les RIP.
+          </li>
+          <li style={li}>
+            <strong>Garde-fous métier</strong> — alertes sur les traitements
+            trop lourds, les agrandissements excessifs et les limites de
+            format.
+          </li>
+          <li style={li}>
+            <strong>Correction d&apos;orientation</strong> — les photos prises
+            au smartphone ne ressortent plus pivotées.
+          </li>
+          <li style={li}>
+            <strong>Interface entièrement repensée</strong> en français, pensée
+            pour un atelier d&apos;impression.
+          </li>
+        </ul>
+      </Section>
+
+      <Section id="ai" title="Modèle d'intelligence artificielle">
+        <p style={p}>
+          L&apos;agrandissement s&apos;appuie sur <strong>Real-ESRGAN</strong>,
+          un modèle de super-résolution open source publié par Xintao Wang et
+          ses co-auteurs (Tencent ARC Lab), exécuté via le moteur{" "}
+          <strong>ncnn</strong> de Tencent avec accélération Vulkan.
+        </p>
+        <p style={{ ...p, marginTop: 8 }}>
+          Deux variantes sont fournies&nbsp;:
+        </p>
+        <ul style={{ marginTop: 6, paddingLeft: 18, listStyle: "disc" }}>
+          <li style={li}>
+            <strong>Rapide</strong> — modèle compact, traitement plus court.
+          </li>
+          <li style={li}>
+            <strong>Standard</strong> — modèle complet, meilleure restitution
+            des détails.
+          </li>
+        </ul>
+        <p style={{ ...p, marginTop: 8 }}>
+          Ces modèles sont pré-entraînés et utilisés tels quels&nbsp;; ils ne
+          sont ni entraînés ni modifiés par Symp&apos;s. Tout le traitement
+          s&apos;effectue <strong>localement</strong>, sur votre machine&nbsp;:
+          aucune image n&apos;est transmise à un serveur.
+        </p>
+      </Section>
+
+      <Section id="base" title="Base logicielle et licence">
+        <p style={p}>
+          Symp&apos;s Upscale est une version modifiée d&apos;
+          <strong>Upscayl</strong>, projet libre distribué sous licence{" "}
+          <strong>GNU AGPL-3.0</strong>. Conformément à cette licence, le
+          présent logiciel est lui aussi distribué sous AGPL-3.0 et son code
+          source est disponible publiquement.
+        </p>
+        <p style={{ ...p, marginTop: 8 }}>
+          Aucun lien officiel, partenariat ou approbation du projet Upscayl
+          n&apos;est sous-entendu. Le support Symp&apos;s ne s&apos;applique
+          qu&apos;aux versions officielles Symp&apos;s.
+        </p>
+      </Section>
+
+      <Section id="third" title="Composants tiers">
+        <ul style={{ paddingLeft: 18, listStyle: "disc" }}>
+          <li style={li}>
+            <strong>Real-ESRGAN</strong> — licence BSD 3-Clause — © 2021 Xintao
+            Wang
+          </li>
+          <li style={li}>
+            <strong>ncnn</strong> — licence BSD 3-Clause — © 2017 THL A29
+            Limited, Tencent
+          </li>
+          <li style={li}>
+            <strong>Upscayl</strong> — licence GNU AGPL-3.0 — © Upscayl
+            Contributors
+          </li>
+          <li style={li}>
+            <strong>Tauri</strong>, <strong>React</strong>,{" "}
+            <strong>Next.js</strong> — licences MIT / Apache-2.0
+          </li>
+        </ul>
+        <p style={{ ...p, marginTop: 8, opacity: 0.85 }}>
+          Le détail complet des licences figure dans les fichiers LICENSE et
+          NOTICE fournis avec le logiciel.
+        </p>
+      </Section>
+    </div>
+  );
+}

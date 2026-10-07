@@ -331,6 +331,51 @@
   animation: symp-indeterminate 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* ── v1.5 micro-interactions ──────────────────────────────────────── */
+
+/* Sections easing in on mount, staggered via --symp-delay. */
+@keyframes symp-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.symp-rise {
+  animation: symp-rise 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation-delay: var(--symp-delay, 0ms);
+}
+
+/* Press feedback shared by cards and buttons. */
+.symp-press {
+  transition: transform 0.14s cubic-bezier(0.32, 0.72, 0, 1),
+              box-shadow 0.2s ease,
+              border-color 0.2s ease,
+              background 0.2s ease;
+}
+.symp-press:active { transform: scale(0.975); }
+
+/* Lift on hover, for selectable cards. */
+.symp-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(14, 14, 15, 0.1);
+}
+
+/* Attention pulse while a drop target is armed. */
+@keyframes symp-drop-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--symp-accent-tint, rgba(0,85,164,0.10)); }
+  50%      { box-shadow: 0 0 0 10px transparent; }
+}
+.symp-drop-active { animation: symp-drop-pulse 1.5s ease-out infinite; }
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .symp-rise,
+  .symp-drop-active,
+  .symp-progress-indeterminate {
+    animation: none !important;
+  }
+  .symp-press,
+  .symp-lift:hover { transition: none; transform: none; }
+}
+
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;

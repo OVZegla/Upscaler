@@ -348,11 +348,13 @@ const LeftPanel = ({
           onDragOver={onDragOver}
           onDragEnter={onDragEnter}
           onDragLeave={onDragLeave}
+          className={`symp-press${dragActive ? " symp-drop-active" : ""}`}
           style={{
             minHeight: 160,
             borderRadius: "var(--radius)",
             border: dragActive ? "2px solid var(--accent)" : "2px dashed var(--border-2)",
             background: dragActive ? "var(--accent-tint)" : "var(--bg-card)",
+            transform: dragActive ? "scale(1.01)" : "scale(1)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -427,7 +429,7 @@ const LeftPanel = ({
         </div>
 
         {/* Mode de redimensionnement */}
-        <div>
+        <div className="symp-rise" style={{ ["--symp-delay" as any]: "40ms" }}>
           <div style={{ marginBottom: 10 }}>
             <SectionLabel info>Redimensionnement</SectionLabel>
           </div>
@@ -598,7 +600,7 @@ const LeftPanel = ({
         )}
 
         {/* Double upscale */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <div className="symp-rise" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, ["--symp-delay" as any]: "80ms" }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ marginBottom: 4 }}>
               <SectionLabel info>Double Upscale</SectionLabel>
@@ -611,7 +613,7 @@ const LeftPanel = ({
         </div>
 
         {/* Mode */}
-        <div>
+        <div className="symp-rise" style={{ ["--symp-delay" as any]: "120ms" }}>
           <div style={{ marginBottom: 12 }}>
             <SectionLabel>Mode</SectionLabel>
           </div>
@@ -622,6 +624,7 @@ const LeftPanel = ({
                 <button
                   key={m.id}
                   onClick={() => setSelectedModelId(m.id)}
+                  className="symp-press symp-lift"
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -647,7 +650,7 @@ const LeftPanel = ({
         </div>
 
         {/* Options d'amélioration */}
-        <div>
+        <div className="symp-rise" style={{ ["--symp-delay" as any]: "160ms" }}>
           <div style={{ marginBottom: 12 }}>
             <SectionLabel>Options d'amélioration</SectionLabel>
           </div>
@@ -681,6 +684,7 @@ const LeftPanel = ({
         <button
           onClick={upscaylHandler}
           disabled={!canUpscale}
+          className={canUpscale ? "symp-press" : undefined}
           style={{
             position: "relative",
             overflow: "hidden",
