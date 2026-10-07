@@ -199,7 +199,6 @@ const PreviewPanel = ({
           <SliderView
             imagePath={imagePath}
             upscaledImagePath={upscaledImagePath}
-            zoomAmount={zoomAmount}
           />
         </div>
       ) : showComparison && !imagePath ? (

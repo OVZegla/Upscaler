@@ -53,9 +53,10 @@ const ChevronDown = () => (
   </svg>
 );
 
-/** Stops the slider snaps to. Past 200% the pane stops smoothing pixels, so
- *  the high stops are where you actually inspect what the model produced. */
-const ZOOM_STOPS = [25, 50, 100, 200, 400, 800, 1600];
+/** Zoom is a multiplier on the fitted size: 100% is the whole picture,
+ *  400% is four times into it. Both panes use the same value, which is what
+ *  keeps them framing the same detail despite very different resolutions. */
+const ZOOM_STOPS = [100, 200, 400, 800, 1600];
 const ZOOM_MIN = ZOOM_STOPS[0];
 const ZOOM_MAX = ZOOM_STOPS[ZOOM_STOPS.length - 1];
 

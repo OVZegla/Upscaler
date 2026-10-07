@@ -12,6 +12,7 @@ import {
   themeAtom,
   zoomAtom,
   panAtom,
+  etaTextAtom,
   migrateRetiredModelAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
@@ -34,6 +35,14 @@ import { ImageFormat, VALID_IMAGE_FORMATS } from "@/lib/valid-formats";
 import { initCustomModels } from "@/components/hooks/use-custom-models";
 import useSystemInfo from "@/components/hooks/use-system-info";
 import { logAtom } from "@/atoms/log-atom";
+import {
+  EtaState,
+  formatRemaining,
+  overallFraction,
+  remainingMs,
+  startEta,
+  updateEta,
+} from "@/lib/eta";
 
 const Home = () => {
   const t = useAtomValue(translationAtom);
@@ -58,6 +67,11 @@ const Home = () => {
   const setProgress = useSetAtom(progressAtom);
   const setUpscalePass = useSetAtom(upscalePassAtom);
   const setStripResult = useSetAtom(stripResultAtom);
+  const setEtaText = useSetAtom(etaTextAtom);
+  // Kept in a ref: it is updated from an event handler many times a
+  // second and must not re-render the page on every sample.
+  const etaRef = useRef<EtaState | null>(null);
+  const passRef = useRef<{ current: number; total: number } | null>(null);
   const migrateRetiredModel = useSetAtom(migrateRetiredModelAtom);
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
@@ -307,6 +321,8 @@ const Home = () => {
       // finding the file again. Only the in-flight state is reset.
       setProgress("");
       setUpscalePass(null);
+      setEtaText(null);
+      etaRef.current = null;
     });
     // STRIP CUTTING: the finished image was split into strips
     window.electron.on(ELECTRON_COMMANDS.UPSCAYL_STRIPS, (_, data: any) => {
@@ -325,6 +341,7 @@ const Home = () => {
         const d = typeof data === "string" ? JSON.parse(data) : data;
         if (d && typeof d.current === "number" && typeof d.total === "number") {
           setUpscalePass({ current: d.current, total: d.total });
+          passRef.current = { current: d.current, total: d.total };
         }
       } catch {
         /* a malformed pass event must never break the run */
@@ -338,7 +355,19 @@ const Home = () => {
         // Take the LAST one so the bar reflects the most recent value.
         const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
         if (percentMatches) {
-          setProgress(percentMatches[percentMatches.length - 1]);
+          const last = percentMatches[percentMatches.length - 1];
+          setProgress(last);
+          // Combine the per-pass percentage with the pass counter into one
+          // fraction for the whole job, then estimate from elapsed time.
+          // The first progress line marks the real start of work; timing
+          // from the click would fold in the file dialog and model load.
+          if (!etaRef.current) etaRef.current = startEta();
+          {
+            const f = overallFraction(parseFloat(last), passRef.current);
+            etaRef.current = updateEta(etaRef.current, f);
+            const left = remainingMs(etaRef.current, f);
+            setEtaText(left === null ? null : formatRemaining(left));
+          }
         } else if (data.includes("converting")) {
           setProgress(t("APP.PROGRESS.SCALING_CONVERTING_TITLE"));
         } else if (data.includes("Successful")) {
@@ -382,6 +411,9 @@ const Home = () => {
     window.electron.on(ELECTRON_COMMANDS.UPSCAYL_DONE, (_, data: string) => {
       setProgress("");
       setUpscalePass(null);
+      setEtaText(null);
+      etaRef.current = null;
+      passRef.current = null;
       setUpscaledImagePath(data);
       setUserStats((prev) => ({
         ...prev,

@@ -1,23 +1,24 @@
 "use client";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { userFileUrl } from "@/lib/asset-url";
 
 /**
  * A pannable, zoomable image pane.
  *
- * The previous "zoom" was a Tailwind class built at runtime
- * (`group-hover:scale-[${n}%]`), which Tailwind cannot generate — it scans
- * source statically, so that class never existed and the control did nothing.
- * This applies a real transform.
+ * Zoom is a multiplier on the *fitted* size, not an absolute pixel scale, and
+ * pan is a fraction of the pane rather than a pixel offset. That is what lets
+ * the "avant" and "après" panes frame the same part of the picture: they hold
+ * images of wildly different resolutions — 1254px against 20064px is normal
+ * here — so a shared pixel offset would land them in completely different
+ * places, which is exactly what it did.
  *
- * Above 200% the browser's smoothing is turned off: the whole point of
- * zooming past 1:1 here is to inspect what the model actually produced, and
- * interpolated pixels would hide exactly that.
+ * Smoothing is turned off once a pane is drawn above its own native
+ * resolution, so going past 1:1 shows the pixels the model produced rather
+ * than the browser's interpolation of them. That threshold is per pane: at the
+ * same zoom the small image is past 1:1 long before the large one.
  */
 
 export type Pan = { x: number; y: number };
-
-const PIXELATE_ABOVE = 200;
 
 export default function ZoomView({
   imagePath,
@@ -27,11 +28,11 @@ export default function ZoomView({
   setZoom,
   onDimensions,
   onError,
-  minZoom = 25,
+  minZoom = 100,
   maxZoom = 1600,
 }: {
   imagePath: string;
-  /** Percentage, or "fit" to letterbox the whole image. */
+  /** "fit", or a percentage of the fitted size: 400 means four times into it. */
   zoom: number | "fit";
   pan: Pan;
   setPan: (p: Pan) => void;
@@ -41,40 +42,49 @@ export default function ZoomView({
   minZoom?: number;
   maxZoom?: number;
 }) {
-  const dragging = useRef<{ x: number; y: number; pan: Pan } | null>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ x: number; y: number; pan: Pan } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
+
   const isFit = zoom === "fit";
+  const factor = isFit ? 1 : (zoom as number) / 100;
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (isFit) return;
-      dragging.current = { x: e.clientX, y: e.clientY, pan };
-      (e.target as Element).setPointerCapture?.(e.pointerId);
+      drag.current = { x: e.clientX, y: e.clientY, pan };
+      setIsDragging(true);
+      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
     },
     [isFit, pan],
   );
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent) => {
-      const d = dragging.current;
-      if (!d) return;
+      const d = drag.current;
+      const el = box.current;
+      if (!d || !el) return;
+      // Pixels dragged become a fraction of this pane, so the other pane —
+      // same size on screen, different resolution — moves by the same amount.
       setPan({
-        x: d.pan.x + (e.clientX - d.x),
-        y: d.pan.y + (e.clientY - d.y),
+        x: d.pan.x + (e.clientX - d.x) / el.clientWidth,
+        y: d.pan.y + (e.clientY - d.y) / el.clientHeight,
       });
     },
     [setPan],
   );
 
   const endDrag = useCallback((e: React.PointerEvent) => {
-    dragging.current = null;
-    (e.target as Element).releasePointerCapture?.(e.pointerId);
+    drag.current = null;
+    setIsDragging(false);
+    (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
   }, []);
 
   const onWheel = useCallback(
     (e: React.WheelEvent) => {
       if (!setZoom) return;
-      // Only take over the wheel when the user means to zoom, so a trackpad
-      // two-finger scroll still behaves like scrolling elsewhere.
+      // Only hijack the wheel when the user clearly means to zoom.
       if (!e.ctrlKey && !e.metaKey && !e.altKey) return;
       const current = isFit ? 100 : (zoom as number);
       const next = Math.round(current * (e.deltaY < 0 ? 1.12 : 1 / 1.12));
@@ -83,10 +93,19 @@ export default function ZoomView({
     [setZoom, isFit, zoom, minZoom, maxZoom],
   );
 
-  const factor = isFit ? 1 : (zoom as number) / 100;
+  // Past its own native resolution, interpolation would hide the very detail
+  // the zoom exists to inspect.
+  const el = box.current;
+  const drawnWider =
+    natural && el
+      ? (Math.min(el.clientWidth / natural.w, el.clientHeight / natural.h) *
+          factor) >
+        1
+      : false;
 
   return (
     <div
+      ref={box}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
@@ -101,7 +120,7 @@ export default function ZoomView({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        cursor: isFit ? "default" : dragging.current ? "grabbing" : "grab",
+        cursor: isFit ? "default" : isDragging ? "grabbing" : "grab",
         touchAction: "none",
         background: "var(--bg-sunken)",
       }}
@@ -111,27 +130,27 @@ export default function ZoomView({
         alt=""
         draggable={false}
         onError={onError}
-        onLoad={(e) =>
+        onLoad={(e) => {
+          setNatural({
+            w: e.currentTarget.naturalWidth,
+            h: e.currentTarget.naturalHeight,
+          });
           onDimensions?.({
             width: e.currentTarget.naturalWidth,
             height: e.currentTarget.naturalHeight,
-          })
-        }
-        style={
-          isFit
-            ? { maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }
-            : {
-                maxWidth: "none",
-                maxHeight: "none",
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${factor})`,
-                transformOrigin: "center center",
-                imageRendering:
-                  (zoom as number) > PIXELATE_ABOVE ? "pixelated" : "auto",
-                // Panning must track the cursor exactly; a transition here
-                // would make the image lag behind the hand.
-                transition: dragging.current ? "none" : "transform 0.12s ease-out",
-              }
-        }
+          });
+        }}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+          // Translate is in percent of the pane and applied after the scale,
+          // so one drag moves both panes over the same part of the picture.
+          transform: `translate(${pan.x * 100}%, ${pan.y * 100}%) scale(${factor})`,
+          transformOrigin: "center center",
+          imageRendering: drawnWider ? "pixelated" : "auto",
+          transition: isDragging ? "none" : "transform 0.14s ease-out",
+        }}
       />
     </div>
   );
