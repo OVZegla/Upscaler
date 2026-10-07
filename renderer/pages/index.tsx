@@ -9,6 +9,9 @@ import {
   progressAtom,
   upscalePassAtom,
   stripResultAtom,
+  themeAtom,
+  zoomAtom,
+  panAtom,
   migrateRetiredModelAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
@@ -68,8 +71,15 @@ const Home = () => {
   const upscaylHandler = () => upscaylHandlerRef.current?.();
 
   // UI redesign state
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [zoomAmount, setZoomAmount] = useState("100");
+  const [theme, setTheme] = useAtom(themeAtom);
+  const [zoom, setZoom] = useAtom(zoomAtom);
+  const setPan = useSetAtom(panAtom);
+  // TopBar still speaks in strings; the atom holds "fit" or a number.
+  const zoomAmount = typeof zoom === "number" ? String(zoom) : "fit";
+  const setZoomAmount = (v: string) => {
+    setZoom(v === "fit" ? "fit" : Number(v));
+    if (v === "fit") setPan({ x: 0, y: 0 });
+  };
   const [dragActive, setDragActive] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
 

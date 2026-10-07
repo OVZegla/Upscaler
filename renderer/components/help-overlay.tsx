@@ -325,7 +325,7 @@ export default function HelpOverlay({ onClose }: { onClose: () => void }) {
                       fontSize: 11,
                       fontWeight: 700,
                       background: on ? "var(--accent)" : "var(--border-2)",
-                      color: on ? "#fff" : "var(--ink-3)",
+                      color: on ? "var(--accent-ink)" : "var(--ink-3)",
                     }}
                   >
                     {i + 1}

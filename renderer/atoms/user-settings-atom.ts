@@ -157,3 +157,17 @@ export const copyMetadataAtom = atomWithStorage<boolean>(
   "copyMetadata",
   false,
 );
+
+// ── Preview view state ────────────────────────────────────────────────
+// Shared so the "avant" and "après" panes zoom and pan together: comparing
+// two images that move independently tells you nothing.
+
+/** Preview zoom. "fit" letterboxes; a number is a percentage. */
+export const zoomAtom = atomWithStorage<number | "fit">("previewZoom", "fit");
+
+/** Pan offset in screen pixels, reset whenever a new image is loaded. */
+export const panAtom = atom({ x: 0, y: 0 });
+
+/** Theme, remembered between launches — it used to reset to light on every
+ *  start, which made choosing it pointless. */
+export const themeAtom = atomWithStorage<"light" | "dark">("theme", "light");
