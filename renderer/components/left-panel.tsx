@@ -84,13 +84,25 @@ const FolderIcon = () => (
   </svg>
 );
 
-const PrinterIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 9V2h12v7" />
-    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-    <rect x="6" y="14" width="12" height="8" />
+const WallWidthIcon = () => (
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+    {/* Two courses only: at 19px any more brickwork turns to mush. */}
+    <g strokeWidth="1.7">
+      <rect x="2.5" y="2.5" width="19" height="11" rx="1.2" />
+      <path d="M2.5 8h19" />
+      <path d="M10 2.5v5.5M15.5 8v5.5" />
+    </g>
+    {/* Width measurement, set well clear of the wall and drawn heavier so it
+        still reads as an arrow at this size. */}
+    <g strokeWidth="2">
+      <path d="M3.5 19.5h17" />
+      <path d="M6.5 16.5L3.5 19.5l3 3" />
+      <path d="M17.5 16.5l3 3-3 3" />
+    </g>
   </svg>
 );
+
+
 
 
 /** Rotating ring shown while a job runs. */
@@ -415,7 +427,7 @@ const LeftPanel = ({
     dot?: boolean;
   }[] = [
     { id: "upscale", label: "Upscale", sub: "par facteur", icon: <ScaleIcon /> },
-    { id: "print", label: "Taille", sub: "d'impression", icon: <PrinterIcon /> },
+    { id: "print", label: "Taille", sub: "du mur", icon: <WallWidthIcon /> },
     {
       id: "strips",
       label: "Découpe",
@@ -910,7 +922,7 @@ const LeftPanel = ({
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "160ms" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
             <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
-              <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><PrinterIcon /></span>
+              <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><StripsIcon /></span>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>Découper en bandes</div>
                 <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>
