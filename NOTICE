@@ -98,17 +98,29 @@ A. 4xLSDIRCompactC3  —  the default model
 
 B. Models inherited from Upscayl — none remain
 
-Both models inherited from the Upscayl distribution (`upscayl-standard-4x`
-and `upscayl-lite-4x`) were retired in version 1.5. Measured over 32 images
-by a 4x round-trip, neither was the most faithful often enough to justify
-keeping it: the standard model was never best on any image and ran about 26x
-slower than the default, and the lite model was slower than the default on
-every one of the 32 while scoring lower overall. Together they accounted for
-roughly 33 MB of the download.
+Both models inherited from the Upscayl distribution were retired in version
+1.5. Measured over 32 images by a 4x round-trip, neither earned its place:
+`upscayl-standard-4x` was never the most faithful on any image and ran about
+26x slower than the default, and `upscayl-lite-4x` was slower than the default
+on every one of the 32 while scoring lower overall. Together they accounted
+for roughly 33 MB of the download.
 
-This also removes the only models whose licence could not be established:
-Upscayl ships no licence file for its model weights. Every model bundled
-today has a licence documented at its author's own source.
+Their provenance, recorded here as an open question in earlier versions, has
+since been established by checksum. Both files are byte-identical to models
+published by the Real-ESRGAN project itself:
+
+   upscayl-standard-4x  ==  realesrgan-x4plus
+     md5 b37a46b08c1997a5652e7373926ca3cf
+     as shipped in xinntao/Real-ESRGAN-ncnn-vulkan, release v0.2.0
+     (realesrgan-ncnn-vulkan-20220424)
+
+   upscayl-lite-4x  ==  RealESRGAN_General_x4_v3 (realesr-general-x4v3)
+     md5 c293d2d74943652274dbcee2b80ff78a
+
+Real-ESRGAN is distributed under the BSD 3-Clause License, Copyright (c) 2021
+Xintao Wang. Upscayl had renamed the files without shipping a licence for the
+weights, which is why the question arose. It is answered, and recorded here
+for anyone auditing earlier releases of this software, which did ship them.
 
 A model a user loads through the custom-models feature is not distributed
 with this software and carries whatever terms its own author set — several

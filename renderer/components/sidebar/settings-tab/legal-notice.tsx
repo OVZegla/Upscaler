@@ -195,9 +195,11 @@ export default function LegalNotice() {
         <p style={{ ...p, marginTop: 8 }}>
           Un seul modèle est fourni, et sa licence est documentée chez son
           auteur. Les deux modèles hérités du projet Upscayl ont été retirés en
-          version 1.5&nbsp;: ils étaient moins fidèles sur un banc d&apos;essai
-          de 32 images, et c&apos;étaient aussi les seuls dont la licence des
-          poids ne pouvait pas être établie.
+          version 1.5 après mesure sur un banc d&apos;essai de 32 images. Leur
+          provenance, longtemps incertaine, a depuis été établie par empreinte
+          numérique&nbsp;: c&apos;étaient les modèles Real-ESRGAN officiels
+          (licence BSD 3-Clause, © 2021 Xintao Wang), simplement renommés. Le
+          détail figure dans le fichier NOTICE.
         </p>
         <p style={{ ...p, marginTop: 8 }}>
           Ces modèles sont pré-entraînés et utilisés tels quels&nbsp;; ils ne
