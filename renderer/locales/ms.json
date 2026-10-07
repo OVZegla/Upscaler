@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Sesuai untuk kebanyakan imej. Peningkatan saiz berkelajuan tinggi dengan kehilangan kualiti yang minimum."
-        },
         "remacri-4x": {
           "NAME": "Remacri (Bukan Komersial)",
           "DESCRIPTION": "Untuk imej semula jadi. Ketajaman dan perincian ditambah. Tiada penggunaan komersial."

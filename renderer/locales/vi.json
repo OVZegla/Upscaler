@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Phù hợp với hầu hết các hình ảnh. Tăng cường tốc độ cao với tổn thất chất lượng tối thiểu."
-        },
         "remacri-4x": {
           "NAME": "Remacri (Không thương mại)",
           "DESCRIPTION": "Dành cho hình ảnh tự nhiên. Tăng thêm độ sắc nét và chi tiết. Không sử dụng cho mục đích thương mại."

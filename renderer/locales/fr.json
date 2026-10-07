@@ -135,10 +135,6 @@
           "NAME": "Précision",
           "DESCRIPTION": "Le plus fidèle aux détails d'origine, et de loin le plus rapide."
         },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Convient à la plupart des images. Suréchantillonnage rapide avec une perte de qualité minimale."
-        },
         "remacri-4x": {
           "NAME": "Remacri (Non-Commercial)",
           "DESCRIPTION": "Pour les images naturelles. Ajoute de la netteté et des détails. Pas d'utilisation commerciale."

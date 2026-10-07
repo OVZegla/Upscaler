@@ -135,10 +135,6 @@
           "NAME": "Precision",
           "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Çoğu görsel için ideal. Minimal kalite kaybıyla, yüksek hızda ölçeklendirme."
-        },
         "remacri-4x": {
           "NAME": "Remacri (Ticari Değildir)",
           "DESCRIPTION": "Doğal görüntüler için idealdir. Keskinlik ve detay ekler. Ticari kullanım için değildir."

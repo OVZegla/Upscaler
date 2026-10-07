@@ -166,8 +166,8 @@ export default function LegalNotice() {
         <p style={p}>
           L&apos;agrandissement s&apos;appuie sur des modèles de
           super-résolution open source, exécutés par le moteur{" "}
-          <strong>ncnn</strong> de Tencent avec accélération Vulkan. Trois
-          modèles sont fournis&nbsp;:
+          <strong>ncnn</strong> de Tencent avec accélération Vulkan. Le modèle
+          fourni&nbsp;:
         </p>
         <ul style={{ marginTop: 8, paddingLeft: 18, listStyle: "disc" }}>
           <li style={li}>
@@ -191,19 +191,13 @@ export default function LegalNotice() {
             Symp&apos;s Upscale, et aucune affiliation n&apos;est
             sous-entendue.
           </li>
-          <li style={li}>
-            <strong>Léger</strong> — <em>upscayl-lite-4x</em>, hérité du projet
-            Upscayl, réputé dérivé de <strong>Real-ESRGAN</strong> (Xintao
-            Wang, licence BSD 3-Clause).
-          </li>
         </ul>
         <p style={{ ...p, marginTop: 8 }}>
-          Précision d&apos;honnêteté sur le second&nbsp;: le projet Upscayl ne
-          publie pas de fichier de licence pour les poids de ses modèles, et
-          ces fichiers ne portent aucune métadonnée de licence. La filiation
-          Real-ESRGAN est très probable mais n&apos;est pas établie par une
-          déclaration accompagnant les fichiers. Le détail, avec les empreintes
-          SHA-256, figure dans le fichier NOTICE.
+          Un seul modèle est fourni, et sa licence est documentée chez son
+          auteur. Les deux modèles hérités du projet Upscayl ont été retirés en
+          version 1.5&nbsp;: ils étaient moins fidèles sur un banc d&apos;essai
+          de 32 images, et c&apos;étaient aussi les seuls dont la licence des
+          poids ne pouvait pas être établie.
         </p>
         <p style={{ ...p, marginTop: 8 }}>
           Ces modèles sont pré-entraînés et utilisés tels quels&nbsp;; ils ne
@@ -257,10 +251,6 @@ export default function LegalNotice() {
           <li style={li}>
             <strong>4xLSDIRCompactC3</strong> — licence CC BY 4.0 — © Philip
             Hofmann
-          </li>
-          <li style={li}>
-            <strong>Real-ESRGAN</strong> — licence BSD 3-Clause — © 2021 Xintao
-            Wang
           </li>
           <li style={li}>
             <strong>ncnn</strong> — licence BSD 3-Clause — © 2017 THL A29
