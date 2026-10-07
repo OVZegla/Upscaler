@@ -61,7 +61,7 @@ const SECTIONS: Section[] = [
       },
       {
         term: "Le facteur affiché",
-        text: "Le logiciel indique de combien votre image doit être agrandie. Jusqu'à 8×, l'IA apporte un vrai gain. Au-delà, nos mesures montrent que l'avantage disparaît : à 16× le résultat est moins bon qu'un simple agrandissement, pour bien plus de temps de calcul. Un message vous prévient. Il n'y a pas de blocage, le logiciel peut monter beaucoup plus haut, mais à ce stade c'est la source qu'il faut changer, pas le réglage.",
+        text: "Le logiciel indique de combien votre image doit être agrandie. Jusqu'à 8×, l'IA apporte un vrai gain. Au-delà, nos mesures montrent que l'avantage disparaît : à 16× le résultat est moins bon qu'un simple agrandissement, pour bien plus de temps de calcul. Le réglage monte quand même jusqu'à 16× et un message vous prévient, parce que le dessin au trait tient le coup plus longtemps que la photo. Mais à ce stade c'est en général la source qu'il faut changer, pas le réglage.",
       },
       {
         term: "La sortie reste en RVB",
@@ -97,14 +97,6 @@ const SECTIONS: Section[] = [
     id: "quality",
     title: "La qualité",
     entries: [
-      {
-        term: "Le modèle d'IA",
-        text: "Un seul modèle est fourni, parce qu'il n'y avait pas de raison d'en proposer d'autres : sur un banc d'essai de 32 images de référence, c'est lui qui reste le plus proche de l'original, et c'est aussi le plus rapide. Les deux modèles proposés auparavant ont été retirés après mesure.",
-      },
-      {
-        term: "Pourquoi « plus accentué » n'est pas « meilleur »",
-        text: "Un modèle qui durcit les contours donne une impression de netteté à l'écran, mais il remplace la vraie texture par du contraste. Sur un mur regardé de près, c'est ce qui donne l'aspect plastique. « Précision » accentue moins et conserve davantage de détail réel.",
-      },
       {
         term: "Double Upscale",
         text: "Fait repasser l'image une seconde fois dans l'IA. À réserver aux sources vraiment petites ou abîmées : sur une bonne photo, cela durcit l'image sans rien apporter.",

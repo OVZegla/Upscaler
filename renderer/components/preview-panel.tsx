@@ -144,7 +144,8 @@ const PreviewPanel = ({
       };
     }
     // Print mode ignores double upscale, so the estimate must too.
-    const factor = doubleUpscayl && !usePrintSize ? scaleInt * scaleInt : scaleInt;
+    const factor =
+      doubleUpscayl && !usePrintSize && scaleInt <= 4 ? scaleInt * scaleInt : scaleInt;
     return {
       width: dimensions.width * factor,
       height: dimensions.height * factor,
