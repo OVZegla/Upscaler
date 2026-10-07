@@ -11,8 +11,10 @@
  */
 
 import { DEFAULT_MODEL_ID, RETIRED_MODEL_IDS } from "@common/models-list";
+import { ZOOM_MAX } from "@common/zoom";
 
 const MODEL_KEY = "selectedModelId";
+const ZOOM_KEY = "previewZoom";
 
 /** Reads a jotai-stored value, which is JSON-encoded. */
 function readStored(key: string): unknown {
@@ -43,5 +45,13 @@ export function migrateSettings() {
   const model = readStored(MODEL_KEY);
   if (typeof model === "string" && RETIRED_MODEL_IDS.includes(model)) {
     writeStored(MODEL_KEY, DEFAULT_MODEL_ID);
+  }
+
+  // The preview zoom ceiling came down from 1600% to 400%. A value stored
+  // above it would leave the slider pinned at its end with the picture far
+  // past where the control can represent it.
+  const zoom = readStored(ZOOM_KEY);
+  if (typeof zoom === "number" && zoom > ZOOM_MAX) {
+    writeStored(ZOOM_KEY, ZOOM_MAX);
   }
 }
