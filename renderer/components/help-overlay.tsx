@@ -71,9 +71,9 @@ const SECTIONS: Section[] = [
   },
   {
     id: "strips",
-    title: "La découpe en bandes",
+    title: "La découpe en bandes (bêta)",
     intro:
-      "Un mur se pose rarement d'une seule pièce. Le logiciel découpe le fichier final en bandes verticales prêtes à imprimer, pour ne plus avoir à le faire à la main dans Photoshop.",
+      "Le logiciel découpe le fichier final en bandes verticales prêtes à imprimer. Le rendu final dépend de la précision de celui qui manie la machine : la découpe fournit la matière, elle ne garantit pas la pose.",
     entries: [
       {
         term: "Nombre de bandes",

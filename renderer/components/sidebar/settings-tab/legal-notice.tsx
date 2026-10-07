@@ -137,9 +137,10 @@ export default function LegalNotice() {
             Photoshop et sur les RIP.
           </li>
           <li style={li}>
-            <strong>Découpe en bandes</strong>&nbsp;: l&apos;image finale est
-            automatiquement scindée en lés de pose numérotés, avec le
-            recouvrement souhaité.
+            <strong>Découpe en bandes</strong> (bêta)&nbsp;: l&apos;image
+            finale est scindée en lés verticaux numérotés, avec le recouvrement
+            souhaité. Le rendu final dépend de la précision de celui qui manie
+            la machine.
           </li>
           <li style={li}>
             <strong>Guide intégré</strong>&nbsp;: chaque réglage expliqué dans le

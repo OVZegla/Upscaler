@@ -932,9 +932,26 @@ const LeftPanel = ({
             <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
               <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><StripsIcon /></span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>Découper en bandes</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>Découper en bandes</span>
+                  <span
+                    style={{
+                      fontSize: 9.5,
+                      fontWeight: 700,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      padding: "2px 6px",
+                      borderRadius: 999,
+                      background: "var(--red-tint)",
+                      color: "var(--red)",
+                    }}
+                  >
+                    Bêta
+                  </span>
+                </div>
                 <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>
-                  Prépare les lés de pose, numérotés dans l'ordre.
+                  Découpe le fichier en bandes verticales numérotées. Le rendu
+                  final dépend de la précision de celui qui manie la machine.
                 </div>
               </div>
             </div>
