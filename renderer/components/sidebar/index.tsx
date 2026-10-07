@@ -126,7 +126,12 @@ const Sidebar = ({
   // "double upscale" on top would route the job through the two-pass command
   // and overshoot the size the user asked for. The toggle is hidden there, but
   // a value stored from factor mode would still have taken that branch.
-  const effectiveDoubleUpscayl = usePrintSize ? false : doubleUpscayl;
+  // Above 4x the binary caps its own -s, so the two-pass command would quietly
+  // produce 16x whatever the slider says; the single path chains correctly
+  // instead. The toggle is hidden there, but a stored value would still have
+  // taken that branch.
+  const effectiveDoubleUpscayl =
+    usePrintSize || (parseInt(scale) || 4) > 4 ? false : doubleUpscayl;
 
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");

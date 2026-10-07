@@ -311,8 +311,14 @@ const MODE_CARDS = [
   },
 ];
 
-const SCALE_VALUES = [1, 2, 4, 6, 8];
-const SCALE_TICKS = ["1x", "2x", "4x", "6x", "8x"];
+/** The chain allows up to 256x (four x4 passes), so the old stop at 8x was
+ *  the slider's, not the engine's. Measured, the model stops paying for itself
+ *  past 8x on photographic content but line art holds up, so the stops go
+ *  further and the panel says what it costs rather than refusing. */
+const SCALE_VALUES = [1, 2, 4, 6, 8, 12, 16];
+const SCALE_TICKS = ["1x", "2x", "4x", "6x", "8x", "12x", "16x"];
+/** Above this the measured advantage over a plain resize is gone. */
+const SCALE_WARN_ABOVE = 8;
 
 type LeftPanelProps = {
   imagePath: string;
@@ -414,7 +420,8 @@ const LeftPanel = ({
     if (useCustomWidth && customWidth > 0) {
       return { width: customWidth, height: Math.round(customWidth * (dimensions.height / dimensions.width)) };
     }
-    const factor = doubleUpscayl && !usePrintSize ? scaleInt * scaleInt : scaleInt;
+    const factor =
+      doubleUpscayl && !usePrintSize && scaleInt <= 4 ? scaleInt * scaleInt : scaleInt;
     return { width: dimensions.width * factor, height: dimensions.height * factor };
   }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printEstimate]);
 
@@ -814,7 +821,7 @@ const LeftPanel = ({
             <input
               type="range"
               min={0}
-              max={4}
+              max={SCALE_VALUES.length - 1}
               step={1}
               value={scaleIdx}
               onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
@@ -825,13 +832,33 @@ const LeftPanel = ({
                 <span key={tick} style={{ fontSize: 10, color: "var(--ink-3)" }}>{tick}</span>
               ))}
             </div>
+
+            {scaleInt > SCALE_WARN_ABOVE && (
+              <div
+                style={{
+                  marginTop: 10,
+                  fontSize: 11.5,
+                  lineHeight: 1.45,
+                  color: "var(--ink-2)",
+                  padding: "9px 11px",
+                  borderRadius: 9,
+                  border: "1px solid var(--border-2)",
+                  background: "var(--red-tint)",
+                }}
+              >
+                Au-delà de 8×, nos mesures montrent que l&apos;IA n&apos;apporte
+                plus rien sur une photo&nbsp;: à 16× le résultat est moins bon
+                qu&apos;un simple agrandissement, pour bien plus de temps de
+                calcul. Le dessin au trait et les logos tiennent mieux.
+              </div>
+            )}
           </div>
         )}
 
         {/* Double upscale — only in factor mode. In print mode the number of
             passes comes from the target width, so a second pass on top would
             just overshoot it. */}
-        {section === "upscale" && (
+        {section === "upscale" && scaleInt <= 4 && (
         <div className="symp-rise" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, ["--symp-delay" as any]: "80ms" }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ marginBottom: 4 }}>
