@@ -23,6 +23,7 @@ import AutoUpdateToggle from "./auto-update-toggle";
 import TTAModeToggle from "./tta-mode-toggle";
 import SystemInfo from "./system-info";
 import CopyMetadataToggle from "./copy-metadata-toggle";
+import LegalNotice from "./legal-notice";
 
 interface IProps {
   batchMode: boolean;
@@ -190,12 +191,8 @@ function SettingsTab({
 
       <SystemInfo />
 
-      <div style={{ marginTop: "auto", paddingTop: 32, fontSize: 11, color: "var(--symp-ink-3)", lineHeight: 1.7, opacity: 0.7 }}>
-        <div style={{ fontWeight: 700, fontSize: 12, color: "var(--symp-ink-2)", marginBottom: 4 }}>Symp's Upscale v1.1.0</div>
-        <div>Basé sur <strong>Upscayl</strong> — licence GNU AGPL-3.0.</div>
-        <div>Code source disponible sur GitHub.</div>
-        <div>Aucun lien officiel avec le projet Upscayl.</div>
-        <div>Le support Symp's ne s'applique qu'aux builds officiels Symp's.</div>
+      <div style={{ marginTop: 32 }}>
+        <LegalNotice />
       </div>
     </div>
   );

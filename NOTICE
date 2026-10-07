@@ -12,10 +12,13 @@ publicly available at: https://github.com/OVZegla/Upscaler
 Modifications made from the original Upscayl codebase include:
 - Rebranding to "Symp's Upscale"
 - Migration to Tauri 2.x backend
-- Redesigned user interface
-- French language as default
-- Progress bar and cancel improvements
-- Various UX and display fixes
+- Redesigned user interface, in French
+- Print sizing in centimetres with an output-resolution target
+- Chained x4 inference passes to reach an exact target width
+- Output resolution (DPI) written into the saved file
+- EXIF orientation baked in before upscaling
+- Workload guard rails for large-format jobs
+- Progress, cancel and various UX fixes
 
 -------------------------------------------------------------------------------
 
