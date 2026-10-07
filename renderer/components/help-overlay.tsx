@@ -61,7 +61,7 @@ const SECTIONS: Section[] = [
       },
       {
         term: "Le facteur affiché",
-        text: "Le logiciel indique de combien votre image doit être agrandie. Au-delà de 8×, l'IA n'a plus assez de matière : elle invente des détails au lieu d'en restituer. Un message rouge vous prévient. Dans ce cas, mieux vaut repartir d'une source plus grande.",
+        text: "Le logiciel indique de combien votre image doit être agrandie. Jusqu'à 8×, l'IA apporte un vrai gain. Au-delà, nos mesures montrent que l'avantage disparaît : à 16× le résultat est moins bon qu'un simple agrandissement, pour bien plus de temps de calcul. Un message vous prévient. Il n'y a pas de blocage — le logiciel peut monter beaucoup plus haut — mais à ce stade c'est la source qu'il faut changer, pas le réglage.",
       },
       {
         term: "La sortie reste en RVB",

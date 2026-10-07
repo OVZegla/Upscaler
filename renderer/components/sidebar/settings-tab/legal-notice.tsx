@@ -139,7 +139,7 @@ export default function LegalNotice() {
           <li style={li}>
             <strong>Découpe en bandes</strong> — l&apos;image finale est
             automatiquement scindée en lés de pose numérotés, avec le
-            recouvrement souhaité, sans passer par un logiciel de retouche.
+            recouvrement souhaité.
           </li>
           <li style={li}>
             <strong>Guide intégré</strong> — chaque réglage expliqué dans le
