@@ -108,7 +108,7 @@ export default function LegalNotice() {
           Symp&apos;s Upscale
         </div>
         <div style={{ fontSize: 12, color: "var(--symp-ink-3, #6F6F75)", marginTop: 2 }}>
-          Version {APP_VERSION} — agrandissement d&apos;images par IA pour
+          Version {APP_VERSION}, agrandissement d&apos;images par IA pour
           l&apos;impression grand format
         </div>
       </div>
@@ -122,36 +122,36 @@ export default function LegalNotice() {
         </p>
         <ul style={{ marginTop: 8, paddingLeft: 18, listStyle: "disc" }}>
           <li style={li}>
-            <strong>Dimensionnement en centimètres</strong> — on saisit la
+            <strong>Dimensionnement en centimètres</strong>&nbsp;: on saisit la
             largeur du mur et la résolution de sortie, le nombre de pixels
             nécessaire est calculé automatiquement.
           </li>
           <li style={li}>
-            <strong>Agrandissement en passes chaînées</strong> — le modèle
+            <strong>Agrandissement en passes chaînées</strong>&nbsp;: le modèle
             travaille plusieurs fois de suite pour atteindre exactement la
             taille demandée, au lieu d&apos;étirer l&apos;image.
           </li>
           <li style={li}>
-            <strong>Résolution inscrite dans le fichier</strong> — le document
+            <strong>Résolution inscrite dans le fichier</strong>&nbsp;: le document
             s&apos;ouvre directement à sa taille physique réelle dans
             Photoshop et sur les RIP.
           </li>
           <li style={li}>
-            <strong>Découpe en bandes</strong> — l&apos;image finale est
+            <strong>Découpe en bandes</strong>&nbsp;: l&apos;image finale est
             automatiquement scindée en lés de pose numérotés, avec le
             recouvrement souhaité.
           </li>
           <li style={li}>
-            <strong>Guide intégré</strong> — chaque réglage expliqué dans le
+            <strong>Guide intégré</strong>&nbsp;: chaque réglage expliqué dans le
             vocabulaire de l&apos;atelier, accessible à tout moment.
           </li>
           <li style={li}>
-            <strong>Garde-fous métier</strong> — alertes sur les traitements
+            <strong>Garde-fous métier</strong>&nbsp;: alertes sur les traitements
             trop lourds, les agrandissements excessifs et les limites de
             format.
           </li>
           <li style={li}>
-            <strong>Correction d&apos;orientation</strong> — les photos prises
+            <strong>Correction d&apos;orientation</strong>&nbsp;: les photos prises
             au smartphone ne ressortent plus pivotées.
           </li>
           <li style={li}>
@@ -170,12 +170,11 @@ export default function LegalNotice() {
         </p>
         <ul style={{ marginTop: 8, paddingLeft: 18, listStyle: "disc" }}>
           <li style={li}>
-            <strong>Précision</strong> — <em>4xLSDIRCompactC3</em>, par{" "}
+            <strong>Précision</strong>&nbsp;: <em>4xLSDIRCompactC3</em>, par{" "}
             <strong>Philip Hofmann</strong> (Phhofm), architecture SRVGGNet
             «&nbsp;Compact&nbsp;». Distribué sous licence{" "}
             <strong>Creative Commons Attribution 4.0 International (CC BY
-            4.0)</strong>{" "}
-            —{" "}
+            4.0)</strong>, dont le texte est publié sur{" "}
             <span style={{ wordBreak: "break-all" }}>
               creativecommons.org/licenses/by/4.0/
             </span>
@@ -250,24 +249,24 @@ export default function LegalNotice() {
       <Section id="third" title="Composants tiers">
         <ul style={{ paddingLeft: 18, listStyle: "disc" }}>
           <li style={li}>
-            <strong>4xLSDIRCompactC3</strong> — licence CC BY 4.0 — © Philip
+            <strong>4xLSDIRCompactC3</strong>, licence CC BY 4.0, © Philip
             Hofmann
           </li>
           <li style={li}>
-            <strong>ncnn</strong> — licence BSD 3-Clause — © 2017 THL A29
+            <strong>ncnn</strong>, licence BSD 3-Clause, © 2017 THL A29
             Limited, Tencent
           </li>
           <li style={li}>
-            <strong>Upscayl</strong> — licence GNU AGPL-3.0 — © Upscayl
+            <strong>Upscayl</strong>, licence GNU AGPL-3.0, © Upscayl
             Contributors
           </li>
           <li style={li}>
-            <strong>upscayl-ncnn</strong> (moteur d&apos;inférence) — licence
-            GNU AGPL-3.0 — © Upscayl Contributors
+            <strong>upscayl-ncnn</strong> (moteur d&apos;inférence), licence
+            GNU AGPL-3.0, © Upscayl Contributors
           </li>
           <li style={li}>
             <strong>Tauri</strong>, <strong>React</strong>,{" "}
-            <strong>Next.js</strong> — licences MIT / Apache-2.0
+            <strong>Next.js</strong>, licences MIT / Apache-2.0
           </li>
         </ul>
         <p style={{ ...p, marginTop: 8, opacity: 0.85 }}>

@@ -57,15 +57,15 @@ const SECTIONS: Section[] = [
       },
       {
         term: "Quand passer à 150 DPI",
-        text: "Si le logiciel affiche que le traitement est « très gourmand », c'est que le fichier dépasserait le gigaoctet. 150 DPI divise son poids par quatre. Pour une fresque qu'on regarde à plus d'un mètre, la différence ne se voit pas — et rien ne vous empêche de réaugmenter la résolution dans Photoshop ensuite.",
+        text: "Si le logiciel affiche que le traitement est « très gourmand », c'est que le fichier dépasserait le gigaoctet. Passer à 150 DPI divise son poids par quatre. Il faudra réaugmenter la résolution dans Photoshop.",
       },
       {
         term: "Le facteur affiché",
-        text: "Le logiciel indique de combien votre image doit être agrandie. Jusqu'à 8×, l'IA apporte un vrai gain. Au-delà, nos mesures montrent que l'avantage disparaît : à 16× le résultat est moins bon qu'un simple agrandissement, pour bien plus de temps de calcul. Un message vous prévient. Il n'y a pas de blocage — le logiciel peut monter beaucoup plus haut — mais à ce stade c'est la source qu'il faut changer, pas le réglage.",
+        text: "Le logiciel indique de combien votre image doit être agrandie. Jusqu'à 8×, l'IA apporte un vrai gain. Au-delà, nos mesures montrent que l'avantage disparaît : à 16× le résultat est moins bon qu'un simple agrandissement, pour bien plus de temps de calcul. Un message vous prévient. Il n'y a pas de blocage, le logiciel peut monter beaucoup plus haut, mais à ce stade c'est la source qu'il faut changer, pas le réglage.",
       },
       {
         term: "La sortie reste en RVB",
-        text: "Le fichier est enregistré en RVB. La conversion en CMJN se fait dans Photoshop, avec le profil de votre machine — c'est là qu'elle doit se faire.",
+        text: "Le fichier est enregistré en RVB. La conversion en CMJN se fait dans Photoshop, avec le profil de votre machine. C'est là qu'elle doit se faire.",
       },
     ],
   },
@@ -125,7 +125,7 @@ const SECTIONS: Section[] = [
     entries: [
       {
         term: "Le format",
-        text: "PNG ne perd aucune qualité : c'est le bon choix pour l'impression. JPG donne des fichiers plus légers mais ne peut pas dépasser 65 535 pixels de côté — au-delà, le logiciel vous le signale.",
+        text: "PNG ne perd aucune qualité : c'est le bon choix pour l'impression. JPG donne des fichiers plus légers mais ne peut pas dépasser 65 535 pixels de côté. Au-delà, le logiciel vous le signale.",
       },
       {
         term: "Le dossier de sortie",
