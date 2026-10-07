@@ -616,7 +616,6 @@ const Home = () => {
             dimensions={dimensions}
             doubleUpscaylCounter={doubleUpscaylCounter}
             setDimensions={setDimensions}
-            zoomAmount={zoomAmount}
             showComparison={showComparison}
           />
         </div>
