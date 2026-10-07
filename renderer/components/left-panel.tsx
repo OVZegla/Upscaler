@@ -13,6 +13,7 @@ import {
   printWidthCmAtom,
   printDpiAtom,
   upscalePassAtom,
+  etaTextAtom,
   cutStripsAtom,
   stripCountAtom,
   stripOverlapCmAtom,
@@ -397,6 +398,7 @@ const LeftPanel = ({
   const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
   const [upscalePass, setUpscalePass] = useAtom(upscalePassAtom);
+  const etaText = useAtomValue(etaTextAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
   const [usePrintSize, setUsePrintSize] = useAtom(usePrintSizeAtom);
@@ -1096,6 +1098,11 @@ const LeftPanel = ({
               {upscalePass && upscalePass.total > 1
                 ? `Passe ${upscalePass.current} / ${upscalePass.total}`
                 : "Traitement en cours"}
+              {etaText && (
+                <span style={{ marginLeft: 8, color: "var(--ink-2)" }}>
+                  · {etaText}
+                </span>
+              )}
             </span>
             <button
               onClick={cancelHandler}

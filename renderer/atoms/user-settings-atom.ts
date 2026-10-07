@@ -171,3 +171,7 @@ export const panAtom = atom({ x: 0, y: 0 });
 /** Theme, remembered between launches — it used to reset to light on every
  *  start, which made choosing it pointless. */
 export const themeAtom = atomWithStorage<"light" | "dark">("theme", "light");
+
+/** Human-readable time remaining for the running job, or null when it cannot
+ *  yet be estimated honestly. */
+export const etaTextAtom = atom(null as string | null);

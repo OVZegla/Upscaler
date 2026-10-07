@@ -393,7 +393,6 @@ const MainContent = ({
           <SliderView
             imagePath={imagePath}
             upscaledImagePath={upscaledImagePath}
-            zoomAmount={zoomAmount}
           />
         )}
     </div>
