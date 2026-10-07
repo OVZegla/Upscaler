@@ -98,12 +98,8 @@ const SECTIONS: Section[] = [
     title: "La qualité",
     entries: [
       {
-        term: "Double Upscale",
-        text: "Fait repasser l'image une seconde fois dans l'IA. À réserver aux sources vraiment petites ou abîmées : sur une bonne photo, cela durcit l'image sans rien apporter.",
-      },
-      {
         term: "Les « passes »",
-        text: "Pour atteindre une grande largeur, le logiciel enchaîne plusieurs agrandissements successifs. L'indication « Passe 2 / 3 » montre où en est le travail. C'est un seul et même traitement, découpé en étapes.",
+        text: "Pour atteindre une grande largeur, le logiciel enchaîne plusieurs agrandissements successifs. L'indication « Passe 2 / 3 » montre où en est le travail. C'est un seul et même traitement, découpé en étapes. Le curseur monte jusqu'à 256×, soit quatre passes : au-delà, l'agrandissement ne serait plus fait par l'IA.",
       },
       {
         term: "Photo prise au téléphone",
