@@ -375,7 +375,7 @@ fn cut_into_strips(
 /// Returns true if the job must not start. Everything it emits lands in the
 /// Logs panel, so a failure report carries the paths instead of only the
 /// binary's own complaint about a path it does not explain.
-fn preflight(app: &AppHandle, bin: &Path, models: &str) -> bool {
+fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
     let _ = app.emit(
         events::UPSCAYL_PROGRESS,
         format!(
@@ -414,6 +414,22 @@ fn preflight(app: &AppHandle, bin: &Path, models: &str) -> bool {
         let _ = app.emit(
             events::UPSCAYL_ERROR,
             format!("Le dossier de modèles est introuvable : {models}."),
+        );
+        return true;
+    }
+
+    // The engine's own message for a missing model is misleading: when the
+    // file is unreadable it retries with its executable directory glued to
+    // the front, and reports that doubled path instead of the real one.
+    let param = Path::new(models).join(format!("{model}.param"));
+    if !param.exists() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            format!(
+                "Le modèle « {model} » est introuvable. Ouvrez les Paramètres \
+                 et resélectionnez un modèle. (Fichier attendu : {})",
+                param.display()
+            ),
         );
         return true;
     }
@@ -465,7 +481,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
-        if preflight(&app, &bin, &models) {
+        if preflight(&app, &bin, &models, &payload.model) {
             return;
         }
 
@@ -602,7 +618,7 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
-        if preflight(&app, &bin, &models) {
+        if preflight(&app, &bin, &models, &payload.model) {
             return;
         }
 
@@ -722,7 +738,7 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
-        if preflight(&app, &bin, &models) {
+        if preflight(&app, &bin, &models, &payload.model) {
             return;
         }
         let args = batch_args(&BatchArgs {
