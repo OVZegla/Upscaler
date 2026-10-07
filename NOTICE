@@ -99,7 +99,7 @@ A. 4xLSDIRCompactC3  —  the default model
 B. Models inherited from Upscayl — none remain
 
 Both models inherited from the Upscayl distribution were retired in version
-1.5. Measured over 32 images by a 4x round-trip, neither earned its place:
+2.0. Measured over 32 images by a 4x round-trip, neither earned its place:
 `upscayl-standard-4x` was never the most faithful on any image and ran about
 26x slower than the default, and `upscayl-lite-4x` was slower than the default
 on every one of the 32 while scoring lower overall. Together they accounted

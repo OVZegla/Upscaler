@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { publicAssetUrl } from "@/lib/asset-url";
+import { APP_VERSION_SHORT } from "@common/app-version";
 
 /**
  * Launch animation.
@@ -11,7 +12,7 @@ import { publicAssetUrl } from "@/lib/asset-url";
  * itself, and can be clicked away.
  */
 
-const TOTAL_MS = 1750;
+const TOTAL_MS = 2200;
 const FADE_MS = 420;
 
 export default function SplashScreen() {
@@ -51,7 +52,7 @@ export default function SplashScreen() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 26,
+        gap: 22,
         background: "var(--bg, #F4F6FA)",
         opacity: phase === "out" ? 0 : 1,
         transition: `opacity ${FADE_MS}ms ease`,
@@ -88,6 +89,43 @@ export default function SplashScreen() {
             transformOrigin: "left center",
           }}
         />
+      </div>
+
+      {/* The release, arriving last so it reads as the point of the screen. */}
+      <div
+        className="symp-splash-version"
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: 10,
+          marginTop: -8,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "var(--ink-3, #8888A8)",
+          }}
+        >
+          Version
+        </span>
+        <span
+          style={{
+            fontSize: 30,
+            fontWeight: 800,
+            letterSpacing: "-0.02em",
+            lineHeight: 1,
+            background: "linear-gradient(90deg, #0A2F7A, #D01217)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        >
+          {APP_VERSION_SHORT}
+        </span>
       </div>
     </div>
   );
