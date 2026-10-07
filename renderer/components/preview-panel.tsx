@@ -1,14 +1,19 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   scaleAtom,
-  doubleUpscaylAtom,
   customWidthAtom,
   useCustomWidthAtom,
+  usePrintSizeAtom,
+  printWidthCmAtom,
+  printDpiAtom,
+  zoomAtom,
+  panAtom,
 } from "../atoms/user-settings-atom";
+import { estimatePrint } from "@/lib/print-size";
 import { userFileUrl } from "@/lib/asset-url";
-import ImageViewer from "./main-content/image-viewer";
+import ZoomView from "./main-content/zoom-view";
 import SliderView from "./main-content/slider-view";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
@@ -27,7 +32,6 @@ type PreviewPanelProps = {
   dimensions: { width: number | null; height: number | null };
   doubleUpscaylCounter: number;
   setDimensions: (d: { width: number; height: number }) => void;
-  zoomAmount: string;
   showComparison?: boolean;
   fileInfo?: { size?: number; format?: string };
 };
@@ -35,11 +39,35 @@ type PreviewPanelProps = {
 function useFileSize(filePath: string) {
   const [size, setSize] = useState<number | null>(null);
   useEffect(() => {
-    if (!filePath) { setSize(null); return; }
-    try {
-      const fs = (window as any).require("fs");
-      setSize(fs.statSync(filePath).size);
-    } catch { setSize(null); }
+    let cancelled = false;
+    if (!filePath) {
+      setSize(null);
+      return;
+    }
+    // Under Tauri there is no `require("fs")`, so the old path always threw
+    // and the size never showed. Ask the backend instead; fall back to fs
+    // when running under Electron.
+    const tauri = (window as any).__TAURI__;
+    if (tauri?.core?.invoke) {
+      tauri.core
+        .invoke("get_file_size", { path: filePath })
+        .then((bytes: number | null) => {
+          if (!cancelled) setSize(typeof bytes === "number" ? bytes : null);
+        })
+        .catch(() => {
+          if (!cancelled) setSize(null);
+        });
+    } else {
+      try {
+        const fs = (window as any).require("fs");
+        setSize(fs.statSync(filePath).size);
+      } catch {
+        setSize(null);
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
   }, [filePath]);
   return size;
 }
@@ -66,15 +94,18 @@ const PreviewPanel = ({
   upscaledImagePath,
   dimensions,
   setDimensions,
-  zoomAmount,
   showComparison,
 }: PreviewPanelProps) => {
   const scale = useAtomValue(scaleAtom);
   const inputSize = useFileSize(imagePath);
   const outputSize = useFileSize(upscaledImagePath);
-  const doubleUpscayl = useAtomValue(doubleUpscaylAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
+  const usePrintSize = useAtomValue(usePrintSizeAtom);
+  const printWidthCm = useAtomValue(printWidthCmAtom);
+  const printDpi = useAtomValue(printDpiAtom);
+  const [zoom, setZoom] = useAtom(zoomAtom);
+  const [pan, setPan] = useAtom(panAtom);
   const [detailMode, setDetailMode] = useState(false);
   // Set when the upscaled image fails to load (missing file, asset-protocol
   // rejection). Shown inline instead of failing silently.
@@ -84,10 +115,25 @@ const PreviewPanel = ({
     setOutputLoadError(false);
   }, [upscaledImagePath]);
 
+  useEffect(() => {
+    setPan({ x: 0, y: 0 });
+  }, [imagePath, setPan]);
+
   const scaleInt = parseInt(scale) || 4;
 
   const outputDimensions = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
+    if (usePrintSize) {
+      const est = estimatePrint(
+        dimensions.width,
+        dimensions.height,
+        printWidthCm,
+        printDpi,
+      );
+      return est
+        ? { width: est.widthPx, height: est.heightPx, factor: est.factor }
+        : null;
+    }
     if (useCustomWidth && customWidth > 0) {
       return {
         width: customWidth,
@@ -95,13 +141,14 @@ const PreviewPanel = ({
         factor: customWidth / dimensions.width,
       };
     }
-    const factor = doubleUpscayl ? scaleInt * scaleInt : scaleInt;
+    // Print mode ignores double upscale, so the estimate must too.
+    const factor = scaleInt;
     return {
       width: dimensions.width * factor,
       height: dimensions.height * factor,
       factor,
     };
-  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth]);
+  }, [dimensions, scaleInt, useCustomWidth, customWidth, usePrintSize, printWidthCm, printDpi]);
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
   const ext = imagePath ? (imagePath.split(".").pop() || "").toUpperCase() : "";
@@ -149,8 +196,11 @@ const PreviewPanel = ({
           <SliderView
             imagePath={imagePath}
             upscaledImagePath={upscaledImagePath}
-            zoomAmount={zoomAmount}
           />
+        </div>
+      ) : showComparison && !imagePath ? (
+        <div style={{ flex: 1, display: "flex", padding: "12px 20px 20px", minHeight: 0 }}>
+          {placeholder}
         </div>
       ) : showComparison && imagePath && !upscaledImagePath ? (
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ink-3)", fontSize: 13, fontFamily: fontStack }}>
@@ -203,16 +253,14 @@ const PreviewPanel = ({
             }}
           >
             {imagePath ? (
-              detailMode ? (
-                <img
-                  src={userFileUrl(imagePath)}
-                  draggable={false}
-                  alt=""
-                  style={{ width: "100%", height: "100%", objectFit: "none", objectPosition: "center" }}
-                />
-              ) : (
-                <ImageViewer imagePath={imagePath} setDimensions={setDimensions} />
-              )
+              <ZoomView
+                imagePath={imagePath}
+                zoom={detailMode ? 100 : zoom}
+                pan={pan}
+                setPan={setPan}
+                setZoom={setZoom}
+                onDimensions={setDimensions}
+              />
             ) : (
               placeholder
             )}
@@ -230,7 +278,7 @@ const PreviewPanel = ({
 
         {/* APRÈS */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: upscaledImagePath ? "var(--accent)" : "var(--red)", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: upscaledImagePath ? "var(--accent)" : "var(--ink-3)", textTransform: "uppercase" }}>
             {detailMode ? "Après · IA 1:1" : upscaledImagePath ? "Après" : "Après (estimé)"}
           </div>
           <div
@@ -271,17 +319,13 @@ const PreviewPanel = ({
                   </span>
                 </div>
               ) : (
-                <img
-                  src={userFileUrl(upscaledImagePath)}
-                  draggable={false}
-                  alt=""
+                <ZoomView
+                  imagePath={upscaledImagePath}
+                  zoom={detailMode ? 100 : zoom}
+                  pan={pan}
+                  setPan={setPan}
+                  setZoom={setZoom}
                   onError={() => setOutputLoadError(true)}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: detailMode ? "none" : "contain",
-                    objectPosition: "center",
-                  }}
                 />
               )
             ) : (

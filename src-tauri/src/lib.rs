@@ -1,8 +1,11 @@
 mod commands;
 mod events;
 mod orientation;
+mod passes;
 mod paths;
+mod resolution;
 mod state;
+mod strips;
 mod upscale;
 
 use tauri::Emitter;

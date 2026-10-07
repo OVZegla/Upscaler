@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { publicAssetUrl } from "@/lib/asset-url";
+import { ZOOM_MAX, ZOOM_MIN, ZOOM_STOPS } from "@common/zoom";
 
 type TopBarProps = {
-  selectedTab: number;
-  setSelectedTab: (tab: number) => void;
   theme: "light" | "dark";
   setTheme: (t: "light" | "dark") => void;
   zoomAmount: string;
@@ -40,24 +39,53 @@ const MoonIcon = () => (
   </svg>
 );
 
+const SearchIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="7" />
+    <path d="M21 21l-4.2-4.2M8 11h6M11 8v6" />
+  </svg>
+);
+
 const ChevronDown = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M6 9l6 6 6-6" />
   </svg>
 );
 
-const ZOOM_OPTIONS = [
-  { label: "Ajuster à l'écran", value: "fit" },
-  { label: "50%", value: "50" },
-  { label: "100%", value: "100" },
-  { label: "200%", value: "200" },
-];
+/** Zoom is a multiplier on the fitted size: 100% is the whole picture,
+ *  400% is four times into it. Both panes use the same value, which is what
+ *  keeps them framing the same detail despite very different resolutions. */
+
+
+/** Slider position <-> zoom, on a log scale: a linear 25..1600 slider would
+ *  spend four fifths of its travel above 400%. */
+const toSlider = (z: number) =>
+  ((Math.log(z) - Math.log(ZOOM_MIN)) /
+    (Math.log(ZOOM_MAX) - Math.log(ZOOM_MIN))) *
+  1000;
+const fromSlider = (v: number) =>
+  Math.round(
+    Math.exp(
+      Math.log(ZOOM_MIN) +
+        (v / 1000) * (Math.log(ZOOM_MAX) - Math.log(ZOOM_MIN)),
+    ),
+  );
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
 
+const chipStyle = (active: boolean): React.CSSProperties => ({
+  padding: "5px 9px",
+  borderRadius: 7,
+  border: `1px solid ${active ? "transparent" : "var(--border-2)"}`,
+  background: active ? "var(--accent)" : "transparent",
+  color: active ? "var(--accent-ink)" : "var(--ink-2)",
+  fontSize: 11.5,
+  fontWeight: 700,
+  cursor: "pointer",
+  fontFamily: fontStack,
+});
+
 const TopBar = ({
-  selectedTab,
-  setSelectedTab,
   theme,
   setTheme,
   zoomAmount,
@@ -113,9 +141,12 @@ const TopBar = ({
       {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
         <img
-          src={publicAssetUrl("logo.png")}
+          src={publicAssetUrl(theme === "dark" ? "logo-dark.png" : "logo.png")}
           alt="Symp's Upscale"
-          style={{ height: 56, width: "auto", objectFit: "contain" }}
+          /* Must sit inside the 56px bar: at full height it was clipped top
+             and bottom. The dark variant exists because the navy mark
+             disappears against a near-black background. */
+          style={{ height: 34, width: "auto", objectFit: "contain" }}
           draggable={false}
         />
       </div>
@@ -125,91 +156,164 @@ const TopBar = ({
       {/* Prévisualisations — toggle comparison view + zoom dropdown */}
       <div ref={zoomWrapRef} style={{ position: "relative" }}>
         <button
-          style={navButtonStyle(showComparison)}
-          onClick={() => {
-            setShowComparison(!showComparison);
-            setShowZoomMenu((v) => !v);
-          }}
+          style={navButtonStyle(zoomAmount !== "fit")}
+          onClick={() => setShowZoomMenu((v) => !v)}
+          title="Zoom et déplacement dans l'aperçu"
         >
-          <EyeIcon />
-          <span>Prévisualisations</span>
+          <SearchIcon />
+          <span>
+            Zoom
+            <span style={{ marginLeft: 6, opacity: 0.75, fontFamily: "var(--symp-mono, monospace)" }}>
+              {zoomAmount === "fit" ? "ajusté" : `${zoomAmount}\u202f%`}
+            </span>
+          </span>
           <ChevronDown />
         </button>
         {showZoomMenu && (
           <div
+            className="symp-menu-in"
             style={{
               position: "absolute",
-              top: "calc(100% + 6px)",
+              top: "calc(100% + 8px)",
               right: 0,
-              minWidth: 180,
+              width: 264,
               background: "var(--bg-card)",
               border: "1px solid var(--border)",
-              borderRadius: 10,
-              boxShadow: "var(--shadow)",
-              padding: 6,
+              borderRadius: 12,
+              boxShadow: "var(--shadow-pop)",
+              padding: 14,
               zIndex: 100,
             }}
           >
-            {ZOOM_OPTIONS.map((opt) => {
-              const active = zoomAmount === opt.value;
-              return (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                justifyContent: "space-between",
+                marginBottom: 10,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+                Zoom
+              </span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "var(--accent)", fontFamily: "var(--symp-mono, monospace)" }}>
+                {zoomAmount === "fit" ? "Ajusté" : `${zoomAmount}\u202f%`}
+              </span>
+            </div>
+
+            <input
+              type="range"
+              min={0}
+              max={1000}
+              step={1}
+              value={toSlider(zoomAmount === "fit" ? 100 : Number(zoomAmount))}
+              onChange={(e) => setZoomAmount(String(fromSlider(Number(e.target.value))))}
+              style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
+            />
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 10 }}>
+              <button
+                onClick={() => setZoomAmount("fit")}
+                className="symp-press"
+                style={chipStyle(zoomAmount === "fit")}
+              >
+                Ajuster
+              </button>
+              {ZOOM_STOPS.map((z) => (
                 <button
-                  key={opt.value}
-                  onClick={() => {
-                    setZoomAmount(opt.value);
-                    setShowZoomMenu(false);
-                  }}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "8px 10px",
-                    borderRadius: 7,
-                    border: "none",
-                    background: active ? "var(--accent-tint)" : "transparent",
-                    color: active ? "var(--accent)" : "var(--ink-2)",
-                    fontWeight: active ? 600 : 500,
-                    fontSize: 13,
-                    cursor: "pointer",
-                    fontFamily: fontStack,
-                  }}
+                  key={z}
+                  onClick={() => setZoomAmount(String(z))}
+                  className="symp-press"
+                  style={chipStyle(zoomAmount === String(z))}
                 >
-                  {opt.label}
+                  {z}&#8239;%
                 </button>
-              );
-            })}
+              ))}
+            </div>
+
+            <p style={{ marginTop: 10, fontSize: 11, lineHeight: 1.45, color: "var(--ink-3)" }}>
+              Glissez l&apos;image pour vous déplacer, double-clic pour
+              recentrer. Les pixels cessent d&apos;être lissés dès qu&apos;une
+              vue dépasse sa propre définition, pour montrer ce que le modèle a
+              réellement produit.
+            </p>
           </div>
         )}
       </div>
 
-      {/* Paramètres — toggle on/off */}
+      {/* Comparaison — its own control. It used to share a button with the
+          zoom menu, so opening the zoom silently switched the view. */}
       <button
-        style={navButtonStyle(selectedTab === 1)}
-        onClick={() => setSelectedTab(selectedTab === 1 ? 0 : 1)}
+        style={navButtonStyle(showComparison)}
+        onClick={() => setShowComparison(!showComparison)}
+        title="Superposer avant et après avec un curseur"
       >
-        <GearIcon />
-        <span>Paramètres</span>
+        <EyeIcon />
+        <span>Comparaison</span>
       </button>
 
-      {/* Theme toggle */}
+      {/* Theme toggle — a track with a sliding thumb, so the state is
+          visible at rest rather than only implied by which icon shows. */}
       <button
-        aria-label="Toggle theme"
+        aria-label={theme === "light" ? "Passer en thème sombre" : "Passer en thème clair"}
+        title={theme === "light" ? "Thème sombre" : "Thème clair"}
         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
         style={{
+          position: "relative",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          width: 38,
-          height: 38,
-          borderRadius: 10,
-          border: "1px solid var(--border)",
-          background: "var(--bg-card)",
-          color: "var(--ink-2)",
+          width: 62,
+          height: 32,
+          padding: 3,
+          borderRadius: 999,
+          border: "1px solid var(--border-2)",
+          background: "var(--bg-sunken)",
           cursor: "pointer",
           flexShrink: 0,
         }}
       >
-        {theme === "light" ? <MoonIcon /> : <SunIcon />}
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: 3,
+            left: theme === "light" ? 3 : 32,
+            width: 26,
+            height: 24,
+            borderRadius: 999,
+            background: "var(--bg-card)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+            transition: "left 0.32s cubic-bezier(0.32, 0.72, 0, 1)",
+          }}
+        />
+        <span
+          aria-hidden
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 29,
+            height: 24,
+            color: theme === "light" ? "var(--accent)" : "var(--ink-3)",
+          }}
+        >
+          <SunIcon />
+        </span>
+        <span
+          aria-hidden
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 29,
+            height: 24,
+            color: theme === "dark" ? "var(--accent)" : "var(--ink-3)",
+          }}
+        >
+          <MoonIcon />
+        </span>
       </button>
 
     </div>

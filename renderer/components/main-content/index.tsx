@@ -276,7 +276,7 @@ const MainContent = ({
       className="relative flex h-screen w-full flex-col items-center justify-center"
       style={{
         background: "var(--symp-bg, #FAF9F7)",
-        outline: dragActive ? "2px solid var(--accent, #4F46E5)" : "none",
+        outline: dragActive ? "2px solid var(--accent)" : "none",
         outlineOffset: -2,
         transition: "outline 0.15s ease",
       }}
@@ -393,7 +393,6 @@ const MainContent = ({
           <SliderView
             imagePath={imagePath}
             upscaledImagePath={upscaledImagePath}
-            zoomAmount={zoomAmount}
           />
         )}
     </div>

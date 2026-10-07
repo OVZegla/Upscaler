@@ -131,13 +131,9 @@
       "AFTER": "Après",
       "ZOOM": "Zoom",
       "MODELS": {
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "Convient à la plupart des images."
-        },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Convient à la plupart des images. Suréchantillonnage rapide avec une perte de qualité minimale."
+        "4xLSDIRCompactC3": {
+          "NAME": "Précision",
+          "DESCRIPTION": "Le plus fidèle aux détails d'origine, et de loin le plus rapide."
         },
         "remacri-4x": {
           "NAME": "Remacri (Non-Commercial)",

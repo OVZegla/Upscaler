@@ -13,7 +13,10 @@ use tauri_plugin_notification::NotificationExt;
 
 use crate::events;
 use crate::orientation;
-use crate::paths::{exec_path, models_path};
+use crate::passes;
+use crate::resolution;
+use crate::strips;
+use crate::paths::{exec_path, is_translocated, models_path};
 use crate::state::AppState;
 use crate::upscale::{
     batch_args, double_first_pass_args, double_second_pass_args, single_image_args, spawn_stream,
@@ -59,6 +62,15 @@ pub struct ImageUpscaylPayload {
     pub tta_mode: bool,
     #[serde(default)]
     pub copy_metadata: bool,
+    #[serde(default)]
+    pub output_dpi: Option<u32>,
+    /// Number of vertical strips to cut the finished image into (None/0/1 =
+    /// no cutting). Wall jobs are hung in strips even on a roll printer.
+    #[serde(default)]
+    pub strip_count: Option<u32>,
+    /// Material shared between two adjacent strips, in centimetres.
+    #[serde(default)]
+    pub strip_overlap_cm: Option<f64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -83,6 +95,15 @@ pub struct DoubleUpscaylPayload {
     pub tta_mode: bool,
     #[serde(default)]
     pub copy_metadata: bool,
+    #[serde(default)]
+    pub output_dpi: Option<u32>,
+    /// Number of vertical strips to cut the finished image into (None/0/1 =
+    /// no cutting). Wall jobs are hung in strips even on a roll printer.
+    #[serde(default)]
+    pub strip_count: Option<u32>,
+    /// Material shared between two adjacent strips, in centimetres.
+    #[serde(default)]
+    pub strip_overlap_cm: Option<f64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -107,6 +128,8 @@ pub struct BatchUpscaylPayload {
     pub tta_mode: bool,
     #[serde(default)]
     pub copy_metadata: bool,
+    #[serde(default)]
+    pub output_dpi: Option<u32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -125,8 +148,15 @@ fn sep() -> char {
     std::path::MAIN_SEPARATOR
 }
 
+/// Models we ship ourselves, which always live in the bundled models folder.
+///
+/// This list went stale once already: it still named two models months after
+/// they were replaced, so the model we actually ship was being looked up in
+/// the user's custom-models folder instead of our own.
+const BUNDLED_MODELS: &[&str] = &["4xLSDIRCompactC3"];
+
 fn is_default_model(model: &str) -> bool {
-    model == "upscayl-lite-4x" || model == "upscayl-standard-4x"
+    BUNDLED_MODELS.contains(&model)
 }
 
 fn hex_val(b: u8) -> Option<u8> {
@@ -199,6 +229,214 @@ fn resolve_models_path(app: &AppHandle, state: &AppState, model: &str) -> String
     models_path(app).to_string_lossy().to_string()
 }
 
+/// Runs a chain of x4 inference passes, each resized down to its planned
+/// width so the last one lands exactly on the target. Intermediates are
+/// temporary PNGs (lossless, so repeated passes don't stack JPEG artefacts)
+/// and are always cleaned up. Returns true if the run failed or was stopped.
+#[allow(clippy::too_many_arguments)]
+fn run_pass_chain(
+    app: &AppHandle,
+    st: &AppState,
+    bin: &Path,
+    plan: &[u32],
+    first_input: &str,
+    final_out: &str,
+    models: &str,
+    model: &str,
+    gpu_id: &str,
+    save_image_as: &str,
+    compression: &str,
+    tile_size: i64,
+    tta_mode: bool,
+    progress_event: &str,
+) -> bool {
+    let total = plan.len();
+    let mut current_input = first_input.to_string();
+    let mut temps: Vec<String> = Vec::new();
+    let mut failed = false;
+
+    for (idx, width) in plan.iter().enumerate() {
+        if st.stopped.load(Ordering::Relaxed) {
+            failed = true;
+            break;
+        }
+        let is_last = idx + 1 == total;
+
+        // Let the UI show overall progress instead of restarting at 0%.
+        let _ = app.emit(
+            events::UPSCAYL_PASS,
+            serde_json::json!({ "current": idx + 1, "total": total }),
+        );
+
+        let (out_path, format) = if is_last {
+            (final_out.to_string(), save_image_as)
+        } else {
+            let nanos = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0);
+            let mut p = std::env::temp_dir();
+            p.push(format!("symps_pass{}_{}.png", idx + 1, nanos));
+            let p = p.to_string_lossy().to_string();
+            temps.push(p.clone());
+            (p, "png")
+        };
+
+        let args = crate::upscale::chain_pass_args(&crate::upscale::ChainPassArgs {
+            in_file: &current_input,
+            out_file: &out_path,
+            models_path: models,
+            model,
+            gpu_id,
+            save_image_as: format,
+            width: *width,
+            // Only compress the final output; intermediates stay lossless.
+            compression: if is_last { compression } else { "" },
+            tile_size,
+            tta_mode,
+        });
+
+        if spawn_stream(app, st, bin, &args, progress_event) {
+            failed = true;
+            break;
+        }
+        current_input = out_path;
+    }
+
+    for t in &temps {
+        let _ = fs::remove_file(t);
+    }
+    failed
+}
+
+/// Cuts a finished output into vertical strips, when the user asked for it.
+///
+/// Never fails the job: the full-size file is already written and usable, so a
+/// cutting problem is reported as a warning instead of losing the upscale.
+fn cut_into_strips(
+    app: &AppHandle,
+    out_file: &str,
+    save_image_as: &str,
+    strip_count: Option<u32>,
+    strip_overlap_cm: Option<f64>,
+    output_dpi: Option<u32>,
+) {
+    let count = match strip_count {
+        Some(c) if c > 1 => c,
+        _ => return,
+    };
+    let path = Path::new(out_file);
+    let Some(parent) = path.parent() else { return };
+    let stem = path
+        .file_stem()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "image".to_string());
+    let dir = parent.join(format!("{stem}_bandes"));
+
+    // The overlap is entered in centimetres. Turning it into pixels needs the
+    // print resolution; in factor mode none was chosen, so assume the house
+    // standard — it is only ever used for this conversion.
+    let dpi = output_dpi.unwrap_or(300) as f64;
+    let overlap = (strip_overlap_cm.unwrap_or(0.0).max(0.0) / 2.54 * dpi).round();
+    let overlap = overlap.clamp(0.0, u32::MAX as f64) as u32;
+
+    match strips::cut(
+        path,
+        &dir,
+        &stem,
+        save_image_as,
+        count,
+        overlap,
+        output_dpi,
+    ) {
+        Ok((folder, produced)) => {
+            let _ = app.emit(
+                events::UPSCAYL_STRIPS,
+                serde_json::json!({
+                    "folder": folder.to_string_lossy(),
+                    "count": produced,
+                }),
+            );
+        }
+        Err(e) => {
+            let _ = app.emit(
+                events::UPSCAYL_WARNING,
+                format!(
+                    "Découpe en bandes impossible : {e}. L'image complète a bien été enregistrée."
+                ),
+            );
+        }
+    }
+}
+
+/// Reports what the app resolved before a run, and stops early with a message
+/// a person can act on when the environment is the problem.
+///
+/// Returns true if the job must not start. Everything it emits lands in the
+/// Logs panel, so a failure report carries the paths instead of only the
+/// binary's own complaint about a path it does not explain.
+fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
+    let _ = app.emit(
+        events::UPSCAYL_PROGRESS,
+        format!(
+            "PATHS: bin={} (exists={}) models={} (exists={})\n",
+            bin.display(),
+            bin.exists(),
+            models,
+            Path::new(models).exists()
+        ),
+    );
+
+    if is_translocated(app) {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            "macOS exécute l'application depuis une copie temporaire et \
+             protégée, ce qui l'empêche d'accéder à ses propres fichiers. \
+             Fermez l'application, glissez « Symp's Upscale » dans le dossier \
+             Applications, puis relancez-la depuis là.",
+        );
+        return true;
+    }
+
+    if !bin.exists() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            format!(
+                "Le moteur d'agrandissement est introuvable à l'emplacement \
+                 attendu : {}. L'installation est probablement incomplète.",
+                bin.display()
+            ),
+        );
+        return true;
+    }
+
+    if !Path::new(models).exists() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            format!("Le dossier de modèles est introuvable : {models}."),
+        );
+        return true;
+    }
+
+    // The engine's own message for a missing model is misleading: when the
+    // file is unreadable it retries with its executable directory glued to
+    // the front, and reports that doubled path instead of the real one.
+    let param = Path::new(models).join(format!("{model}.param"));
+    if !param.exists() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            format!(
+                "Le modèle « {model} » est introuvable. Ouvrez les Paramètres \
+                 et resélectionnez un modèle. (Fichier attendu : {})",
+                param.display()
+            ),
+        );
+        return true;
+    }
+
+    false
+}
+
 // ── Upscale commands ────────────────────────────────────────────────────────
 
 #[tauri::command]
@@ -243,6 +481,9 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+        if preflight(&app, &bin, &models, &payload.model) {
+            return;
+        }
 
         // Bake EXIF orientation into a temp copy so the output isn't rotated.
         let decoded_input_dir = percent_decode(&input_dir);
@@ -257,28 +498,88 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             None => (decoded_input_dir.clone(), decoded_file.clone()),
         };
 
-        let args = single_image_args(&SingleArgs {
-            input_dir: &arg_input_dir,
-            file_name_with_ext: &arg_file,
-            out_file: &out_file,
-            models_path: &models,
-            model: &payload.model,
-            scale: &payload.scale,
-            gpu_id: &payload.gpu_id,
-            save_image_as: &payload.save_image_as,
-            custom_width: &custom_width,
-            compression: &payload.compression,
-            tile_size: payload.tile_size,
-            tta_mode: payload.tta_mode,
-        });
+        // Reaching a target width bigger than one x4 pass needs a chain of
+        // passes: the binary caps `-s` at 4 and its `-w` only resizes with a
+        // classic filter, so a single pass would be x4 of real detail plus
+        // plain interpolation on top.
+        let full_input = format!("{arg_input_dir}{}{arg_file}", sep());
+        let src_dims = image::image_dimensions(&full_input).ok();
 
-        let failed = spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS);
+        let target_width: Option<u32> = if !custom_width.is_empty() {
+            // Print mode: the width is the target.
+            custom_width.parse::<u32>().ok().filter(|w| *w > 0)
+        } else {
+            // Factor mode: only factors beyond one pass need chaining. 2x/3x/4x
+            // are handled natively by `-s`; 6x and 8x are not (the binary
+            // silently falls back to x4), so derive a width and chain.
+            payload
+                .scale
+                .parse::<u32>()
+                .ok()
+                .filter(|s| *s > 4)
+                .and_then(|s| src_dims.map(|(w, _)| w.saturating_mul(s)))
+        };
+
+        let pass_plan: Vec<u32> = match (target_width, src_dims) {
+            (Some(target), Some((src_w, _))) => passes::plan(src_w, target),
+            _ => Vec::new(),
+        };
+
+        let failed = if pass_plan.len() > 1 {
+            run_pass_chain(
+                &app,
+                st,
+                &bin,
+                &pass_plan,
+                &full_input,
+                &out_file,
+                &models,
+                &payload.model,
+                &payload.gpu_id,
+                &payload.save_image_as,
+                &payload.compression,
+                payload.tile_size,
+                payload.tta_mode,
+                events::UPSCAYL_PROGRESS,
+            )
+        } else {
+            let args = single_image_args(&SingleArgs {
+                input_dir: &arg_input_dir,
+                file_name_with_ext: &arg_file,
+                out_file: &out_file,
+                models_path: &models,
+                model: &payload.model,
+                scale: &payload.scale,
+                gpu_id: &payload.gpu_id,
+                save_image_as: &payload.save_image_as,
+                custom_width: &custom_width,
+                compression: &payload.compression,
+                tile_size: payload.tile_size,
+                tta_mode: payload.tta_mode,
+            });
+            spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS)
+        };
         // Clean up the temporary orientation-normalized input, if any.
         if let Some(tmp) = &oriented {
             let _ = fs::remove_file(tmp);
         }
         if !failed && !st.stopped.load(Ordering::Relaxed) {
-            let _ = app.emit(events::UPSCAYL_DONE, out_file);
+            // Stamp the print resolution so the file opens at its intended
+            // physical size instead of defaulting to 72 DPI.
+            if let Some(dpi) = payload.output_dpi {
+                resolution::write_dpi(&out_file, dpi);
+            }
+            let _ = app.emit(events::UPSCAYL_DONE, out_file.clone());
+            // After the preview is live: cutting a wall-sized file takes a
+            // while and the full image is already usable without it.
+            cut_into_strips(
+                &app,
+                &out_file,
+                &payload.save_image_as,
+                payload.strip_count,
+                payload.strip_overlap_cm,
+                payload.output_dpi,
+            );
             notify(&app, "Symp's Upscale", "Image upscaled successfully!");
         }
     });
@@ -317,6 +618,9 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+        if preflight(&app, &bin, &models, &payload.model) {
+            return;
+        }
 
         // Bake EXIF orientation into a temp copy so the output isn't rotated.
         let decoded_file = percent_decode(&full_file_name);
@@ -343,6 +647,13 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             custom_width: &custom_width,
             tile_size: payload.tile_size,
         });
+        // Double upscale is two runs of the binary, each counting 0->100%.
+        // Announce them so the bar spans the whole job instead of filling
+        // up twice.
+        let _ = app.emit(
+            events::UPSCAYL_PASS,
+            serde_json::json!({ "current": 1, "total": 2 }),
+        );
         let failed1 = spawn_stream(&app, st, &bin, &args1, events::DOUBLE_UPSCAYL_PROGRESS);
         // Clean up the temporary orientation-normalized input, if any.
         if let Some(tmp) = &oriented {
@@ -365,9 +676,26 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             tile_size: payload.tile_size,
             tta_mode: payload.tta_mode,
         });
+        let _ = app.emit(
+            events::UPSCAYL_PASS,
+            serde_json::json!({ "current": 2, "total": 2 }),
+        );
         let failed2 = spawn_stream(&app, st, &bin, &args2, events::DOUBLE_UPSCAYL_PROGRESS);
         if !failed2 && !st.stopped.load(Ordering::Relaxed) {
-            let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file);
+            // Stamp the print resolution so the file opens at its intended
+            // physical size instead of defaulting to 72 DPI.
+            if let Some(dpi) = payload.output_dpi {
+                resolution::write_dpi(&out_file, dpi);
+            }
+            let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file.clone());
+            cut_into_strips(
+                &app,
+                &out_file,
+                &payload.save_image_as,
+                payload.strip_count,
+                payload.strip_overlap_cm,
+                payload.output_dpi,
+            );
             notify(&app, "Symp's Upscale", "Image upscayled successfully!");
         }
     });
@@ -410,6 +738,9 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+        if preflight(&app, &bin, &models, &payload.model) {
+            return;
+        }
         let args = batch_args(&BatchArgs {
             input_dir: &input_dir,
             output_dir: &output_folder,
@@ -426,6 +757,10 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
 
         let failed = spawn_stream(&app, st, &bin, &args, events::FOLDER_UPSCAYL_PROGRESS);
         if !failed && !st.stopped.load(Ordering::Relaxed) {
+            // Stamp every result so the whole batch opens at the right size.
+            if let Some(dpi) = payload.output_dpi {
+                resolution::write_dpi_in_dir(&output_folder, dpi);
+            }
             let _ = app.emit(events::FOLDER_UPSCAYL_DONE, output_folder);
             notify(&app, "Symp's Upscale", "Images upscaled successfully!");
         }

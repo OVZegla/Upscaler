@@ -131,13 +131,9 @@
       "AFTER": "หลัง",
       "ZOOM": "ขยาย",
       "MODELS": {
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "เหมาะกับรูปส่วนใหญ่"
-        },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "เหมาะกับรูปส่วนใหญ่ เป็นการเพิ่มขนาดด้วยความเร็วสูงและมีการสูญเสียคุณภาพน้อย"
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
         "remacri-4x": {
           "NAME": "Remacri (ไม่ใช่เชิงพาณิชย์)",
