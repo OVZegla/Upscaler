@@ -33,6 +33,25 @@ pub fn plan(source_width: u32, target_width: u32) -> Vec<u32> {
     }
 
     let factor = target_width as f64 / source_width as f64;
+    let max_factor = MODEL_SCALE.powi(MAX_PASSES as i32);
+
+    // Beyond what the chain can reach, one interpolated enlargement is
+    // unavoidable. Spreading the shortfall over the passes puts it at the
+    // START, where the blur it introduces is then amplified x4 by every pass
+    // that follows. So run each pass at its full x4 on clean data and let the
+    // single upward resize happen LAST, once, un-amplified.
+    if factor > max_factor {
+        return (1..=MAX_PASSES)
+            .map(|i| {
+                if i == MAX_PASSES {
+                    target_width
+                } else {
+                    ((source_width as f64) * MODEL_SCALE.powi(i as i32)).round() as u32
+                }
+            })
+            .collect();
+    }
+
     // How many x4 passes are needed to reach (or exceed) the factor.
     let passes = (factor.log(MODEL_SCALE).ceil() as u32).clamp(1, MAX_PASSES);
 
@@ -132,6 +151,38 @@ mod tests {
         // 2x/3x/4x are handled natively by `-s`, so a single pass is enough.
         for f in [2u32, 3, 4] {
             assert_eq!(plan(4000, 4000 * f).len(), 1, "{f}x should be one pass");
+        }
+    }
+
+    #[test]
+    /// Past the chain's reach the shortfall must land on the final pass, so the
+    /// blur is never fed back into another x4.
+    fn only_the_last_step_may_enlarge() {
+        for (s, t) in [(100u32, 50_000u32), (100, 10_000_000), (37, 1_000_000)] {
+            let steps = plan(s, t);
+            let mut w = s as f64;
+            for (i, step) in steps.iter().enumerate() {
+                let reachable = w * MODEL_SCALE >= *step as f64;
+                assert!(
+                    reachable || i == steps.len() - 1,
+                    "source {s} target {t}: pass {} enlarges by interpolation",
+                    i + 1
+                );
+                w = *step as f64;
+            }
+            assert_eq!(*steps.last().unwrap(), t, "must still land on the target");
+        }
+    }
+
+    #[test]
+    fn within_reach_nothing_is_ever_enlarged() {
+        // 256x is exactly the chain's reach; everything up to it stays pure.
+        for (s, t) in [(100u32, 25_600u32), (1000, 256_000), (640, 40_960)] {
+            let mut w = s as f64;
+            for step in plan(s, t) {
+                assert!(w * MODEL_SCALE >= step as f64, "source {s} target {t}");
+                w = step as f64;
+            }
         }
     }
 
