@@ -440,6 +440,16 @@
   transform-origin: top right;
 }
 
+/* Switching section in the left rail: a short slide from the rail's side,
+   enough to show something changed without making the user wait. */
+@keyframes symp-section-in {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.symp-section-in {
+  animation: symp-section-in 0.24s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
 /* Respect users who ask for less motion. */
 @media (prefers-reduced-motion: reduce) {
   .symp-rise,
@@ -450,7 +460,8 @@
   .symp-splash-version,
   .symp-overlay-in,
   .symp-dialog-in,
-  .symp-menu-in {
+  .symp-menu-in,
+  .symp-section-in {
     animation: none !important;
   }
   .symp-press,

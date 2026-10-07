@@ -545,7 +545,7 @@ const LeftPanel = ({
           {section === "upscale"
             ? "Upscale"
             : section === "print"
-              ? "Taille d'impression"
+              ? "Taille du mur"
               : "Découpe en bandes"}
         </span>
         <button
@@ -659,6 +659,14 @@ const LeftPanel = ({
           )}
         </div>
 
+        {/* Everything below depends on the section. Keyed on it so switching
+            replays a short entrance; the drop zone above stays put. */}
+        <div
+          key={section}
+          className="symp-section-in"
+          style={{ display: "flex", flexDirection: "column", gap: 22 }}
+        >
+
         {/* Taille d'impression */}
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "40ms" }}>
           {section === "print" && (
@@ -744,9 +752,9 @@ const LeftPanel = ({
                       }}
                     >
                       <span style={{ fontSize: 11.5, color: "var(--ink-2)", lineHeight: 1.45 }}>
-                        Traitement très gourmand à {printDpi} DPI. Passer à 150 DPI
-                        divise le poids par quatre — vous pourrez toujours
-                        réaugmenter la résolution dans Photoshop.
+                        Traitement très gourmand à {printDpi} DPI. Passer à 150
+                        DPI divise le poids par quatre. Il faudra réaugmenter la
+                        résolution dans Photoshop.
                       </span>
                       {printDpi !== 150 && (
                         <button
@@ -774,7 +782,7 @@ const LeftPanel = ({
                     <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
                       Facteur {printEstimate.factor.toFixed(1)}× : au-delà de
                       8×, nos mesures montrent que l&apos;IA n&apos;apporte plus
-                      rien — à 16× elle fait moins bien qu&apos;un simple
+                      rien. À 16× elle fait moins bien qu&apos;un simple
                       agrandissement, tout en prenant bien plus de temps. Il
                       faudrait repartir d&apos;une source plus grande.
                     </span>
@@ -998,6 +1006,7 @@ const LeftPanel = ({
           )}
         </div>
         )}
+        </div>
       </div>
 
       {/* Launch button (sticky) */}
