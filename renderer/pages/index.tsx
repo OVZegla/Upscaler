@@ -292,7 +292,11 @@ const Home = () => {
         title: t("ERRORS.GENERIC_ERROR.TITLE"),
         description: data,
       });
-      resetImagePaths();
+      // Deliberately NOT clearing the selected image: a failed run used to
+      // throw away what the user had loaded, so every retry began with
+      // finding the file again. Only the in-flight state is reset.
+      setProgress("");
+      setUpscalePass(null);
     });
     // STRIP CUTTING: the finished image was split into strips
     window.electron.on(ELECTRON_COMMANDS.UPSCAYL_STRIPS, (_, data: any) => {
