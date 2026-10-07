@@ -14,6 +14,7 @@ import {
   printDpiAtom,
   upscalePassAtom,
   etaTextAtom,
+  panelSectionAtom,
   cutStripsAtom,
   stripCountAtom,
   stripOverlapCmAtom,
@@ -48,6 +49,20 @@ const InfoIcon = () => (
 );
 
 
+
+const ScaleIcon = () => (
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+  </svg>
+);
+
+const StripsIcon = () => (
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="4.5" height="16" rx="1" />
+    <rect x="9.75" y="4" width="4.5" height="16" rx="1" />
+    <rect x="16.5" y="4" width="4.5" height="16" rx="1" />
+  </svg>
+);
 
 const SparkleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -384,6 +399,7 @@ type LeftPanelProps = {
 
 const LeftPanel = ({
   imagePath,
+  batchFolderPath,
   dimensions,
   selectImageHandler,
   upscaylHandler,
@@ -437,11 +453,20 @@ const LeftPanel = ({
   const [stripOverlapCm, setStripOverlapCm] = useAtom(stripOverlapCmAtom);
   const [stripResult, setStripResult] = useAtom(stripResultAtom);
   const [showHelp, setShowHelp] = useState(false);
+  const [section, setSection] = useAtom(panelSectionAtom);
+
+  // The rail's first two entries ARE the sizing mode, so choosing one sets it.
+  const goTo = (next: typeof section) => {
+    setSection(next);
+    if (next === "upscale") setUsePrintSize(false);
+    if (next === "print") setUsePrintSize(true);
+  };
 
   // In print mode the job is only launchable once a real size is known —
   // otherwise the backend silently falls back to the scale factor.
+  const hasSource = !!imagePath || !!batchFolderPath;
   const printSizeReady = !usePrintSize || (printWidthCm > 0 && !!printEstimate);
-  const canUpscale = !isUpscaling && printSizeReady;
+  const canUpscale = !isUpscaling && hasSource && printSizeReady;
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
 
@@ -455,20 +480,38 @@ const LeftPanel = ({
     if (useCustomWidth && customWidth > 0) {
       return { width: customWidth, height: Math.round(customWidth * (dimensions.height / dimensions.width)) };
     }
-    const factor = doubleUpscayl ? scaleInt * scaleInt : scaleInt;
+    const factor = doubleUpscayl && !usePrintSize ? scaleInt * scaleInt : scaleInt;
     return { width: dimensions.width * factor, height: dimensions.height * factor };
   }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printEstimate]);
 
 
+  const SECTIONS: {
+    id: typeof section;
+    label: string;
+    sub: string;
+    icon: React.ReactNode;
+    dot?: boolean;
+  }[] = [
+    { id: "upscale", label: "Upscale", sub: "par facteur", icon: <ScaleIcon /> },
+    { id: "print", label: "Taille", sub: "d'impression", icon: <PrinterIcon /> },
+    {
+      id: "strips",
+      label: "Découpe",
+      sub: "en bandes",
+      icon: <StripsIcon />,
+      dot: cutStrips,
+    },
+  ];
+
   return (
     <div
       style={{
-        width: 420,
-        minWidth: 420,
-        maxWidth: 420,
+        width: 468,
+        minWidth: 468,
+        maxWidth: 468,
         height: "100%",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         background: "var(--bg)",
         borderRight: "1px solid var(--border)",
         flexShrink: 0,
@@ -477,6 +520,72 @@ const LeftPanel = ({
       }}
     >
       {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+
+      {/* Section rail. The first two entries are the sizing mode itself, so
+          there is no second control deciding the same thing. */}
+      <nav
+        style={{
+          width: 96,
+          flexShrink: 0,
+          borderRight: "1px solid var(--border)",
+          background: "var(--bg-card)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+          padding: "14px 8px",
+        }}
+      >
+        {SECTIONS.map((sec) => {
+          const on = section === sec.id;
+          return (
+            <button
+              key={sec.id}
+              onClick={() => goTo(sec.id)}
+              aria-current={on}
+              className="symp-press"
+              style={{
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 5,
+                padding: "11px 4px 10px",
+                borderRadius: 10,
+                border: "none",
+                background: on ? "var(--accent-tint)" : "transparent",
+                color: on ? "var(--accent)" : "var(--ink-3)",
+                cursor: "pointer",
+                fontFamily: fontStack,
+                textAlign: "center",
+              }}
+            >
+              {sec.icon}
+              <span style={{ fontSize: 11.5, fontWeight: on ? 700 : 600, lineHeight: 1.15 }}>
+                {sec.label}
+                <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.8 }}>
+                  {sec.sub}
+                </span>
+              </span>
+              {sec.dot && (
+                <span
+                  aria-label="actif"
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: "var(--red)",
+                  }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
 
       {/* Panel header — the guide has to be one obvious click away, not
           buried in the settings tab. */}
@@ -499,7 +608,11 @@ const LeftPanel = ({
             color: "var(--ink-3)",
           }}
         >
-          Réglages
+          {section === "upscale"
+            ? "Upscale"
+            : section === "print"
+              ? "Taille d'impression"
+              : "Découpe en bandes"}
         </span>
         <button
           onClick={() => setShowHelp(true)}
@@ -612,21 +725,9 @@ const LeftPanel = ({
           )}
         </div>
 
-        {/* Mode de redimensionnement */}
+        {/* Taille d'impression */}
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "40ms" }}>
-          <div style={{ marginBottom: 10 }}>
-            <SectionLabel info>Redimensionnement</SectionLabel>
-          </div>
-          <SegmentedControl
-            value={usePrintSize ? "print" : "factor"}
-            onChange={(v) => setUsePrintSize(v === "print")}
-            options={[
-              { value: "factor", label: "Facteur" },
-              { value: "print", label: "Taille d'impression" },
-            ]}
-          />
-
-          {usePrintSize && (
+          {section === "print" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>
               {/* Largeur + DPI */}
               <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
@@ -737,9 +838,11 @@ const LeftPanel = ({
 
                   {printEstimate.isOverStretched && (
                     <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
-                      Facteur {printEstimate.factor.toFixed(1)}× : au-delà de 8×,
-                      l'IA invente des détails plutôt que d'en restituer. Une
-                      source plus grande donnerait un bien meilleur résultat.
+                      Facteur {printEstimate.factor.toFixed(1)}× : au-delà de
+                      8×, nos mesures montrent que l&apos;IA n&apos;apporte plus
+                      rien — à 16× elle fait moins bien qu&apos;un simple
+                      agrandissement, tout en prenant bien plus de temps. Il
+                      faudrait repartir d&apos;une source plus grande.
                     </span>
                   )}
 
@@ -759,8 +862,8 @@ const LeftPanel = ({
           )}
         </div>
 
-        {/* Scale slider — only in factor mode; print mode derives the scale */}
-        {!usePrintSize && (
+        {/* Scale slider — the "Upscale" section's only control. */}
+        {section === "upscale" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <SectionLabel info>Niveau d'upscale</SectionLabel>
@@ -783,7 +886,10 @@ const LeftPanel = ({
           </div>
         )}
 
-        {/* Double upscale */}
+        {/* Double upscale — only in factor mode. In print mode the number of
+            passes comes from the target width, so a second pass on top would
+            just overshoot it. */}
+        {section === "upscale" && (
         <div className="symp-rise" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, ["--symp-delay" as any]: "80ms" }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ marginBottom: 4 }}>
@@ -795,6 +901,7 @@ const LeftPanel = ({
           </div>
           <PillToggle on={doubleUpscayl} onChange={setDoubleUpscayl} />
         </div>
+        )}
 
         {/* Mode — only worth showing while there is something to choose. */}
         {MODE_CARDS.length > 1 && (
@@ -876,7 +983,8 @@ const LeftPanel = ({
         </div>
         )}
 
-        {/* Découpe en bandes */}
+        {/* Découpe en bandes — its own section in the rail. */}
+        {section === "strips" && (
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "160ms" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
             <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
@@ -884,7 +992,7 @@ const LeftPanel = ({
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>Découper en bandes</div>
                 <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>
-                  Prépare les lés de pose, sans passer par Photoshop.
+                  Prépare les lés de pose, numérotés dans l'ordre.
                 </div>
               </div>
             </div>
@@ -955,6 +1063,7 @@ const LeftPanel = ({
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Launch button (sticky) */}
@@ -1072,6 +1181,8 @@ const LeftPanel = ({
               <Spinner />
               <span>Upscale en cours, patientez…</span>
             </>
+          ) : !hasSource ? (
+            <span>Sélectionnez une image</span>
           ) : !printSizeReady ? (
             <span>Indiquez la taille du mur</span>
           ) : (
@@ -1122,6 +1233,7 @@ const LeftPanel = ({
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

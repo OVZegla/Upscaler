@@ -175,3 +175,8 @@ export const themeAtom = atomWithStorage<"light" | "dark">("theme", "light");
 /** Human-readable time remaining for the running job, or null when it cannot
  *  yet be estimated honestly. */
 export const etaTextAtom = atom(null as string | null);
+
+/** Which settings section the left rail is showing. "upscale" and "print" are
+ *  the two sizing modes; "strips" is an add-on that applies on top of either. */
+export type PanelSection = "upscale" | "print" | "strips";
+export const panelSectionAtom = atom("upscale" as PanelSection);

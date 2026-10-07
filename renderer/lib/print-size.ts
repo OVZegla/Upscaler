@@ -25,8 +25,14 @@ export function pixelsToCm(px: number, dpi: number): number {
  *  ~400 MP ≈ 1.2 GB as flat 8-bit RGB, before the upscaler's own working set. */
 const HEAVY_MEGAPIXELS = 400;
 
-/** Above this upscale factor the model stops recovering detail and starts
- *  inventing it — worth warning about regardless of machine capacity. */
+/** Above this factor the model stops paying for itself.
+ *
+ *  Measured on a 4x round-trip (benchmarks/): against plain interpolation the
+ *  model gains +0.08 SSIM on text at 4x, +0.07 at 8x, and -0.02 at 16x. On
+ *  architecture it goes +0.055, +0.018, then -0.064. The advantage shrinks
+ *  monotonically and has crossed into negative by 16x — past that point the
+ *  chained passes cost time to produce something worse than a plain resize.
+ *  Line art holds up longer, which is why this warns rather than blocks. */
 const MAX_SANE_FACTOR = 8;
 
 /** Hard limit of the JPEG format on either dimension. */

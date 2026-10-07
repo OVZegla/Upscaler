@@ -122,6 +122,12 @@ const Sidebar = ({
       ? customWidth.toString()
       : null;
 
+  // In print mode the number of passes is derived from the target width, so a
+  // "double upscale" on top would route the job through the two-pass command
+  // and overshoot the size the user asked for. The toggle is hidden there, but
+  // a value stored from factor mode would still have taken that branch.
+  const effectiveDoubleUpscayl = usePrintSize ? false : doubleUpscayl;
+
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");
     setUpscaledImagePath("");
@@ -132,7 +138,7 @@ const Sidebar = ({
     setUpscaledBatchFolderPath("");
     if (imagePath !== "" || batchFolderPath !== "") {
       setProgress(t("APP.PROGRESS.WAIT_TITLE"));
-      if (doubleUpscayl) {
+      if (effectiveDoubleUpscayl) {
         window.electron.send<DoubleUpscaylPayload>(
           ELECTRON_COMMANDS.DOUBLE_UPSCAYL,
           {
