@@ -61,7 +61,7 @@ const SECTIONS: Section[] = [
       },
       {
         term: "Le facteur affiché",
-        text: "Le logiciel indique de combien votre image doit être agrandie. Jusqu'à 8×, l'IA apporte un vrai gain. Au-delà, nos mesures montrent que l'avantage disparaît : à 16× le résultat est moins bon qu'un simple agrandissement, pour bien plus de temps de calcul. Le réglage monte quand même jusqu'à 16× et un message vous prévient, parce que le dessin au trait tient le coup plus longtemps que la photo. Mais à ce stade c'est en général la source qu'il faut changer, pas le réglage.",
+        text: "Monter le facteur donne une image plus grande, pas plus détaillée. L'IA ne sait agrandir que par 4 : au-delà, elle repasse sur ce qu'elle a inventé à la passe précédente, comme une photocopie de photocopie. Jusqu'à 8× le gain reste réel. À 16× le résultat est déjà moins fidèle qu'un simple étirement de l'image, pour bien plus de temps et de poids. Le curseur monte quand même jusqu'à 256×, parce que les logos et dessins au trait tiennent beaucoup mieux que les photos. Mais pour gagner en qualité sur une photo, c'est la source qu'il faut plus grande, pas le réglage.",
       },
       {
         term: "La sortie reste en RVB",
