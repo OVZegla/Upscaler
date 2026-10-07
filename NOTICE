@@ -6,12 +6,26 @@ licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
 The full text of the AGPL-3.0 license is provided in the LICENSE file.
 
-As required by the AGPL-3.0, the source code of this modified version is
-publicly available at: https://github.com/OVZegla/Upscaler
+As required by the AGPL-3.0, the Corresponding Source of this modified version
+is publicly available at: https://github.com/OVZegla/Upscaler
 
-Modifications made from the original Upscayl codebase include:
+That repository contains everything needed to generate, install and run this
+build, including the build scripts (package.json, src-tauri/, and the GitHub
+Actions workflows under .github/workflows/).
+
+This program is distributed WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+
+MODIFICATIONS
+-------------
+
+Modified by Symp's, from 2025 onwards. Carried changes, relative to the
+original Upscayl codebase:
+
 - Rebranding to "Symp's Upscale"
-- Migration to Tauri 2.x backend
+- Migration from Electron to a Tauri 2.x backend
 - Redesigned user interface, in French
 - Print sizing in centimetres with an output-resolution target
 - Chained x4 inference passes to reach an exact target width
@@ -22,58 +36,100 @@ Modifications made from the original Upscayl codebase include:
 - Built-in user guide covering every setting
 - Progress, cancel and various UX fixes
 
--------------------------------------------------------------------------------
+The AI models themselves are NOT modified: they are shipped byte-for-byte as
+received (see the checksums below).
 
-Third-party components bundled in this distribution:
 
-1. upscayl-bin (Real-ESRGAN ncnn Vulkan)
+BUNDLED EXECUTABLES
+-------------------
+
+1. upscayl-bin / upscayl-bin.exe  (the inference backend)
    Source:  https://github.com/upscayl/upscayl-ncnn
-   License: MIT License
+   License: GNU Affero General Public License v3.0 (AGPL-3.0)
+            — see https://github.com/upscayl/upscayl-ncnn/blob/master/LICENSE
    Copyright (c) Upscayl Contributors
+   Shipped unmodified. Its Corresponding Source is at the URL above.
 
-2. Real-ESRGAN
-   Source:  https://github.com/xinntao/Real-ESRGAN
-   License: BSD 3-Clause License
-   Copyright (c) 2021, Xintao Wang
+2. vcomp140.dll  (Windows builds only)
+   Microsoft Visual C++ OpenMP runtime, redistributed under the Microsoft
+   Visual Studio redistributable terms. Not part of the Vulkan SDK.
 
-3. ncnn
-   Source:  https://github.com/Tencent/ncnn
-   License: BSD 3-Clause License
-   Copyright (C) 2017 THL A29 Limited, a Tencent company.
+The backend statically incorporates:
 
-4. Vulkan SDK (runtime, vcomp140.dll on Windows)
-   License: Apache License 2.0 / Microsoft Redistributable License
+   ncnn       — BSD 3-Clause — Copyright (C) 2017 THL A29 Limited, a Tencent
+                company — https://github.com/Tencent/ncnn
+   Real-ESRGAN — BSD 3-Clause — Copyright (c) 2021, Xintao Wang
+                https://github.com/xinntao/Real-ESRGAN
 
--------------------------------------------------------------------------------
+Vulkan itself is a system API provided by the user's graphics driver; no
+Vulkan SDK component is redistributed here.
 
-AI upscaling models bundled in this distribution are provided by Upscayl
-and are subject to their respective licenses. See the Upscayl repository
-for model license details: https://github.com/upscayl/upscayl
 
--------------------------------------------------------------------------------
+BUNDLED AI MODELS
+-----------------
 
-This software uses the following open-source JavaScript/TypeScript libraries
-(MIT License unless otherwise noted):
+Two model files are bundled, taken verbatim from the Upscayl distribution:
 
-  React                  — MIT  — https://github.com/facebook/react
-  Next.js                — MIT  — https://github.com/vercel/next.js
-  Jotai                  — MIT  — https://github.com/pmndrs/jotai
-  Tailwind CSS           — MIT  — https://github.com/tailwindlabs/tailwindcss
-  daisyUI                — MIT  — https://github.com/saadeghi/daisyui
-  Radix UI               — MIT  — https://github.com/radix-ui/primitives
-  Lucide React           — ISC  — https://github.com/lucide-icons/lucide
-  react-compare-slider   — MIT  — https://github.com/nerdyman/react-compare-slider
-  react-tooltip          — MIT  — https://github.com/ReactTooltip/react-tooltip
-  clsx                   — MIT  — https://github.com/lukeed/clsx
+   upscayl-standard-4x  (RRDBNet / ESRGAN architecture, 999 layers)
+     bin   sha256 713ee713b0353afaa27976f0563a64a5043bd70b9bd8936c2e26e25ebcdbcddf
+     param sha256 35330ececcea33b6c397a72548e788d5d53becee4734c50b7fada36e89f10a86
+
+   upscayl-lite-4x  (SRVGGNet "Compact" architecture, 72 layers)
+     bin   sha256 85ee266b632a765a725425ba6a5620c088c8aa2939a03063b2d83b3462724cc1
+     param sha256 22174924330297357434ad21ed0af7f4b820008d2a502b492754d130d4142714
+
+Both are byte-identical to the files published at
+https://github.com/upscayl/upscayl/tree/main/resources/models
+
+PROVENANCE — OPEN ITEM. The Upscayl distribution does not ship a separate
+license file for its model weights, and the files themselves carry no embedded
+license metadata. These weights are understood to derive from the Real-ESRGAN
+project (BSD 3-Clause, Copyright (c) 2021 Xintao Wang), whose terms would
+permit redistribution and commercial use with attribution; that attribution is
+given above. However, this derivation has NOT been confirmed against a license
+statement accompanying the weights, and is recorded here as an unresolved
+question rather than as an established fact.
+
+Anyone redistributing this software, or relying on it for commercially billed
+work, should establish the position for themselves. The same applies to any
+model a user loads through the custom-models feature: such models are not
+distributed with this software and carry whatever terms their own author set —
+several widely circulated upscaling models are published under CC BY-NC terms,
+which do not permit commercial use.
+
+
+THIRD-PARTY LIBRARIES
+---------------------
+
+JavaScript / TypeScript (MIT unless noted), non-exhaustive:
+
+  React                    — MIT        — https://github.com/facebook/react
+  Next.js                  — MIT        — https://github.com/vercel/next.js
+  Jotai                    — MIT        — https://github.com/pmndrs/jotai
+  Tailwind CSS             — MIT        — https://github.com/tailwindlabs/tailwindcss
+  daisyUI                  — MIT        — https://github.com/saadeghi/daisyui
+  Radix UI                 — MIT        — https://github.com/radix-ui/primitives
+  Lucide React             — ISC        — https://github.com/lucide-icons/lucide
+  react-compare-slider     — MIT        — https://github.com/nerdyman/react-compare-slider
+  react-tooltip            — MIT        — https://github.com/ReactTooltip/react-tooltip
+  clsx                     — MIT        — https://github.com/lukeed/clsx
   class-variance-authority — Apache-2.0 — https://github.com/joe-bell/cva
 
-This software uses the following open-source Rust crates
-(MIT or Apache-2.0 dual-licensed unless otherwise noted):
+Direct Rust dependencies (MIT or Apache-2.0 dual-licensed unless noted):
 
-  tauri         — MIT/Apache-2.0 — https://github.com/tauri-apps/tauri
-  serde         — MIT/Apache-2.0 — https://github.com/serde-rs/serde
-  tokio         — MIT            — https://github.com/tokio-rs/tokio
-  anyhow        — MIT/Apache-2.0 — https://github.com/dtolnay/anyhow
+  tauri                      — MIT/Apache-2.0 — https://github.com/tauri-apps/tauri
+  tauri-plugin-dialog        — MIT/Apache-2.0
+  tauri-plugin-notification  — MIT/Apache-2.0
+  tauri-plugin-opener        — MIT/Apache-2.0
+  serde / serde_json         — MIT/Apache-2.0 — https://github.com/serde-rs/serde
+  image                      — MIT/Apache-2.0 — https://github.com/image-rs/image
+  kamadak-exif               — BSD 2-Clause   — https://github.com/kamadak/exif-rs
+  sysinfo                    — MIT            — https://github.com/GuillaumeGomez/sysinfo
+  base64                     — MIT/Apache-2.0 — https://github.com/marshallpierce/rust-base64
+  crc32fast                  — MIT/Apache-2.0 — https://github.com/srijs/rust-crc32fast
 
-A complete list of Rust crate licenses is available by running:
+The complete transitive list, with licenses, can be produced by running:
   cd src-tauri && cargo license
+
+No endorsement by, affiliation with, or approval from any of the projects or
+authors listed above is claimed or implied.
