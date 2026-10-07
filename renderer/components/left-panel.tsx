@@ -5,7 +5,6 @@ import { ELECTRON_COMMANDS } from "@common/electron-commands";
 import {
   scaleAtom,
   selectedModelIdAtom,
-  doubleUpscaylAtom,
   progressAtom,
   customWidthAtom,
   useCustomWidthAtom,
@@ -315,8 +314,9 @@ const MODE_CARDS = [
  *  the slider's, not the engine's. Measured, the model stops paying for itself
  *  past 8x on photographic content but line art holds up, so the stops go
  *  further and the panel says what it costs rather than refusing. */
-const SCALE_VALUES = [1, 2, 4, 6, 8, 12, 16];
-const SCALE_TICKS = ["1x", "2x", "4x", "6x", "8x", "12x", "16x"];
+const SCALE_VALUES = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 128, 256];
+/** Only a few get a label: fourteen under a 350px track is unreadable. */
+const SCALE_TICK_AT = [1, 4, 16, 64, 256];
 /** Above this the measured advantage over a plain resize is gone. */
 const SCALE_WARN_ABOVE = 8;
 
@@ -351,7 +351,6 @@ const LeftPanel = ({
 }: LeftPanelProps) => {
   const [scale, setScale] = useAtom(scaleAtom);
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
-  const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [progress, setProgress] = useAtom(progressAtom);
   const [upscalePass, setUpscalePass] = useAtom(upscalePassAtom);
   const etaText = useAtomValue(etaTextAtom);
@@ -404,9 +403,33 @@ const LeftPanel = ({
 
   // In print mode the job is only launchable once a real size is known —
   // otherwise the backend silently falls back to the scale factor.
+  // Factor mode never estimated its own output. At the factors the slider now
+  // reaches, a job can be physically impossible long before it is merely
+  // unwise, and waiting minutes to find that out is the worst way to learn it.
+  const factorEstimate = useMemo(() => {
+    if (usePrintSize || !dimensions.width || !dimensions.height) return null;
+    const width = dimensions.width * scaleInt;
+    const height = dimensions.height * scaleInt;
+    const megapixels = (width * height) / 1e6;
+    return {
+      width,
+      height,
+      megapixels,
+      bytes: width * height * 3,
+      // Heavy, but the user's call: show the weight and let them decide.
+      heavy: megapixels > 400,
+      // JPEG cannot address a side beyond this.
+      exceedsJpegLimit: width > 65535 || height > 65535,
+      // Genuinely out of reach: 16 gigapixels is ~64 GB as RGBA, and both the
+      // DPI stamp and the strip cutter load the finished file whole.
+      impossible: megapixels > 16000,
+    };
+  }, [dimensions, scaleInt, usePrintSize]);
+
   const hasSource = !!imagePath || !!batchFolderPath;
   const printSizeReady = !usePrintSize || (printWidthCm > 0 && !!printEstimate);
-  const canUpscale = !isUpscaling && hasSource && printSizeReady;
+  const canUpscale =
+    !isUpscaling && hasSource && printSizeReady && !factorEstimate?.impossible;
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
 
@@ -420,10 +443,9 @@ const LeftPanel = ({
     if (useCustomWidth && customWidth > 0) {
       return { width: customWidth, height: Math.round(customWidth * (dimensions.height / dimensions.width)) };
     }
-    const factor =
-      doubleUpscayl && !usePrintSize && scaleInt <= 4 ? scaleInt * scaleInt : scaleInt;
+    const factor = scaleInt;
     return { width: dimensions.width * factor, height: dimensions.height * factor };
-  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printEstimate]);
+  }, [dimensions, scaleInt, useCustomWidth, customWidth, usePrintSize, printEstimate]);
 
 
   const SECTIONS: {
@@ -827,13 +849,74 @@ const LeftPanel = ({
               onChange={(e) => setScale(String(SCALE_VALUES[parseInt(e.target.value)]))}
               style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
             />
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-              {SCALE_TICKS.map((tick) => (
-                <span key={tick} style={{ fontSize: 10, color: "var(--ink-3)" }}>{tick}</span>
-              ))}
+            <div style={{ position: "relative", height: 14, marginTop: 4 }}>
+              {SCALE_TICK_AT.map((v) => {
+                const i = SCALE_VALUES.indexOf(v);
+                const pct = (i / (SCALE_VALUES.length - 1)) * 100;
+                return (
+                  <span
+                    key={v}
+                    style={{
+                      position: "absolute",
+                      left: `${pct}%`,
+                      transform: `translateX(${pct === 0 ? "0" : pct === 100 ? "-100%" : "-50%"})`,
+                      fontSize: 10,
+                      color: "var(--ink-3)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {v}x
+                  </span>
+                );
+              })}
             </div>
 
-            {scaleInt > SCALE_WARN_ABOVE && (
+            {factorEstimate && (
+              <div style={{ marginTop: 10, fontSize: 11.5, color: "var(--ink-3)" }}>
+                <span style={{ fontFamily: "var(--symp-mono, monospace)", fontWeight: 700, color: "var(--accent)" }}>
+                  {factorEstimate.width.toLocaleString("fr-FR")} × {factorEstimate.height.toLocaleString("fr-FR")} px
+                </span>
+                <span style={{ marginLeft: 8 }}>
+                  {factorEstimate.megapixels.toFixed(0)} Mpx, environ{" "}
+                  {formatSize(factorEstimate.bytes)}
+                </span>
+              </div>
+            )}
+
+            {factorEstimate?.impossible && (
+              <div
+                style={{
+                  marginTop: 10,
+                  fontSize: 11.5,
+                  lineHeight: 1.45,
+                  color: "var(--ink-2)",
+                  padding: "9px 11px",
+                  borderRadius: 9,
+                  border: "1px solid var(--border-2)",
+                  background: "var(--red-tint)",
+                }}
+              >
+                À cette taille le fichier ne pourra pas être écrit&nbsp;: la
+                mémoire nécessaire dépasse ce qu&apos;une machine peut fournir.
+                Choisissez un facteur plus bas.
+              </div>
+            )}
+
+            {!factorEstimate?.impossible && factorEstimate?.exceedsJpegLimit && (
+              <div style={{ marginTop: 10, fontSize: 11.5, lineHeight: 1.45, color: "var(--red)" }}>
+                Au-delà de 65 535 px de côté, le format JPG est impossible.
+                Choisissez PNG dans les paramètres.
+              </div>
+            )}
+
+            {!factorEstimate?.impossible && factorEstimate?.heavy && (
+              <div style={{ marginTop: 10, fontSize: 11.5, lineHeight: 1.45, color: "var(--ink-2)" }}>
+                Traitement très gourmand. Prévoyez du temps et de l&apos;espace
+                disque.
+              </div>
+            )}
+
+            {!factorEstimate?.impossible && scaleInt > SCALE_WARN_ABOVE && (
               <div
                 style={{
                   marginTop: 10,
@@ -853,23 +936,6 @@ const LeftPanel = ({
               </div>
             )}
           </div>
-        )}
-
-        {/* Double upscale — only in factor mode. In print mode the number of
-            passes comes from the target width, so a second pass on top would
-            just overshoot it. */}
-        {section === "upscale" && scaleInt <= 4 && (
-        <div className="symp-rise" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, ["--symp-delay" as any]: "80ms" }}>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ marginBottom: 4 }}>
-              <SectionLabel info>Double Upscale</SectionLabel>
-            </div>
-            <div style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.4 }}>
-              Applique deux passes d'upscaling pour un résultat ultra-détaillé
-            </div>
-          </div>
-          <PillToggle on={doubleUpscayl} onChange={setDoubleUpscayl} />
-        </div>
         )}
 
         {/* Mode — only worth showing while there is something to choose. */}

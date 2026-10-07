@@ -15,7 +15,6 @@ import {
   useCustomWidthAtom,
   tileSizeAtom,
   selectedModelIdAtom,
-  doubleUpscaylAtom,
   gpuIdAtom,
   saveImageAsAtom,
   userStatsAtom,
@@ -75,7 +74,6 @@ const Sidebar = ({
   const version = useUpscaylVersion();
 
   const [selectedModelId] = useAtom(selectedModelIdAtom);
-  const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [gpuId] = useAtom(gpuIdAtom);
   const [saveImageAs] = useAtom(saveImageAsAtom);
 
@@ -126,12 +124,12 @@ const Sidebar = ({
   // "double upscale" on top would route the job through the two-pass command
   // and overshoot the size the user asked for. The toggle is hidden there, but
   // a value stored from factor mode would still have taken that branch.
-  // Above 4x the binary caps its own -s, so the two-pass command would quietly
-  // produce 16x whatever the slider says; the single path chains correctly
-  // instead. The toggle is hidden there, but a stored value would still have
-  // taken that branch.
-  const effectiveDoubleUpscayl =
-    usePrintSize || (parseInt(scale) || 4) > 4 ? false : doubleUpscayl;
+  // Double upscale is gone: "double x4" and "x16" produced the same file, and
+  // above 4x the binary capped its own -s so it silently gave 16x whatever the
+  // slider said. The factor slider covers the whole range through the chain.
+  // Pinned false so a value stored by an older version cannot take the
+  // two-pass branch, which the backend still exposes.
+  const effectiveDoubleUpscayl = false;
 
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");
@@ -174,7 +172,6 @@ const Sidebar = ({
         }));
         logit("🏁 DOUBLE_UPSCAYL");
       } else if (batchMode) {
-        setDoubleUpscayl(false);
         window.electron.send<BatchUpscaylPayload>(
           ELECTRON_COMMANDS.FOLDER_UPSCAYL,
           {
@@ -242,7 +239,7 @@ const Sidebar = ({
     onUpscaylHandlerReady(upscaylHandler);
     // Print-mode values belong here too: without them the registered handler
     // keeps a stale width/DPI and the job runs with the previous size.
-  }, [imagePath, batchFolderPath, outputPath, selectedModelId, doubleUpscayl, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite, usePrintSize, printDpi, printWidthCm, cutStrips, stripCount, stripOverlapCm]);
+  }, [imagePath, batchFolderPath, outputPath, selectedModelId, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite, usePrintSize, printDpi, printWidthCm, cutStrips, stripCount, stripOverlapCm]);
 
   return (
     <LeftNav

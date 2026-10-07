@@ -3,7 +3,6 @@ import React, { useMemo, useState, useEffect } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import {
   scaleAtom,
-  doubleUpscaylAtom,
   customWidthAtom,
   useCustomWidthAtom,
   usePrintSizeAtom,
@@ -100,7 +99,6 @@ const PreviewPanel = ({
   const scale = useAtomValue(scaleAtom);
   const inputSize = useFileSize(imagePath);
   const outputSize = useFileSize(upscaledImagePath);
-  const doubleUpscayl = useAtomValue(doubleUpscaylAtom);
   const customWidth = useAtomValue(customWidthAtom);
   const useCustomWidth = useAtomValue(useCustomWidthAtom);
   const usePrintSize = useAtomValue(usePrintSizeAtom);
@@ -144,14 +142,13 @@ const PreviewPanel = ({
       };
     }
     // Print mode ignores double upscale, so the estimate must too.
-    const factor =
-      doubleUpscayl && !usePrintSize && scaleInt <= 4 ? scaleInt * scaleInt : scaleInt;
+    const factor = scaleInt;
     return {
       width: dimensions.width * factor,
       height: dimensions.height * factor,
       factor,
     };
-  }, [dimensions, scaleInt, doubleUpscayl, useCustomWidth, customWidth, usePrintSize, printWidthCm, printDpi]);
+  }, [dimensions, scaleInt, useCustomWidth, customWidth, usePrintSize, printWidthCm, printDpi]);
 
   const fileName = imagePath ? imagePath.split(/[\\/]/).pop() : "";
   const ext = imagePath ? (imagePath.split(".").pop() || "").toUpperCase() : "";
