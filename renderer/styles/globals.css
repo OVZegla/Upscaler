@@ -365,11 +365,48 @@
 }
 .symp-drop-active { animation: symp-drop-pulse 1.5s ease-out infinite; }
 
+/* Launch animation: the mark settles, then a rule draws left to right. */
+@keyframes symp-splash-logo {
+  0%   { opacity: 0; transform: scale(0.92) translateY(10px); filter: blur(6px); }
+  60%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+.symp-splash-logo {
+  animation: symp-splash-logo 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes symp-splash-bar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.symp-splash-bar {
+  animation: symp-splash-bar 1.15s cubic-bezier(0.65, 0, 0.35, 1) 0.35s both;
+}
+
+/* Modal entrances. */
+@keyframes symp-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.symp-overlay-in { animation: symp-overlay-in 0.2s ease both; }
+
+@keyframes symp-dialog-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.symp-dialog-in {
+  animation: symp-dialog-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
 /* Respect users who ask for less motion. */
 @media (prefers-reduced-motion: reduce) {
   .symp-rise,
   .symp-drop-active,
-  .symp-progress-indeterminate {
+  .symp-progress-indeterminate,
+  .symp-splash-logo,
+  .symp-splash-bar,
+  .symp-overlay-in,
+  .symp-dialog-in {
     animation: none !important;
   }
   .symp-press,

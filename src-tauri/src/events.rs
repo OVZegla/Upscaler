@@ -18,6 +18,10 @@ pub const FOLDER_UPSCAYL_DONE: &str = "folder-upscayl-done";
 /// than restarting at 0% on every pass.
 pub const UPSCAYL_PASS: &str = "upscayl-pass";
 
+/// Emitted once the finished image has been cut into strips, as
+/// `{"folder":"...","count":3}`, so the UI can offer to open the folder.
+pub const UPSCAYL_STRIPS: &str = "upscayl-strips";
+
 pub const SCALING_AND_CONVERTING: &str = "scaling-and-converting";
 pub const CUSTOM_MODEL_FILES_LIST: &str = "custom-model-files-list";
 pub const METADATA_ERROR: &str = "metadata-error";

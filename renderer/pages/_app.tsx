@@ -8,6 +8,7 @@ import { Tooltip } from "react-tooltip";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { installTauriElectronShim } from "@/lib/tauri-electron-shim";
 import { installGlobalErrorOverlay } from "@/lib/global-error-overlay";
+import SplashScreen from "@/components/splash-screen";
 
 // Make any uncaught error visible instead of a silent black screen. Must run
 // first so it can also catch failures from the shim installation below.
@@ -28,6 +29,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <Head>
         <title>Symp&apos;s Upscale</title>
       </Head>
+
+      {/* Sits above an app that is already running, and removes itself. */}
+      <SplashScreen />
 
       <ErrorBoundary>
         <Provider>

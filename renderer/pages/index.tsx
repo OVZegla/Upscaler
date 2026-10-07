@@ -8,6 +8,7 @@ import {
   savedOutputPathAtom,
   progressAtom,
   upscalePassAtom,
+  stripResultAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
   compressionAtom,
@@ -52,6 +53,7 @@ const Home = () => {
   const [upscaledBatchFolderPath, setUpscaledBatchFolderPath] = useState("");
   const setProgress = useSetAtom(progressAtom);
   const setUpscalePass = useSetAtom(upscalePassAtom);
+  const setStripResult = useSetAtom(stripResultAtom);
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
@@ -282,6 +284,17 @@ const Home = () => {
         description: data,
       });
       resetImagePaths();
+    });
+    // STRIP CUTTING: the finished image was split into strips
+    window.electron.on(ELECTRON_COMMANDS.UPSCAYL_STRIPS, (_, data: any) => {
+      try {
+        const d = typeof data === "string" ? JSON.parse(data) : data;
+        if (d && typeof d.folder === "string" && d.folder) {
+          setStripResult({ folder: d.folder, count: Number(d.count) || 0 });
+        }
+      } catch {
+        /* the strips are on disk either way — never break the run over this */
+      }
     });
     // CHAINED UPSCALE: which pass is running
     window.electron.on(ELECTRON_COMMANDS.UPSCAYL_PASS, (_, data: any) => {

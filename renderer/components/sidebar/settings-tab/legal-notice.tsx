@@ -138,6 +138,15 @@ export default function LegalNotice() {
             Photoshop et sur les RIP.
           </li>
           <li style={li}>
+            <strong>Découpe en bandes</strong> — l&apos;image finale est
+            automatiquement scindée en lés de pose numérotés, avec le
+            recouvrement souhaité, sans passer par un logiciel de retouche.
+          </li>
+          <li style={li}>
+            <strong>Guide intégré</strong> — chaque réglage expliqué dans le
+            vocabulaire de l&apos;atelier, accessible à tout moment.
+          </li>
+          <li style={li}>
             <strong>Garde-fous métier</strong> — alertes sur les traitements
             trop lourds, les agrandissements excessifs et les limites de
             format.
