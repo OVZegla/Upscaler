@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   scaleAtom,
   doubleUpscaylAtom,
@@ -9,10 +9,12 @@ import {
   usePrintSizeAtom,
   printWidthCmAtom,
   printDpiAtom,
+  zoomAtom,
+  panAtom,
 } from "../atoms/user-settings-atom";
 import { estimatePrint } from "@/lib/print-size";
 import { userFileUrl } from "@/lib/asset-url";
-import ImageViewer from "./main-content/image-viewer";
+import ZoomView from "./main-content/zoom-view";
 import SliderView from "./main-content/slider-view";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
@@ -106,6 +108,8 @@ const PreviewPanel = ({
   const usePrintSize = useAtomValue(usePrintSizeAtom);
   const printWidthCm = useAtomValue(printWidthCmAtom);
   const printDpi = useAtomValue(printDpiAtom);
+  const [zoom, setZoom] = useAtom(zoomAtom);
+  const [pan, setPan] = useAtom(panAtom);
   const [detailMode, setDetailMode] = useState(false);
   // Set when the upscaled image fails to load (missing file, asset-protocol
   // rejection). Shown inline instead of failing silently.
@@ -114,6 +118,10 @@ const PreviewPanel = ({
   useEffect(() => {
     setOutputLoadError(false);
   }, [upscaledImagePath]);
+
+  useEffect(() => {
+    setPan({ x: 0, y: 0 });
+  }, [imagePath, setPan]);
 
   const scaleInt = parseInt(scale) || 4;
 
@@ -194,6 +202,10 @@ const PreviewPanel = ({
             zoomAmount={zoomAmount}
           />
         </div>
+      ) : showComparison && !imagePath ? (
+        <div style={{ flex: 1, display: "flex", padding: "12px 20px 20px", minHeight: 0 }}>
+          {placeholder}
+        </div>
       ) : showComparison && imagePath && !upscaledImagePath ? (
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ink-3)", fontSize: 13, fontFamily: fontStack }}>
           Lancez l'upscale pour voir la comparaison
@@ -245,16 +257,14 @@ const PreviewPanel = ({
             }}
           >
             {imagePath ? (
-              detailMode ? (
-                <img
-                  src={userFileUrl(imagePath)}
-                  draggable={false}
-                  alt=""
-                  style={{ width: "100%", height: "100%", objectFit: "none", objectPosition: "center" }}
-                />
-              ) : (
-                <ImageViewer imagePath={imagePath} setDimensions={setDimensions} />
-              )
+              <ZoomView
+                imagePath={imagePath}
+                zoom={detailMode ? 100 : zoom}
+                pan={pan}
+                setPan={setPan}
+                setZoom={setZoom}
+                onDimensions={setDimensions}
+              />
             ) : (
               placeholder
             )}
@@ -272,7 +282,7 @@ const PreviewPanel = ({
 
         {/* APRÈS */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: upscaledImagePath ? "var(--accent)" : "var(--red)", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: upscaledImagePath ? "var(--accent)" : "var(--ink-3)", textTransform: "uppercase" }}>
             {detailMode ? "Après · IA 1:1" : upscaledImagePath ? "Après" : "Après (estimé)"}
           </div>
           <div
@@ -313,17 +323,13 @@ const PreviewPanel = ({
                   </span>
                 </div>
               ) : (
-                <img
-                  src={userFileUrl(upscaledImagePath)}
-                  draggable={false}
-                  alt=""
+                <ZoomView
+                  imagePath={upscaledImagePath}
+                  zoom={detailMode ? 100 : zoom}
+                  pan={pan}
+                  setPan={setPan}
+                  setZoom={setZoom}
                   onError={() => setOutputLoadError(true)}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: detailMode ? "none" : "contain",
-                    objectPosition: "center",
-                  }}
                 />
               )
             ) : (

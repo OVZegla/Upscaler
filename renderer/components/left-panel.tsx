@@ -90,7 +90,7 @@ const Spinner = () => (
     <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
     <path
       d="M21 12a9 9 0 0 0-9-9"
-      stroke="#fff"
+      stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="round"
     />
@@ -147,7 +147,7 @@ function PillToggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => v
           width: 18,
           height: 18,
           borderRadius: "50%",
-          background: "#fff",
+          background: "var(--bg-card)",
           transition: "left 0.18s ease",
           boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
         }}
@@ -593,8 +593,8 @@ const LeftPanel = ({
                 }}
                 style={{
                   marginTop: 6,
-                  background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
-                  color: "#fff",
+                  background: "var(--accent)",
+                  color: "var(--accent-ink)",
                   border: "none",
                   borderRadius: 10,
                   padding: "9px 16px",
@@ -665,7 +665,7 @@ const LeftPanel = ({
                           borderRadius: 8,
                           border: printDpi === dpi ? "1px solid transparent" : "1px solid var(--border-2)",
                           background: printDpi === dpi ? "var(--accent)" : "transparent",
-                          color: printDpi === dpi ? "#fff" : "var(--ink-2)",
+                          color: printDpi === dpi ? "var(--accent-ink)" : "var(--ink-2)",
                           fontSize: 12,
                           fontWeight: 700,
                           cursor: "pointer",
@@ -720,7 +720,7 @@ const LeftPanel = ({
                             borderRadius: 7,
                             border: "none",
                             background: "var(--accent)",
-                            color: "#fff",
+                            color: "var(--accent-ink)",
                             fontSize: 11.5,
                             fontWeight: 700,
                             cursor: "pointer",
@@ -815,8 +815,8 @@ const LeftPanel = ({
                     padding: "12px 13px",
                     borderRadius: "var(--radius)",
                     border: active ? "1px solid transparent" : "1px solid var(--border)",
-                    background: active ? "linear-gradient(135deg, #4F46E5, #3B82F6)" : "var(--bg-card)",
-                    color: active ? "#fff" : "var(--ink)",
+                    background: active ? "var(--accent)" : "var(--bg-card)",
+                    color: active ? "var(--accent-ink)" : "var(--ink)",
                     cursor: "pointer",
                     textAlign: "left",
                     transition: "all 0.15s ease",
@@ -829,7 +829,7 @@ const LeftPanel = ({
                       display: "inline-flex",
                       marginTop: 1,
                       flexShrink: 0,
-                      color: active ? "#fff" : "var(--accent)",
+                      color: active ? "var(--accent-ink)" : "var(--accent)",
                     }}
                   >
                     {m.icon}
@@ -847,7 +847,7 @@ const LeftPanel = ({
                             padding: "2px 6px",
                             borderRadius: 999,
                             background: active ? "rgba(255,255,255,0.22)" : "var(--accent-tint)",
-                            color: active ? "#fff" : "var(--accent)",
+                            color: active ? "var(--accent-ink)" : "var(--accent)",
                           }}
                         >
                           {m.badge}
@@ -861,7 +861,7 @@ const LeftPanel = ({
                         fontSize: 11.5,
                         lineHeight: 1.45,
                         opacity: active ? 0.92 : 1,
-                        color: active ? "#fff" : "var(--ink-3)",
+                        color: active ? "var(--accent-ink)" : "var(--ink-3)",
                       }}
                     >
                       {m.sub}
@@ -992,7 +992,7 @@ const LeftPanel = ({
                   borderRadius: 7,
                   border: "none",
                   background: "var(--accent)",
-                  color: "#fff",
+                  color: "var(--accent-ink)",
                   fontSize: 11.5,
                   fontWeight: 700,
                   cursor: "pointer",
@@ -1032,8 +1032,8 @@ const LeftPanel = ({
             overflow: "hidden",
             width: "100%",
             height: 52,
-            background: "linear-gradient(135deg, #4F46E5, #3B82F6)",
-            color: "#fff",
+            background: "var(--accent)",
+            color: "var(--accent-ink)",
             border: "none",
             borderRadius: 12,
             fontWeight: 700,

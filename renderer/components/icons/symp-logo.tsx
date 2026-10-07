@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { publicAssetUrl } from "@/lib/asset-url";
+import { useAtomValue } from "jotai";
+import { themeAtom } from "@/atoms/user-settings-atom";
 
 interface SympLogoProps {
   /** Height of the mark, in pixels. */
@@ -20,11 +22,16 @@ interface SympLogoProps {
  */
 const SympLogo = ({ size = 28, subtitle = true, className }: SympLogoProps) => {
   const [src, setSrc] = useState("");
+  const theme = useAtomValue(themeAtom);
 
   // Resolved after mount: the runtime isn't known during the static export.
   useEffect(() => {
-    setSrc(publicAssetUrl(subtitle ? "logo.png" : "icone.png"));
-  }, [subtitle]);
+    setSrc(
+      publicAssetUrl(
+        subtitle ? (theme === "dark" ? "logo-dark.png" : "logo.png") : "icone.png",
+      ),
+    );
+  }, [subtitle, theme]);
 
   if (!src) {
     // Hold the layout so nothing jumps when the image resolves.

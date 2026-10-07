@@ -18,10 +18,24 @@ const FADE_MS = 420;
 export default function SplashScreen() {
   const [phase, setPhase] = useState<"in" | "out" | "gone">("in");
   const [logo, setLogo] = useState("");
+  const [dark, setDark] = useState(false);
 
   // The asset URL depends on the runtime (Tauri vs Electron), which isn't
   // known during the static export — resolve it once mounted.
-  useEffect(() => setLogo(publicAssetUrl("logo.png")), []);
+  //
+  // The theme is read straight from storage rather than from the atom: this
+  // screen is mounted outside the jotai Provider, deliberately, so that it
+  // shows even if the app below fails to start.
+  useEffect(() => {
+    let isDark = false;
+    try {
+      isDark = JSON.parse(localStorage.getItem("theme") ?? '"light"') === "dark";
+    } catch {
+      /* storage can be unavailable; light is the safe default */
+    }
+    setDark(isDark);
+    setLogo(publicAssetUrl(isDark ? "logo-dark.png" : "logo.png"));
+  }, []);
 
   useEffect(() => {
     // Someone who asked for less motion gets a much shorter, still splash.
@@ -53,7 +67,7 @@ export default function SplashScreen() {
         alignItems: "center",
         justifyContent: "center",
         gap: 22,
-        background: "var(--bg, #F4F6FA)",
+        background: dark ? "#0B0F17" : "#F6F7F9",
         opacity: phase === "out" ? 0 : 1,
         transition: `opacity ${FADE_MS}ms ease`,
         pointerEvents: phase === "out" ? "none" : "auto",
@@ -75,7 +89,7 @@ export default function SplashScreen() {
           width: "min(360px, 56vw)",
           height: 3,
           borderRadius: 999,
-          background: "var(--border-2, rgba(26,26,46,0.14))",
+          background: dark ? "rgba(238,242,248,0.18)" : "rgba(11,18,32,0.16)",
           overflow: "hidden",
         }}
       >
@@ -85,7 +99,9 @@ export default function SplashScreen() {
             height: "100%",
             width: "100%",
             borderRadius: 999,
-            background: "linear-gradient(90deg, #0A2F7A, #D01217)",
+            background: dark
+              ? "linear-gradient(90deg, #5B8DEF, #FF5C62)"
+              : "linear-gradient(90deg, #0A2F7A, #D01217)",
             transformOrigin: "left center",
           }}
         />
@@ -107,7 +123,7 @@ export default function SplashScreen() {
             fontWeight: 700,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "var(--ink-3, #8888A8)",
+            color: dark ? "#7A869A" : "#78839A",
           }}
         >
           Version
@@ -118,7 +134,9 @@ export default function SplashScreen() {
             fontWeight: 800,
             letterSpacing: "-0.02em",
             lineHeight: 1,
-            background: "linear-gradient(90deg, #0A2F7A, #D01217)",
+            background: dark
+              ? "linear-gradient(90deg, #5B8DEF, #FF5C62)"
+              : "linear-gradient(90deg, #0A2F7A, #D01217)",
             WebkitBackgroundClip: "text",
             backgroundClip: "text",
             color: "transparent",
