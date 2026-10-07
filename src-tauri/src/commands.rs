@@ -16,7 +16,7 @@ use crate::orientation;
 use crate::passes;
 use crate::resolution;
 use crate::strips;
-use crate::paths::{exec_path, models_path};
+use crate::paths::{exec_path, is_translocated, models_path};
 use crate::state::AppState;
 use crate::upscale::{
     batch_args, double_first_pass_args, double_second_pass_args, single_image_args, spawn_stream,
@@ -148,8 +148,15 @@ fn sep() -> char {
     std::path::MAIN_SEPARATOR
 }
 
+/// Models we ship ourselves, which always live in the bundled models folder.
+///
+/// This list went stale once already: it still named two models months after
+/// they were replaced, so the model we actually ship was being looked up in
+/// the user's custom-models folder instead of our own.
+const BUNDLED_MODELS: &[&str] = &["4xLSDIRCompactC3"];
+
 fn is_default_model(model: &str) -> bool {
-    model == "upscayl-lite-4x" || model == "upscayl-standard-4x"
+    BUNDLED_MODELS.contains(&model)
 }
 
 fn hex_val(b: u8) -> Option<u8> {
@@ -362,6 +369,58 @@ fn cut_into_strips(
     }
 }
 
+/// Reports what the app resolved before a run, and stops early with a message
+/// a person can act on when the environment is the problem.
+///
+/// Returns true if the job must not start. Everything it emits lands in the
+/// Logs panel, so a failure report carries the paths instead of only the
+/// binary's own complaint about a path it does not explain.
+fn preflight(app: &AppHandle, bin: &Path, models: &str) -> bool {
+    let _ = app.emit(
+        events::UPSCAYL_PROGRESS,
+        format!(
+            "PATHS: bin={} (exists={}) models={} (exists={})\n",
+            bin.display(),
+            bin.exists(),
+            models,
+            Path::new(models).exists()
+        ),
+    );
+
+    if is_translocated(app) {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            "macOS exécute l'application depuis une copie temporaire et \
+             protégée, ce qui l'empêche d'accéder à ses propres fichiers. \
+             Fermez l'application, glissez « Symp's Upscale » dans le dossier \
+             Applications, puis relancez-la depuis là.",
+        );
+        return true;
+    }
+
+    if !bin.exists() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            format!(
+                "Le moteur d'agrandissement est introuvable à l'emplacement \
+                 attendu : {}. L'installation est probablement incomplète.",
+                bin.display()
+            ),
+        );
+        return true;
+    }
+
+    if !Path::new(models).exists() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            format!("Le dossier de modèles est introuvable : {models}."),
+        );
+        return true;
+    }
+
+    false
+}
+
 // ── Upscale commands ────────────────────────────────────────────────────────
 
 #[tauri::command]
@@ -406,6 +465,9 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+        if preflight(&app, &bin, &models) {
+            return;
+        }
 
         // Bake EXIF orientation into a temp copy so the output isn't rotated.
         let decoded_input_dir = percent_decode(&input_dir);
@@ -540,6 +602,9 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+        if preflight(&app, &bin, &models) {
+            return;
+        }
 
         // Bake EXIF orientation into a temp copy so the output isn't rotated.
         let decoded_file = percent_decode(&full_file_name);
@@ -657,6 +722,9 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
+        if preflight(&app, &bin, &models) {
+            return;
+        }
         let args = batch_args(&BatchArgs {
             input_dir: &input_dir,
             output_dir: &output_folder,

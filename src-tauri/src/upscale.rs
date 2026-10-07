@@ -239,6 +239,14 @@ pub fn spawn_stream(
     args: &[String],
     progress_event: &str,
 ) -> bool {
+    // Echo the exact command into the log stream. When a run fails on a user's
+    // machine the one thing we never have is what was actually executed, and
+    // the binary's own errors quote paths without saying where they came from.
+    let _ = app.emit(
+        progress_event,
+        format!("CMD: {} {}\n", bin.display(), args.join(" ")),
+    );
+
     let mut cmd = Command::new(bin);
     cmd.args(args).stderr(Stdio::piped()).stdout(Stdio::piped());
 
