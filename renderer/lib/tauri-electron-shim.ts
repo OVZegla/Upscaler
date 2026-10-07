@@ -42,6 +42,7 @@ const PAYLOAD_COMMANDS = new Set<string>([
 const COMMAND_TO_EVENT: Record<string, string> = {
   [ELECTRON_COMMANDS.UPSCAYL_PROGRESS]: "upscayl-progress",
   [ELECTRON_COMMANDS.UPSCAYL_PASS]: "upscayl-pass",
+  [ELECTRON_COMMANDS.UPSCAYL_STRIPS]: "upscayl-strips",
   [ELECTRON_COMMANDS.UPSCAYL_DONE]: "upscayl-done",
   [ELECTRON_COMMANDS.UPSCAYL_ERROR]: "upscayl-error",
   [ELECTRON_COMMANDS.UPSCAYL_WARNING]: "upscayl-warning",

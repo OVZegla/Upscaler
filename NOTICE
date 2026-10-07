@@ -18,6 +18,8 @@ Modifications made from the original Upscayl codebase include:
 - Output resolution (DPI) written into the saved file
 - EXIF orientation baked in before upscaling
 - Workload guard rails for large-format jobs
+- Automatic cutting of the finished image into numbered hanging strips
+- Built-in user guide covering every setting
 - Progress, cancel and various UX fixes
 
 -------------------------------------------------------------------------------

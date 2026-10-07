@@ -13,8 +13,13 @@ import {
   printWidthCmAtom,
   printDpiAtom,
   upscalePassAtom,
+  cutStripsAtom,
+  stripCountAtom,
+  stripOverlapCmAtom,
+  stripResultAtom,
 } from "../atoms/user-settings-atom";
 import { estimatePrint, formatSize } from "@/lib/print-size";
+import HelpOverlay from "./help-overlay";
 
 const fontStack = "var(--symp-font, Geist, -apple-system, sans-serif)";
 
@@ -54,6 +59,20 @@ const ClockIcon = () => (
   </svg>
 );
 
+const HelpIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.1 9a3 3 0 1 1 4.2 2.7c-.8.4-1.3 1.1-1.3 2v.3" />
+    <path d="M12 17h.01" />
+  </svg>
+);
+
+const FolderIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 20a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2z" />
+  </svg>
+);
+
 const PrinterIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M6 9V2h12v7" />
@@ -62,11 +81,6 @@ const PrinterIcon = () => (
   </svg>
 );
 
-const SparkleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2l2.4 7.2L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" />
-  </svg>
-);
 
 /** Rotating ring shown while a job runs. */
 const Spinner = () => (
@@ -225,6 +239,119 @@ function SegmentedControl<T extends string>({
   );
 }
 
+/** −/+ stepper for a small count. Far easier to hit than a text field for
+ *  someone who is not comfortable with a keyboard. */
+function Stepper({
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+}) {
+  const btn = (label: string, delta: number, disabled: boolean) => (
+    <button
+      onClick={() => onChange(Math.min(max, Math.max(min, value + delta)))}
+      disabled={disabled}
+      aria-label={delta < 0 ? "Diminuer" : "Augmenter"}
+      className={disabled ? undefined : "symp-press"}
+      style={{
+        width: 30,
+        height: 30,
+        borderRadius: 8,
+        border: "1px solid var(--border-2)",
+        background: "var(--bg-card)",
+        color: disabled ? "var(--ink-3)" : "var(--ink)",
+        fontSize: 16,
+        fontWeight: 700,
+        lineHeight: 1,
+        cursor: disabled ? "default" : "pointer",
+        opacity: disabled ? 0.45 : 1,
+        fontFamily: fontStack,
+        flexShrink: 0,
+      }}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {btn("−", -1, value <= min)}
+      <span
+        style={{
+          minWidth: 28,
+          textAlign: "center",
+          fontSize: 15,
+          fontWeight: 700,
+          color: "var(--ink)",
+          fontFamily: "var(--symp-mono, monospace)",
+        }}
+      >
+        {value}
+      </span>
+      {btn("+", 1, value >= max)}
+    </div>
+  );
+}
+
+/** Scale drawing of the cut: numbered strips with the shared material shown
+ *  between them, so the layout is obvious without reading anything. */
+function StripPreview({ count, overlap }: { count: number; overlap: boolean }) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        display: "flex",
+        gap: overlap ? 0 : 3,
+        height: 46,
+        borderRadius: 8,
+        overflow: "hidden",
+        border: "1px solid var(--border-2)",
+        background: "var(--bg-card)",
+        padding: 3,
+      }}
+    >
+      {Array.from({ length: count }, (_, i) => (
+        <React.Fragment key={i}>
+          {overlap && i > 0 && (
+            <div
+              title="recouvrement"
+              style={{
+                width: 7,
+                flexShrink: 0,
+                background:
+                  "repeating-linear-gradient(45deg, var(--accent) 0 2px, transparent 2px 4px)",
+                opacity: 0.55,
+              }}
+            />
+          )}
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              borderRadius: 5,
+              background: "var(--accent-tint)",
+              border: "1px solid var(--accent)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 12,
+              fontWeight: 700,
+              color: "var(--accent)",
+              fontFamily: "var(--symp-mono, monospace)",
+            }}
+          >
+            {i + 1}
+          </div>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
 const MODE_CARDS = [
   { id: "upscayl-lite-4x", label: "Rapide", sub: "Traitement plus rapide", icon: <BoltIcon /> },
   { id: "upscayl-standard-4x", label: "Standard", sub: "Meilleure qualité", icon: <ClockIcon /> },
@@ -299,8 +426,11 @@ const LeftPanel = ({
     setUpscalePass(null);
   };
 
-  const [printOptim, setPrintOptim] = useState(false);
-  const [smartSharpen, setSmartSharpen] = useState(true);
+  const [cutStrips, setCutStrips] = useAtom(cutStripsAtom);
+  const [stripCount, setStripCount] = useAtom(stripCountAtom);
+  const [stripOverlapCm, setStripOverlapCm] = useAtom(stripOverlapCmAtom);
+  const [stripResult, setStripResult] = useAtom(stripResultAtom);
+  const [showHelp, setShowHelp] = useState(false);
 
   // In print mode the job is only launchable once a real size is known —
   // otherwise the backend silently falls back to the scale factor.
@@ -340,7 +470,55 @@ const LeftPanel = ({
         fontFamily: fontStack,
       }}
     >
-      <div className="no-scrollbar" style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "20px 20px 8px", display: "flex", flexDirection: "column", gap: 22 }}>
+      {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+
+      {/* Panel header — the guide has to be one obvious click away, not
+          buried in the settings tab. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          padding: "14px 20px 0",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "var(--ink-3)",
+          }}
+        >
+          Réglages
+        </span>
+        <button
+          onClick={() => setShowHelp(true)}
+          className="symp-press symp-lift"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "6px 11px",
+            borderRadius: 9,
+            border: "1px solid var(--border-2)",
+            background: "var(--bg-card)",
+            color: "var(--ink-2)",
+            fontSize: 12.5,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: fontStack,
+          }}
+        >
+          <HelpIcon />
+          Aide
+        </button>
+      </div>
+
+      <div className="no-scrollbar" style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "14px 20px 8px", display: "flex", flexDirection: "column", gap: 22 }}>
         {/* Drop zone */}
         <div
           onClick={selectImageHandler}
@@ -649,38 +827,155 @@ const LeftPanel = ({
           </div>
         </div>
 
-        {/* Options d'amélioration */}
+        {/* Découpe en bandes */}
         <div className="symp-rise" style={{ ["--symp-delay" as any]: "160ms" }}>
-          <div style={{ marginBottom: 12 }}>
-            <SectionLabel>Options d'amélioration</SectionLabel>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-              <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
-                <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><PrinterIcon /></span>
-                <div>
-                  <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink)" }}>Optimisation d'impression</div>
-                  <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>Améliore le contraste et les détails pour l'impression.</div>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+            <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
+              <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><PrinterIcon /></span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>Découper en bandes</div>
+                <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>
+                  Prépare les lés de pose, sans passer par Photoshop.
                 </div>
               </div>
-              <PillToggle on={printOptim} onChange={setPrintOptim} />
             </div>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-              <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
-                <span style={{ color: "var(--ink-2)", display: "inline-flex", marginTop: 2, flexShrink: 0 }}><SparkleIcon /></span>
-                <div>
-                  <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink)" }}>Netteté intelligente</div>
-                  <div style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 2, lineHeight: 1.4 }}>Renforce intelligemment les détails sans artefacts.</div>
+            <PillToggle on={cutStrips} onChange={setCutStrips} />
+          </div>
+
+          {cutStrips && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 13, marginTop: 14 }}>
+              <StripPreview count={stripCount} overlap={stripOverlapCm > 0} />
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontSize: 12.5, color: "var(--ink-2)" }}>Nombre de bandes</span>
+                <Stepper value={stripCount} min={2} max={12} onChange={setStripCount} />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12.5, color: "var(--ink-2)" }}>Recouvrement</div>
+                  <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 1 }}>
+                    Matière partagée avec la bande suivante
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  <input
+                    type="number"
+                    min={0}
+                    max={30}
+                    step={0.5}
+                    value={stripOverlapCm}
+                    onChange={(e) =>
+                      setStripOverlapCm(
+                        Math.min(30, Math.max(0, parseFloat(e.target.value) || 0)),
+                      )
+                    }
+                    style={{
+                      width: 62,
+                      padding: "6px 8px",
+                      borderRadius: 8,
+                      border: "1px solid var(--border-2)",
+                      background: "var(--bg-card)",
+                      color: "var(--ink)",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      fontFamily: "var(--symp-mono, monospace)",
+                    }}
+                  />
+                  <span style={{ fontSize: 12, color: "var(--ink-3)" }}>cm</span>
                 </div>
               </div>
-              <PillToggle on={smartSharpen} onChange={setSmartSharpen} />
+
+              <div style={{ fontSize: 11.5, color: "var(--ink-3)", lineHeight: 1.5 }}>
+                {usePrintSize && printEstimate ? (
+                  <>
+                    Environ{" "}
+                    <strong style={{ color: "var(--ink-2)" }}>
+                      {(printWidthCm / stripCount + stripOverlapCm).toFixed(1)} cm
+                    </strong>{" "}
+                    par bande, recouvrement compris. L&apos;image complète est
+                    enregistrée en plus des bandes.
+                  </>
+                ) : (
+                  <>
+                    Les bandes sont enregistrées dans un dossier «&nbsp;…_bandes&nbsp;»,
+                    numérotées de gauche à droite. L&apos;image complète est gardée.
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Launch button (sticky) */}
       <div style={{ padding: "12px 20px 20px", borderTop: "1px solid var(--border)" }}>
+        {!isUpscaling && stripResult && (
+          <div
+            className="symp-rise"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 10,
+              marginBottom: 12,
+              padding: "10px 12px",
+              borderRadius: 10,
+              border: "1px solid var(--border-2)",
+              background: "var(--accent-tint)",
+            }}
+          >
+            <span style={{ fontSize: 12, color: "var(--ink-2)", lineHeight: 1.4, minWidth: 0 }}>
+              {stripResult.count} bandes prêtes à imprimer.
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+              <button
+                onClick={() =>
+                  window.electron.send(
+                    ELECTRON_COMMANDS.OPEN_FOLDER,
+                    stripResult.folder,
+                  )
+                }
+                className="symp-press"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  padding: "5px 10px",
+                  borderRadius: 7,
+                  border: "none",
+                  background: "var(--accent)",
+                  color: "#fff",
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: fontStack,
+                }}
+              >
+                <FolderIcon />
+                Ouvrir
+              </button>
+              <button
+                onClick={() => setStripResult(null)}
+                aria-label="Masquer"
+                style={{
+                  appearance: "none",
+                  background: "transparent",
+                  border: 0,
+                  padding: 0,
+                  color: "var(--ink-3)",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={upscaylHandler}
           disabled={!canUpscale}

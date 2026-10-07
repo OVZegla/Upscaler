@@ -1,54 +1,55 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
+import { publicAssetUrl } from "@/lib/asset-url";
 
 interface SympLogoProps {
+  /** Height of the mark, in pixels. */
   size?: number;
+  /** Kept for callers that only want the square app icon, without the wordmark. */
   subtitle?: boolean;
-  color?: string;
-  accent?: string;
   className?: string;
 }
 
-const SympLogo = ({
-  size = 28,
-  subtitle = true,
-  color,
-  className,
-}: SympLogoProps) => {
-  const ink = color || "var(--symp-ink, #0E0E0F)";
+/**
+ * The Symp's Upscale mark.
+ *
+ * `logo.png` is the full wordmark (bracket + "Symp's Upscale"); `icone.png` is
+ * the square app icon. Both are bundled frontend assets, so their URL has to go
+ * through `publicAssetUrl` — Electron serves them over a `public://` protocol
+ * that does not exist under Tauri, where a hard-coded one silently 404s.
+ */
+const SympLogo = ({ size = 28, subtitle = true, className }: SympLogoProps) => {
+  const [src, setSrc] = useState("");
+
+  // Resolved after mount: the runtime isn't known during the static export.
+  useEffect(() => {
+    setSrc(publicAssetUrl(subtitle ? "logo.png" : "icone.png"));
+  }, [subtitle]);
+
+  if (!src) {
+    // Hold the layout so nothing jumps when the image resolves.
+    return (
+      <span
+        className={className}
+        aria-hidden
+        style={{ display: "inline-block", height: size * 1.6, width: subtitle ? size * 3.5 : size * 1.6 }}
+      />
+    );
+  }
 
   return (
-    <div
+    <img
       className={className}
+      src={src}
+      alt="Symp's Upscale"
+      draggable={false}
       style={{
-        display: "inline-flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: size * 0.2,
+        height: subtitle ? size * 1.6 : size * 1.1,
+        width: "auto",
+        objectFit: "contain",
         userSelect: "none",
       }}
-    >
-      <img
-        src="public:///icone.png"
-        alt="Symp's Upscale"
-        style={{ width: size * 1.1, height: size * 1.1, objectFit: "contain" }}
-        draggable={false}
-      />
-      {subtitle && (
-        <div
-          style={{
-            fontFamily: "var(--symp-font, Geist, sans-serif)",
-            fontWeight: 700,
-            fontSize: size * 0.38,
-            letterSpacing: "0.05em",
-            color: ink,
-            lineHeight: 1,
-            paddingLeft: 1,
-          }}
-        >
-          SYMP'S UPSCALE
-        </div>
-      )}
-    </div>
+    />
   );
 };
 

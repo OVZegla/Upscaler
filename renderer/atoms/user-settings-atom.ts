@@ -96,6 +96,23 @@ export const printWidthCmAtom = atomWithStorage<number>("printWidthCm", 320);
  *  jobs that would otherwise be too heavy (still re-scalable afterwards). */
 export const printDpiAtom = atomWithStorage<number>("printDpi", 300);
 
+// ── Découpe en bandes (lés) ───────────────────────────────────────────
+// A roll printer has no width limit, but a wall is still hung in strips.
+// The app cuts the finished file so nobody has to do it in Photoshop.
+export const cutStripsAtom = atomWithStorage<boolean>("cutStrips", false);
+
+/** How many vertical strips the finished image is split into. */
+export const stripCountAtom = atomWithStorage<number>("stripCount", 3);
+
+/** Material shared between two adjacent strips, in centimetres. */
+export const stripOverlapCmAtom = atomWithStorage<number>("stripOverlapCm", 2);
+
+/** Folder the last job's strips were written to, so the UI can offer to
+ *  open it. Null until a cut job finishes. */
+export const stripResultAtom = atom(
+  null as { folder: string; count: number } | null,
+);
+
 // CLIENT SIDE ONLY
 export const showSidebarAtom = atomWithStorage("showSidebar", true);
 

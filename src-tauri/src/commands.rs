@@ -15,6 +15,7 @@ use crate::events;
 use crate::orientation;
 use crate::passes;
 use crate::resolution;
+use crate::strips;
 use crate::paths::{exec_path, models_path};
 use crate::state::AppState;
 use crate::upscale::{
@@ -63,6 +64,13 @@ pub struct ImageUpscaylPayload {
     pub copy_metadata: bool,
     #[serde(default)]
     pub output_dpi: Option<u32>,
+    /// Number of vertical strips to cut the finished image into (None/0/1 =
+    /// no cutting). Wall jobs are hung in strips even on a roll printer.
+    #[serde(default)]
+    pub strip_count: Option<u32>,
+    /// Material shared between two adjacent strips, in centimetres.
+    #[serde(default)]
+    pub strip_overlap_cm: Option<f64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -89,6 +97,13 @@ pub struct DoubleUpscaylPayload {
     pub copy_metadata: bool,
     #[serde(default)]
     pub output_dpi: Option<u32>,
+    /// Number of vertical strips to cut the finished image into (None/0/1 =
+    /// no cutting). Wall jobs are hung in strips even on a roll printer.
+    #[serde(default)]
+    pub strip_count: Option<u32>,
+    /// Material shared between two adjacent strips, in centimetres.
+    #[serde(default)]
+    pub strip_overlap_cm: Option<f64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -287,6 +302,66 @@ fn run_pass_chain(
     failed
 }
 
+/// Cuts a finished output into vertical strips, when the user asked for it.
+///
+/// Never fails the job: the full-size file is already written and usable, so a
+/// cutting problem is reported as a warning instead of losing the upscale.
+fn cut_into_strips(
+    app: &AppHandle,
+    out_file: &str,
+    save_image_as: &str,
+    strip_count: Option<u32>,
+    strip_overlap_cm: Option<f64>,
+    output_dpi: Option<u32>,
+) {
+    let count = match strip_count {
+        Some(c) if c > 1 => c,
+        _ => return,
+    };
+    let path = Path::new(out_file);
+    let Some(parent) = path.parent() else { return };
+    let stem = path
+        .file_stem()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "image".to_string());
+    let dir = parent.join(format!("{stem}_bandes"));
+
+    // The overlap is entered in centimetres. Turning it into pixels needs the
+    // print resolution; in factor mode none was chosen, so assume the house
+    // standard — it is only ever used for this conversion.
+    let dpi = output_dpi.unwrap_or(300) as f64;
+    let overlap = (strip_overlap_cm.unwrap_or(0.0).max(0.0) / 2.54 * dpi).round();
+    let overlap = overlap.clamp(0.0, u32::MAX as f64) as u32;
+
+    match strips::cut(
+        path,
+        &dir,
+        &stem,
+        save_image_as,
+        count,
+        overlap,
+        output_dpi,
+    ) {
+        Ok((folder, produced)) => {
+            let _ = app.emit(
+                events::UPSCAYL_STRIPS,
+                serde_json::json!({
+                    "folder": folder.to_string_lossy(),
+                    "count": produced,
+                }),
+            );
+        }
+        Err(e) => {
+            let _ = app.emit(
+                events::UPSCAYL_WARNING,
+                format!(
+                    "Découpe en bandes impossible : {e}. L'image complète a bien été enregistrée."
+                ),
+            );
+        }
+    }
+}
+
 // ── Upscale commands ────────────────────────────────────────────────────────
 
 #[tauri::command]
@@ -416,7 +491,17 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi(&out_file, dpi);
             }
-            let _ = app.emit(events::UPSCAYL_DONE, out_file);
+            let _ = app.emit(events::UPSCAYL_DONE, out_file.clone());
+            // After the preview is live: cutting a wall-sized file takes a
+            // while and the full image is already usable without it.
+            cut_into_strips(
+                &app,
+                &out_file,
+                &payload.save_image_as,
+                payload.strip_count,
+                payload.strip_overlap_cm,
+                payload.output_dpi,
+            );
             notify(&app, "Symp's Upscale", "Image upscaled successfully!");
         }
     });
@@ -521,7 +606,15 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi(&out_file, dpi);
             }
-            let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file);
+            let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file.clone());
+            cut_into_strips(
+                &app,
+                &out_file,
+                &payload.save_image_as,
+                payload.strip_count,
+                payload.strip_overlap_cm,
+                payload.output_dpi,
+            );
             notify(&app, "Symp's Upscale", "Image upscayled successfully!");
         }
     });

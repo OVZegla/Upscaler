@@ -25,6 +25,10 @@ import {
   printDpiAtom,
   printWidthCmAtom,
   upscalePassAtom,
+  cutStripsAtom,
+  stripCountAtom,
+  stripOverlapCmAtom,
+  stripResultAtom,
 } from "../../atoms/user-settings-atom";
 import useLogger from "../hooks/use-logger";
 import {
@@ -93,8 +97,17 @@ const Sidebar = ({
   const usePrintSize = useAtomValue(usePrintSizeAtom);
   const printDpi = useAtomValue(printDpiAtom);
   const printWidthCm = useAtomValue(printWidthCmAtom);
+  const cutStrips = useAtomValue(cutStripsAtom);
+  const stripCount = useAtomValue(stripCountAtom);
+  const stripOverlapCm = useAtomValue(stripOverlapCmAtom);
+  const setStripResult = useSetAtom(stripResultAtom);
   // Only stamp a resolution when the user sized the job in real-world units.
   const outputDpi = usePrintSize ? printDpi : null;
+
+  // Cutting is only meaningful from two strips up; below that the backend
+  // would do a full extra decode of a wall-sized file for nothing.
+  const effectiveStripCount = cutStrips && stripCount > 1 ? stripCount : null;
+  const effectiveStripOverlapCm = effectiveStripCount ? stripOverlapCm : null;
 
   // Print mode derives the pixel width here rather than writing into
   // customWidthAtom, which belongs to the "custom resolution" setting —
@@ -115,6 +128,7 @@ const Sidebar = ({
     // Clear any pass state left by a previous job — a run that errored out
     // never emits UPSCAYL_DONE, so it would otherwise skew this one.
     setUpscalePass(null);
+    setStripResult(null);
     setUpscaledBatchFolderPath("");
     if (imagePath !== "" || batchFolderPath !== "") {
       setProgress(t("APP.PROGRESS.WAIT_TITLE"));
@@ -136,6 +150,8 @@ const Sidebar = ({
             ttaMode,
             copyMetadata,
             outputDpi,
+            stripCount: effectiveStripCount,
+            stripOverlapCm: effectiveStripOverlapCm,
           },
         );
         setUserStats((prev) => ({
@@ -191,6 +207,8 @@ const Sidebar = ({
           ttaMode,
           copyMetadata,
           outputDpi,
+          stripCount: effectiveStripCount,
+          stripOverlapCm: effectiveStripOverlapCm,
         });
         setUserStats((prev) => ({
           ...prev,
@@ -213,7 +231,7 @@ const Sidebar = ({
     onUpscaylHandlerReady(upscaylHandler);
     // Print-mode values belong here too: without them the registered handler
     // keeps a stale width/DPI and the job runs with the previous size.
-  }, [imagePath, batchFolderPath, outputPath, selectedModelId, doubleUpscayl, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite, usePrintSize, printDpi, printWidthCm]);
+  }, [imagePath, batchFolderPath, outputPath, selectedModelId, doubleUpscayl, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite, usePrintSize, printDpi, printWidthCm, cutStrips, stripCount, stripOverlapCm]);
 
   return (
     <LeftNav
