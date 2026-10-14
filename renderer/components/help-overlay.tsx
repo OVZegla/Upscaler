@@ -142,6 +142,10 @@ const SECTIONS: Section[] = [
         text: "C'est presque toujours que la source était trop petite pour la taille demandée. Vérifiez le facteur affiché : s'il dépasse 8×, aucune IA ne pourra inventer les détails manquants.",
       },
       {
+        term: "L'agrandissement échoue sans produire de fichier",
+        text: "Ouvrez Paramètres, puis « Diagnostic du moteur », et appuyez sur Tester. Le rapport dit en une ligne ce qui manque sur la machine. La cause la plus fréquente est un pilote de carte graphique absent ou trop ancien : le calcul se fait sur la carte graphique, et sans son pilote à jour le moteur ne peut pas démarrer.",
+      },
+      {
         term: "Mes couleurs ont changé",
         text: "Elles ne devraient pas. Si c'est le cas à l'ouverture dans Photoshop, c'est un réglage de profil colorimétrique : le fichier sort en RVB sans profil imposé.",
       },
