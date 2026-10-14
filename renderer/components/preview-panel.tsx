@@ -110,9 +110,34 @@ const PreviewPanel = ({
   // Set when the upscaled image fails to load (missing file, asset-protocol
   // rejection). Shown inline instead of failing silently.
   const [outputLoadError, setOutputLoadError] = useState(false);
+  // Why it failed, not just that it did. "Peut-être absent ou chemin trop
+  // long" was a guess the app was in a position to replace with a fact.
+  const [outputLoadWhy, setOutputLoadWhy] = useState<string>("");
+
+  // Asks the asset protocol directly for the same URL the <img> just gave up
+  // on, and reports what came back: a refused scope, a missing file and a
+  // protocol that never answered all look identical in an onError.
+  const diagnoseOutput = async () => {
+    setOutputLoadError(true);
+    try {
+      const url = userFileUrl(upscaledImagePath);
+      const res = await fetch(url, { method: "GET" });
+      const len = res.headers.get("content-length");
+      setOutputLoadWhy(
+        `Le protocole d'assets a répondu ${res.status} ${res.statusText}` +
+          (len ? ` (${len} octets)` : "") +
+          `. URL : ${url}`,
+      );
+    } catch (e: any) {
+      setOutputLoadWhy(
+        `Le protocole d'assets n'a pas répondu : ${e?.message ?? e}`,
+      );
+    }
+  };
 
   useEffect(() => {
     setOutputLoadError(false);
+    setOutputLoadWhy("");
   }, [upscaledImagePath]);
 
   useEffect(() => {
@@ -314,8 +339,8 @@ const PreviewPanel = ({
                   <span style={{ fontSize: 11, color: "var(--ink-3)", wordBreak: "break-all", lineHeight: 1.5 }}>
                     {upscaledImagePath}
                   </span>
-                  <span style={{ fontSize: 11, color: "var(--ink-3)" }}>
-                    Le fichier est peut-être absent ou son chemin trop long.
+                  <span style={{ fontSize: 11, color: "var(--ink-3)", wordBreak: "break-all", lineHeight: 1.5, userSelect: "text" }}>
+                    {outputLoadWhy || "Diagnostic en cours…"}
                   </span>
                 </div>
               ) : (
@@ -325,7 +350,7 @@ const PreviewPanel = ({
                   pan={pan}
                   setPan={setPan}
                   setZoom={setZoom}
-                  onError={() => setOutputLoadError(true)}
+                  onError={diagnoseOutput}
                 />
               )
             ) : (
