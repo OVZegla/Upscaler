@@ -55,7 +55,10 @@ BUNDLED EXECUTABLES
 
 2. vcomp140.dll  (Windows builds only)
    Microsoft Visual C++ OpenMP runtime, redistributed under the Microsoft
-   Visual Studio redistributable terms. Not part of the Vulkan SDK.
+   Visual Studio redistributable terms. Not part of the Vulkan SDK. It is the
+   only Microsoft runtime component shipped: the application binary links the
+   C runtime statically, so no Visual C++ Redistributable has to be installed
+   for it to start.
 
 The backend statically incorporates:
 
