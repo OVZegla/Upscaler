@@ -61,25 +61,6 @@ function SettingsTab({
     }, 2000);
   };
 
-  const sendToTermbin = async (logData: string[]) => {
-    try {
-      const response = await fetch("https://termbin.com:9999/", {
-        method: "POST",
-        body: logData.join("\n"),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const url = await response.text();
-      return url.trim();
-    } catch (error) {
-      console.error("Error sending to termbin:", error);
-      throw error;
-    }
-  };
-
   const upscaylVersion = navigator?.userAgent?.match(
     /(?:Upscayl|Symps?[\s-]?Upscale)\/([\d.]+)/i,
   )?.[1] ?? "";
