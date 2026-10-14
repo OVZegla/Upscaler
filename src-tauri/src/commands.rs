@@ -437,6 +437,33 @@ fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
     false
 }
 
+/// Windows blocks unknown programs from writing to Downloads, Documents,
+/// Pictures and Desktop through Controlled Folder Access, and reports nothing
+/// but "access denied". An unsigned build that was just downloaded is exactly
+/// what it targets, so the bare error needs saying out loud.
+fn protected_folder_hint(dest: &str) -> String {
+    let lower = dest.to_lowercase();
+    let protected = [
+        "downloads",
+        "documents",
+        "pictures",
+        "desktop",
+        "téléchargements",
+        "images",
+        "bureau",
+    ]
+    .iter()
+    .any(|d| lower.contains(d));
+    if protected {
+        " Windows protège peut-être ce dossier : Sécurité Windows, \
+         Protection contre les rançongiciels, Accès contrôlé aux dossiers. \
+         Autorisez Symp's Upscale, ou enregistrez dans un autre dossier."
+            .to_string()
+    } else {
+        String::new()
+    }
+}
+
 /// A directory the engine can write into whose path holds no non-ASCII
 /// character, or None when the destination needs no help.
 ///
@@ -500,7 +527,14 @@ fn adopt_staged(app: &AppHandle, staged: &str, dest: &str) -> bool {
         Err(e) => {
             let _ = app.emit(
                 events::UPSCAYL_ERROR,
-                format!("Impossible de déplacer le résultat vers {dest} : {e}"),
+                format!(
+                    "Impossible de déplacer le résultat vers {dest} : {e}.{}",
+                    if e.kind() == std::io::ErrorKind::PermissionDenied {
+                        protected_folder_hint(dest)
+                    } else {
+                        String::new()
+                    }
+                ),
             );
             false
         }
@@ -548,8 +582,9 @@ fn verify_output(app: &AppHandle, out_file: &str) -> bool {
                 format!(
                     "Le moteur a signalé une réussite mais le fichier est \
                      introuvable : {out_file} ({why}). Fichiers « _upscaled_ » \
-                     présents dans le dossier : {}",
-                    if listing.is_empty() { "aucun".to_string() } else { listing }
+                     présents dans le dossier : {}.{}",
+                    if listing.is_empty() { "aucun".to_string() } else { listing },
+                    protected_folder_hint(out_file)
                 ),
             );
             false
