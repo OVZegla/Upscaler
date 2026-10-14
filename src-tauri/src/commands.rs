@@ -229,6 +229,23 @@ fn resolve_models_path(app: &AppHandle, state: &AppState, model: &str) -> String
     models_path(app).to_string_lossy().to_string()
 }
 
+/// Confirms one intermediate pass of a chain landed on disk.
+fn pass_wrote(app: &AppHandle, out_path: &str, pass: usize, total: usize) -> bool {
+    match std::fs::metadata(out_path) {
+        Ok(m) if m.len() > 0 => true,
+        _ => {
+            let _ = app.emit(
+                events::UPSCAYL_ERROR,
+                format!(
+                    "La passe {pass} sur {total} n'a produit aucune image. \
+                     L'agrandissement est interrompu ici."
+                ),
+            );
+            false
+        }
+    }
+}
+
 /// Runs a chain of x4 inference passes, each resized down to its planned
 /// width so the last one lands exactly on the target. Intermediates are
 /// temporary PNGs (lossless, so repeated passes don't stack JPEG artefacts)
@@ -296,7 +313,15 @@ fn run_pass_chain(
             tta_mode,
         });
 
-        if spawn_stream(app, st, bin, &args, progress_event) {
+        if spawn_stream(app, st, bin, &args, progress_event).failed {
+            failed = true;
+            break;
+        }
+        // Check each pass instead of only the last one. A chain whose second
+        // pass wrote nothing used to carry on feeding the next pass a file
+        // that was not there, and the whole job failed at the end with the
+        // last pass named as the culprit.
+        if !is_last && !pass_wrote(app, &out_path, idx + 1, total) {
             failed = true;
             break;
         }
@@ -375,7 +400,7 @@ fn cut_into_strips(
 /// Returns true if the job must not start. Everything it emits lands in the
 /// Logs panel, so a failure report carries the paths instead of only the
 /// binary's own complaint about a path it does not explain.
-fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
+fn preflight(app: &AppHandle, st: &AppState, bin: &Path, models: &str, model: &str) -> bool {
     let _ = app.emit(
         events::UPSCAYL_PROGRESS,
         format!(
@@ -432,6 +457,81 @@ fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
             ),
         );
         return true;
+    }
+
+    // The engine runs its inference on the GPU through Vulkan, which it links
+    // at load time. Without the runtime, which comes with the graphics driver
+    // and is not ours to ship, the process is killed before its first line of
+    // code: no output, no file, nothing to go on. Say it here instead.
+    if crate::upscale::vulkan_runtime().is_none() {
+        let _ = app.emit(
+            events::UPSCAYL_ERROR,
+            "Cette machine n'a pas de moteur graphique Vulkan (vulkan-1.dll \
+             est introuvable). L'agrandissement se fait sur la carte graphique \
+             et ne peut pas démarrer sans lui. Installez ou mettez à jour le \
+             pilote de la carte graphique (Intel, AMD ou NVIDIA) depuis le \
+             site du fabricant, puis relancez Symp's Upscale.",
+        );
+        return true;
+    }
+
+    // Everything above exists; check that it actually loads. One spawn, and
+    // only until the first success of the session.
+    let known_good = st
+        .engine_loads
+        .lock()
+        .map(|g| *g == Some(true))
+        .unwrap_or(false);
+    if !known_good {
+        let probe = crate::upscale::probe_engine(bin);
+        let _ = app.emit(
+            events::UPSCAYL_PROGRESS,
+            format!(
+                "ENGINE: ran={} code={:?} output={} octets\n",
+                probe.ran,
+                probe.code,
+                probe.output.len()
+            ),
+        );
+
+        if !probe.ran {
+            let _ = app.emit(
+                events::UPSCAYL_ERROR,
+                format!(
+                    "Le moteur d'agrandissement n'a pas pu être lancé : {}. \
+                     Un antivirus bloque peut-être le fichier {}.",
+                    probe.error.unwrap_or_default(),
+                    bin.display()
+                ),
+            );
+            return true;
+        }
+
+        // Only refuse on a certainty: the executable printed nothing and
+        // exited with a status that names the reason. Anything else is left
+        // to the run itself, which reports its own errors.
+        let loader_failure = !probe.loaded()
+            && probe
+                .code
+                .map(|c| crate::upscale::describe_exit_code(c).is_some())
+                .unwrap_or(false);
+        if loader_failure {
+            let detail = probe
+                .code
+                .and_then(crate::upscale::describe_exit_code)
+                .unwrap_or("le système n'a pas pu le charger");
+            let _ = app.emit(
+                events::UPSCAYL_ERROR,
+                format!("Le moteur d'agrandissement ne démarre pas sur cette machine : {detail}"),
+            );
+            return true;
+        }
+
+        if probe.loaded() {
+            if let Ok(mut g) = st.engine_loads.lock() {
+                *g = Some(true);
+            }
+        }
     }
 
     false
@@ -547,7 +647,7 @@ fn adopt_staged(app: &AppHandle, staged: &str, dest: &str) -> bool {
 /// did not land where `-o` asked, which leaves the interface pointing at
 /// nothing and blaming its own preview. Reporting the directory's real
 /// contents turns that into something answerable.
-fn verify_output(app: &AppHandle, out_file: &str) -> bool {
+fn verify_output(app: &AppHandle, out_file: &str, hint: &str) -> bool {
     let path = Path::new(out_file);
     match std::fs::metadata(path) {
         Ok(m) if m.len() > 0 => {
@@ -584,7 +684,7 @@ fn verify_output(app: &AppHandle, out_file: &str) -> bool {
                      introuvable : {out_file} ({why}). Fichiers « _upscaled_ » \
                      présents dans le dossier : {}.{}",
                     if listing.is_empty() { "aucun".to_string() } else { listing },
-                    protected_folder_hint(out_file)
+                    if hint.is_empty() { protected_folder_hint(out_file) } else { hint.to_string() }
                 ),
             );
             false
@@ -633,7 +733,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
-        if preflight(&app, &bin, &models, &payload.model) {
+        if preflight(&app, st, &bin, &models, &payload.model) {
             return;
         }
 
@@ -691,6 +791,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             );
         }
 
+        let mut silent_hint = String::new();
         let failed = if pass_plan.len() > 1 {
             run_pass_chain(
                 &app,
@@ -723,7 +824,9 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
                 tile_size: payload.tile_size,
                 tta_mode: payload.tta_mode,
             });
-            spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS)
+            let outcome = spawn_stream(&app, st, &bin, &args, events::UPSCAYL_PROGRESS);
+            silent_hint = outcome.silent_hint();
+            outcome.failed
         };
         // Clean up the temporary orientation-normalized input, if any.
         if let Some(tmp) = &oriented {
@@ -741,7 +844,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi(&out_file, dpi);
             }
-            if !verify_output(&app, &out_file) {
+            if !verify_output(&app, &out_file, &silent_hint) {
                 return;
             }
             let _ = app.emit(events::UPSCAYL_DONE, out_file.clone());
@@ -755,7 +858,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
                 payload.strip_overlap_cm,
                 payload.output_dpi,
             );
-            notify(&app, "Symp's Upscale", "Image upscaled successfully!");
+            notify(&app, "Symp's Upscale", "Image agrandie avec succès.");
         }
     });
 }
@@ -792,7 +895,7 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
-        if preflight(&app, &bin, &models, &payload.model) {
+        if preflight(&app, st, &bin, &models, &payload.model) {
             return;
         }
 
@@ -828,7 +931,7 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             events::UPSCAYL_PASS,
             serde_json::json!({ "current": 1, "total": 2 }),
         );
-        let failed1 = spawn_stream(&app, st, &bin, &args1, events::DOUBLE_UPSCAYL_PROGRESS);
+        let failed1 = spawn_stream(&app, st, &bin, &args1, events::DOUBLE_UPSCAYL_PROGRESS).failed;
         // Clean up the temporary orientation-normalized input, if any.
         if let Some(tmp) = &oriented {
             let _ = fs::remove_file(tmp);
@@ -854,14 +957,14 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             events::UPSCAYL_PASS,
             serde_json::json!({ "current": 2, "total": 2 }),
         );
-        let failed2 = spawn_stream(&app, st, &bin, &args2, events::DOUBLE_UPSCAYL_PROGRESS);
+        let failed2 = spawn_stream(&app, st, &bin, &args2, events::DOUBLE_UPSCAYL_PROGRESS).failed;
         if !failed2 && !st.stopped.load(Ordering::Relaxed) {
             // Stamp the print resolution so the file opens at its intended
             // physical size instead of defaulting to 72 DPI.
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi(&out_file, dpi);
             }
-            if !verify_output(&app, &out_file) {
+            if !verify_output(&app, &out_file, "") {
                 return;
             }
             let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file.clone());
@@ -873,7 +976,7 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
                 payload.strip_overlap_cm,
                 payload.output_dpi,
             );
-            notify(&app, "Symp's Upscale", "Image upscayled successfully!");
+            notify(&app, "Symp's Upscale", "Image agrandie avec succès.");
         }
     });
 }
@@ -915,7 +1018,7 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
 
         let bin = exec_path(&app);
         let models = resolve_models_path(&app, st, &payload.model);
-        if preflight(&app, &bin, &models, &payload.model) {
+        if preflight(&app, st, &bin, &models, &payload.model) {
             return;
         }
         let args = batch_args(&BatchArgs {
@@ -932,14 +1035,34 @@ pub fn batch_upscale_image(app: AppHandle, payload: BatchUpscaylPayload) {
             tta_mode: payload.tta_mode,
         });
 
-        let failed = spawn_stream(&app, st, &bin, &args, events::FOLDER_UPSCAYL_PROGRESS);
+        let failed = spawn_stream(&app, st, &bin, &args, events::FOLDER_UPSCAYL_PROGRESS).failed;
         if !failed && !st.stopped.load(Ordering::Relaxed) {
+            // Same check as a single image, counted over the folder: a batch
+            // that produced nothing must not be announced as finished.
+            let produced = fs::read_dir(&output_folder)
+                .map(|rd| rd.filter_map(|e| e.ok()).count())
+                .unwrap_or(0);
+            if produced == 0 {
+                let _ = app.emit(
+                    events::UPSCAYL_ERROR,
+                    format!(
+                        "Le moteur a signalé une réussite mais aucune image \
+                         n'a été écrite dans {output_folder}.{}",
+                        protected_folder_hint(&output_folder)
+                    ),
+                );
+                return;
+            }
+            let _ = app.emit(
+                events::FOLDER_UPSCAYL_PROGRESS,
+                format!("OUTPUT: {produced} image(s) dans {output_folder}\n"),
+            );
             // Stamp every result so the whole batch opens at the right size.
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi_in_dir(&output_folder, dpi);
             }
             let _ = app.emit(events::FOLDER_UPSCAYL_DONE, output_folder);
-            notify(&app, "Symp's Upscale", "Images upscaled successfully!");
+            notify(&app, "Symp's Upscale", "Images agrandies avec succès.");
         }
     });
 }
@@ -1134,4 +1257,141 @@ pub fn get_system_info() -> serde_json::Value {
 #[tauri::command]
 pub fn set_notifications_off(state: State<'_, AppState>, value: bool) {
     state.notifications_off.store(value, Ordering::Relaxed);
+}
+
+/// A report on whether the engine can run on this machine, as text meant to
+/// be read by the person in front of it and pasted into a message.
+///
+/// This exists because of how long the opposite took. An upscale that failed
+/// silently on a Windows machine cost several rounds of guessing at a distance
+/// — the path, the folder protection, the file name — when one look at what
+/// the engine actually does on that machine would have answered it.
+#[tauri::command]
+pub fn engine_diagnostics(app: AppHandle, state: State<'_, AppState>) -> String {
+    let mut out = String::new();
+    let mut line = |s: String| {
+        out.push_str(&s);
+        out.push('\n');
+    };
+
+    line(format!(
+        "Symp's Upscale {} — {} {}",
+        app.package_info().version,
+        std::env::consts::OS,
+        std::env::consts::ARCH
+    ));
+
+    let bin = exec_path(&app);
+    let size = fs::metadata(&bin).map(|m| m.len()).unwrap_or(0);
+    line(format!("Moteur : {}", bin.display()));
+    line(format!(
+        "  présent : {}{}",
+        if bin.exists() { "oui" } else { "NON" },
+        if size > 0 {
+            format!(" ({size} octets)")
+        } else {
+            String::new()
+        }
+    ));
+
+    // The library the engine links at load time, and the one real cause of a
+    // process that dies before printing anything.
+    match crate::upscale::vulkan_runtime() {
+        Some(p) => line(format!("Vulkan : {}", p.display())),
+        None => line(
+            "Vulkan : INTROUVABLE — installez ou mettez à jour le pilote de la \
+             carte graphique, l'agrandissement ne peut pas fonctionner sans lui"
+                .to_string(),
+        ),
+    }
+
+    #[cfg(target_os = "windows")]
+    if let Some(dir) = bin.parent() {
+        let vcomp = dir.join("vcomp140.dll");
+        line(format!(
+            "vcomp140.dll : {}",
+            if vcomp.exists() { "présent" } else { "MANQUANT" }
+        ));
+    }
+
+    let models = models_path(&app);
+    let installed: Vec<String> = fs::read_dir(&models)
+        .map(|rd| {
+            let mut v: Vec<String> = rd
+                .filter_map(|e| e.ok())
+                .map(|e| e.file_name().to_string_lossy().to_string())
+                .filter(|n| n.ends_with(".param"))
+                .map(|n| n.trim_end_matches(".param").to_string())
+                .collect();
+            v.sort();
+            v
+        })
+        .unwrap_or_default();
+    line(format!("Modèles : {}", models.display()));
+    line(format!(
+        "  trouvés : {}",
+        if installed.is_empty() {
+            "AUCUN".to_string()
+        } else {
+            installed.join(", ")
+        }
+    ));
+
+    // The decisive test: start the engine and see whether it speaks.
+    let probe = crate::upscale::probe_engine(&bin);
+    line(format!(
+        "Démarrage du moteur : {}",
+        if probe.loaded() {
+            "OK".to_string()
+        } else if !probe.ran {
+            format!(
+                "ÉCHEC du lancement ({})",
+                probe.error.clone().unwrap_or_default()
+            )
+        } else {
+            let detail = probe
+                .code
+                .and_then(crate::upscale::describe_exit_code)
+                .unwrap_or("le moteur n'a rien affiché");
+            format!(
+                "ÉCHEC (code {:?}) — {detail}",
+                probe.code.unwrap_or_default()
+            )
+        }
+    ));
+    if probe.loaded() {
+        if let Ok(mut g) = state.engine_loads.lock() {
+            *g = Some(true);
+        }
+        if let Some(first) = probe.output.lines().find(|l| !l.trim().is_empty()) {
+            line(format!("  réponse : {}", first.trim()));
+        }
+    }
+
+    // Where the user's own files would be written, since a destination the
+    // app cannot write to looks exactly like an engine that does nothing.
+    let writable = app
+        .path()
+        .picture_dir()
+        .ok()
+        .map(|d| {
+            let probe_file = d.join(".symps_write_test");
+            let ok = fs::write(&probe_file, b"ok").is_ok();
+            let _ = fs::remove_file(&probe_file);
+            (d, ok)
+        });
+    if let Some((dir, ok)) = writable {
+        line(format!(
+            "Écriture dans {} : {}{}",
+            dir.display(),
+            if ok { "OK" } else { "REFUSÉE" },
+            if ok {
+                String::new()
+            } else {
+                protected_folder_hint(&dir.to_string_lossy())
+            }
+        ));
+    }
+
+    out
 }

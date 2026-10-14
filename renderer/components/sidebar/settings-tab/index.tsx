@@ -15,6 +15,7 @@ import TTAModeToggle from "./tta-mode-toggle";
 import SystemInfo from "./system-info";
 import CopyMetadataToggle from "./copy-metadata-toggle";
 import LegalNotice from "./legal-notice";
+import EngineDiagnostics from "./engine-diagnostics";
 
 interface IProps {
   batchMode: boolean;
@@ -131,6 +132,8 @@ function SettingsTab({
 
       {/* RESET SETTINGS */}
       <ResetSettingsButton />
+
+      <EngineDiagnostics />
 
       <SystemInfo />
 

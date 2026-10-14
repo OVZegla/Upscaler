@@ -37,6 +37,9 @@ original Upscayl codebase:
 - Added the 4xLSDIRCompactC3 model (CC BY 4.0, attributed below) as the
   default, measured both more faithful and far faster than the inherited
   models, and retired both inherited models, which it outperformed
+- Engine start-up check and failure reporting: the inference process's exit
+  status is read, Windows loader statuses are named, and a missing Vulkan
+  runtime is reported before a job starts
 - Progress, cancel and various UX fixes
 
 The AI models themselves are NOT modified: they are shipped byte-for-byte as
