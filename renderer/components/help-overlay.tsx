@@ -61,7 +61,7 @@ const SECTIONS: Section[] = [
       },
       {
         term: "Le facteur affiché",
-        text: "Monter le facteur donne une image plus grande, pas plus détaillée. L'IA ne sait agrandir que par 4 : au-delà, elle repasse sur ce qu'elle a inventé à la passe précédente, comme une photocopie de photocopie. Jusqu'à 8× le gain reste réel. À 16× le résultat est déjà moins fidèle qu'un simple étirement de l'image, pour bien plus de temps et de poids. Le curseur monte quand même jusqu'à 256×, parce que les logos et dessins au trait tiennent beaucoup mieux que les photos. Mais pour gagner en qualité sur une photo, c'est la source qu'il faut plus grande, pas le réglage.",
+        text: "Jusqu'à 8×, l'IA restitue du détail réellement présent dans l'image. Au-delà, il est possible qu'elle en invente : elle ne sait agrandir que par 4, donc chaque passe retravaille ce que la précédente a produit, et elle comble les manques par du détail plausible qui n'était pas dans l'original. L'image sera plus grande, pas forcément plus fidèle. Le curseur s'arrête à 16× ; un interrupteur l'ouvre jusqu'à 256×, parce que les logos et dessins au trait s'en accommodent beaucoup mieux que les photos. Pour gagner en qualité sur une photo, c'est la source qu'il faut plus grande, pas le réglage.",
       },
       {
         term: "La sortie reste en RVB",

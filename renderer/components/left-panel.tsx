@@ -713,11 +713,11 @@ const LeftPanel = ({
 
                   {printEstimate.isOverStretched && (
                     <span style={{ fontSize: 11.5, color: "var(--red)", lineHeight: 1.45 }}>
-                      Facteur {printEstimate.factor.toFixed(1)}× : au-delà de
-                      8×, nos mesures montrent que l&apos;IA n&apos;apporte plus
-                      rien. À 16× elle fait moins bien qu&apos;un simple
-                      agrandissement, tout en prenant bien plus de temps. Il
-                      faudrait repartir d&apos;une source plus grande.
+                      Facteur {printEstimate.factor.toFixed(1)}×&nbsp;: au-delà
+                      de 8×, il est possible que l&apos;IA invente des détails
+                      qui n&apos;étaient pas dans l&apos;image d&apos;origine.
+                      Pour ce mur, il faudrait repartir d&apos;une source plus
+                      grande.
                     </span>
                   )}
 
@@ -854,15 +854,18 @@ const LeftPanel = ({
                   background: "var(--red-tint)",
                 }}
               >
-                <strong>L&apos;image sera plus grande, pas plus détaillée.</strong>{" "}
-                L&apos;IA ne sait agrandir que par 4. Au-delà, elle repasse sur
-                ce qu&apos;elle a elle-même inventé à la passe précédente&nbsp;:
-                elle ajoute du détail plausible, pas du détail réel. Sur une
-                photo, le résultat devient alors moins fidèle que si vous aviez
-                simplement étiré l&apos;image, pour bien plus de temps et de
-                poids. Les logos et dessins au trait tiennent mieux. Pour
-                vraiment gagner en qualité, c&apos;est l&apos;image de départ
-                qu&apos;il faut plus grande.
+                <strong>
+                  Au-delà de 8×, il est possible que l&apos;IA invente des
+                  détails.
+                </strong>{" "}
+                Elle ne sait agrandir que par 4&nbsp;: au-delà, chaque passe
+                retravaille ce que la précédente a produit, et elle comble les
+                manques par du détail plausible qui n&apos;était pas dans
+                l&apos;image d&apos;origine. L&apos;image sera plus grande, pas
+                forcément plus fidèle. Les logos et dessins au trait s&apos;en
+                accommodent mieux que les photos. Pour vraiment gagner en
+                qualité, c&apos;est l&apos;image de départ qu&apos;il faut plus
+                grande.
               </div>
             )}
           </div>
