@@ -437,6 +437,56 @@ fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
     false
 }
 
+/// Confirms the engine actually produced the file we are about to announce.
+///
+/// The engine prints "Upscayled Successfully" and exits 0 even when the file
+/// did not land where `-o` asked, which leaves the interface pointing at
+/// nothing and blaming its own preview. Reporting the directory's real
+/// contents turns that into something answerable.
+fn verify_output(app: &AppHandle, out_file: &str) -> bool {
+    let path = Path::new(out_file);
+    match std::fs::metadata(path) {
+        Ok(m) if m.len() > 0 => {
+            let _ = app.emit(
+                events::UPSCAYL_PROGRESS,
+                format!("OUTPUT: {} ({} octets)\n", out_file, m.len()),
+            );
+            true
+        }
+        other => {
+            let why = match other {
+                Ok(_) => "le fichier est vide".to_string(),
+                Err(e) => e.to_string(),
+            };
+            // What IS in the folder, so a wrong name shows up immediately.
+            let listing = path
+                .parent()
+                .and_then(|d| std::fs::read_dir(d).ok())
+                .map(|rd| {
+                    let mut names: Vec<String> = rd
+                        .filter_map(|e| e.ok())
+                        .map(|e| e.file_name().to_string_lossy().to_string())
+                        .filter(|n| n.contains("_upscaled_"))
+                        .collect();
+                    names.sort();
+                    names.truncate(5);
+                    names.join(", ")
+                })
+                .unwrap_or_default();
+            let _ = app.emit(
+                events::UPSCAYL_ERROR,
+                format!(
+                    "Le moteur a signalé une réussite mais le fichier est \
+                     introuvable : {out_file} ({why}). Fichiers « _upscaled_ » \
+                     présents dans le dossier : {}",
+                    if listing.is_empty() { "aucun".to_string() } else { listing }
+                ),
+            );
+            false
+        }
+    }
+}
+
 // ── Upscale commands ────────────────────────────────────────────────────────
 
 #[tauri::command]
@@ -569,6 +619,9 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi(&out_file, dpi);
             }
+            if !verify_output(&app, &out_file) {
+                return;
+            }
             let _ = app.emit(events::UPSCAYL_DONE, out_file.clone());
             // After the preview is live: cutting a wall-sized file takes a
             // while and the full image is already usable without it.
@@ -686,6 +739,9 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
             // physical size instead of defaulting to 72 DPI.
             if let Some(dpi) = payload.output_dpi {
                 resolution::write_dpi(&out_file, dpi);
+            }
+            if !verify_output(&app, &out_file) {
+                return;
             }
             let _ = app.emit(events::DOUBLE_UPSCAYL_DONE, out_file.clone());
             cut_into_strips(
