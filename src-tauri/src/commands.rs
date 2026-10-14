@@ -437,6 +437,76 @@ fn preflight(app: &AppHandle, bin: &Path, models: &str, model: &str) -> bool {
     false
 }
 
+/// A directory the engine can write into whose path holds no non-ASCII
+/// character, or None when the destination needs no help.
+///
+/// The Windows build of upscayl-bin reports success and writes nothing when
+/// asked to produce a file under a path containing an accented character: a
+/// run into `C:\Users\Loïc Symp's\Downloads` exits 0, prints "Upscayled
+/// Successfully", and leaves the folder empty. The same binary's Linux build
+/// handles that path, and an accent, an apostrophe and a space, without
+/// trouble, so this is specific to its Windows path handling and not
+/// something a caller can argue with.
+///
+/// `C:\Users\Public` is writable by a standard account and, unlike both the
+/// profile directory and TEMP, never carries the account name.
+fn ascii_staging_dir(dest: &str) -> Option<std::path::PathBuf> {
+    if dest.is_ascii() {
+        return None;
+    }
+    #[cfg(target_os = "windows")]
+    {
+        let base = std::env::var("PUBLIC").unwrap_or_else(|_| "C:\\Users\\Public".to_string());
+        let dir = std::path::PathBuf::from(base).join("SympsUpscale");
+        if !dir.to_string_lossy().is_ascii() {
+            return None;
+        }
+        if std::fs::create_dir_all(&dir).is_err() {
+            return None;
+        }
+        Some(dir)
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        None
+    }
+}
+
+/// A unique file name inside `dir`, keeping `ext`.
+fn staged_path(dir: &std::path::Path, ext: &str) -> String {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_nanos())
+        .unwrap_or(0);
+    dir.join(format!("staged_{nanos}.{ext}"))
+        .to_string_lossy()
+        .to_string()
+}
+
+/// Moves a staged result onto its real destination, across volumes if needed.
+fn adopt_staged(app: &AppHandle, staged: &str, dest: &str) -> bool {
+    if let Some(parent) = Path::new(dest).parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    // rename is atomic but fails across volumes; copy then is the fallback.
+    if std::fs::rename(staged, dest).is_ok() {
+        return true;
+    }
+    match std::fs::copy(staged, dest) {
+        Ok(_) => {
+            let _ = std::fs::remove_file(staged);
+            true
+        }
+        Err(e) => {
+            let _ = app.emit(
+                events::UPSCAYL_ERROR,
+                format!("Impossible de déplacer le résultat vers {dest} : {e}"),
+            );
+            false
+        }
+    }
+}
+
 /// Confirms the engine actually produced the file we are about to announce.
 ///
 /// The engine prints "Upscayled Successfully" and exits 0 even when the file
@@ -575,6 +645,20 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             _ => Vec::new(),
         };
 
+        // The engine cannot write under a non-ASCII path on Windows, so give
+        // it an ASCII one and move the result into place ourselves.
+        let staging = ascii_staging_dir(&out_file);
+        let engine_out = match &staging {
+            Some(dir) => staged_path(dir, &payload.save_image_as),
+            None => out_file.clone(),
+        };
+        if staging.is_some() {
+            let _ = app.emit(
+                events::UPSCAYL_PROGRESS,
+                format!("STAGING: {engine_out}\n"),
+            );
+        }
+
         let failed = if pass_plan.len() > 1 {
             run_pass_chain(
                 &app,
@@ -582,7 +666,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
                 &bin,
                 &pass_plan,
                 &full_input,
-                &out_file,
+                &engine_out,
                 &models,
                 &payload.model,
                 &payload.gpu_id,
@@ -596,7 +680,7 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
             let args = single_image_args(&SingleArgs {
                 input_dir: &arg_input_dir,
                 file_name_with_ext: &arg_file,
-                out_file: &out_file,
+                out_file: &engine_out,
                 models_path: &models,
                 model: &payload.model,
                 scale: &payload.scale,
@@ -613,7 +697,13 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
         if let Some(tmp) = &oriented {
             let _ = fs::remove_file(tmp);
         }
+        if (failed || st.stopped.load(Ordering::Relaxed)) && staging.is_some() {
+            let _ = fs::remove_file(&engine_out);
+        }
         if !failed && !st.stopped.load(Ordering::Relaxed) {
+            if staging.is_some() && !adopt_staged(&app, &engine_out, &out_file) {
+                return;
+            }
             // Stamp the print resolution so the file opens at its intended
             // physical size instead of defaulting to 72 DPI.
             if let Some(dpi) = payload.output_dpi {
