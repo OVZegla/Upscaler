@@ -1,0 +1,12 @@
+# Link the Visual C++ runtime into the executable instead of depending on it.
+#
+# Without this the app refuses to start on any Windows that has never had the
+# Visual C++ Redistributable installed: "Impossible d'exécuter le code, car
+# VCRUNTIME140.dll est introuvable". That is a plausible state for a workshop
+# machine, and telling the user to go and install a Microsoft package first is
+# not an acceptable first run.
+#
+# Only our own binary is affected. upscayl-bin.exe imports just VCOMP140.DLL,
+# the OpenMP runtime, which ships beside it already.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
