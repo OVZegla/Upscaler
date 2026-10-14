@@ -55,3 +55,6 @@ main/utils/*.js
 flags.ts
 *.p12
 .claude/
+
+# TypeScript incremental build state — a local cache, never a source file.
+*.tsbuildinfo

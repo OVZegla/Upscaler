@@ -25,6 +25,7 @@ const COMMAND_TO_TAURI: Record<string, string> = {
   [ELECTRON_COMMANDS.SELECT_CUSTOM_MODEL_FOLDER]: "select_custom_models_folder",
   "get-gpu-info": "get_gpu_info",
   "get-app-version": "get_app_version",
+  "engine-diagnostics": "engine_diagnostics",
 };
 
 // Commands whose single argument is forwarded as a bare string/object `payload`.
@@ -41,6 +42,8 @@ const PAYLOAD_COMMANDS = new Set<string>([
 // src-tauri/src/events.rs.
 const COMMAND_TO_EVENT: Record<string, string> = {
   [ELECTRON_COMMANDS.UPSCAYL_PROGRESS]: "upscayl-progress",
+  [ELECTRON_COMMANDS.UPSCAYL_PASS]: "upscayl-pass",
+  [ELECTRON_COMMANDS.UPSCAYL_STRIPS]: "upscayl-strips",
   [ELECTRON_COMMANDS.UPSCAYL_DONE]: "upscayl-done",
   [ELECTRON_COMMANDS.UPSCAYL_ERROR]: "upscayl-error",
   [ELECTRON_COMMANDS.UPSCAYL_WARNING]: "upscayl-warning",

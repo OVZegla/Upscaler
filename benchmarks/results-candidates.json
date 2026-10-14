@@ -1,0 +1,1532 @@
+[
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 22.573959449915876,
+  "ssim": 0.4746348325554239,
+  "sharp_ratio": 0.0039419023831104485
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.1864955425262451,
+  "psnr": 21.56212063819627,
+  "ssim": 0.45360410401653317,
+  "sharp_ratio": 0.2713618174946952
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.87363600730896,
+  "psnr": 21.68744692074966,
+  "ssim": 0.471527907156469,
+  "sharp_ratio": 0.04451452965270656
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.8220560550689697,
+  "psnr": 21.025172773318836,
+  "ssim": 0.4314881000534766,
+  "sharp_ratio": 0.23903963105313375
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 24.67264437675476,
+  "psnr": 21.90326611288074,
+  "ssim": 0.4375685582310007,
+  "sharp_ratio": 0.1137068005407871
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 23.144110679626465,
+  "psnr": 21.353590686685077,
+  "ssim": 0.45288424518762793,
+  "sharp_ratio": 0.3689985346556667
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 22.571916341781616,
+  "psnr": 20.19113878016943,
+  "ssim": 0.43063755677545656,
+  "sharp_ratio": 0.6230969587230039
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 22.684635639190674,
+  "psnr": 21.577526728988666,
+  "ssim": 0.4471257802605142,
+  "sharp_ratio": 0.14139820200224532
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 22.317092657089233,
+  "psnr": 19.093379519402603,
+  "ssim": 0.37714111409458245,
+  "sharp_ratio": 1.87957903047822
+ },
+ {
+  "image": "set14_001",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 22.0267391204834,
+  "psnr": 19.684613199275724,
+  "ssim": 0.39960422441013876,
+  "sharp_ratio": 1.0115935656782724
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 25.40704513914825,
+  "ssim": 0.7021937194252841,
+  "sharp_ratio": 0.008853902026077045
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.921034574508667,
+  "psnr": 24.499071355465457,
+  "ssim": 0.7033721491571892,
+  "sharp_ratio": 0.26870386507811106
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 2.7116377353668213,
+  "psnr": 23.77219157121192,
+  "ssim": 0.693738202788192,
+  "sharp_ratio": 0.15039911871323872
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 2.892172336578369,
+  "psnr": 24.02874845654625,
+  "ssim": 0.6859544359465211,
+  "sharp_ratio": 0.170458339818427
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 34.733275175094604,
+  "psnr": 24.673040118258186,
+  "ssim": 0.680341686282882,
+  "sharp_ratio": 0.21410643409607796
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 33.941789388656616,
+  "psnr": 24.973886842166355,
+  "ssim": 0.7127420363254865,
+  "sharp_ratio": 0.3259974327510059
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 32.788655519485474,
+  "psnr": 22.855426539334946,
+  "ssim": 0.6913445669269431,
+  "sharp_ratio": 0.6469022567642224
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 32.870543479919434,
+  "psnr": 24.8989044548462,
+  "ssim": 0.6983054670699845,
+  "sharp_ratio": 0.08643308028269066
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 33.693530559539795,
+  "psnr": 24.47901539547004,
+  "ssim": 0.6871755002004044,
+  "sharp_ratio": 0.7469144153204189
+ },
+ {
+  "image": "set14_002",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 32.395118713378906,
+  "psnr": 24.18230121380273,
+  "ssim": 0.6834710825137964,
+  "sharp_ratio": 0.6812592452064524
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 24.750301712431646,
+  "ssim": 0.5903784431312198,
+  "sharp_ratio": 0.010138115770167228
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.4038522243499756,
+  "psnr": 23.48498309001197,
+  "ssim": 0.5363943508633651,
+  "sharp_ratio": 0.49993079112729233
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.8670563697814941,
+  "psnr": 23.348038991261014,
+  "ssim": 0.5661888208006183,
+  "sharp_ratio": 0.1270373709519033
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.739119291305542,
+  "psnr": 23.440925066420526,
+  "ssim": 0.5266103607208137,
+  "sharp_ratio": 0.3039604069001149
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 21.9293212890625,
+  "psnr": 23.444078397273245,
+  "ssim": 0.5198669347559944,
+  "sharp_ratio": 0.2748485452602946
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 24.462421655654907,
+  "psnr": 23.13282926187385,
+  "ssim": 0.5232275594019133,
+  "sharp_ratio": 0.6764648279167299
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 23.427398920059204,
+  "psnr": 21.699083782744907,
+  "ssim": 0.5026983405189305,
+  "sharp_ratio": 1.1254269363540432
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 22.811460733413696,
+  "psnr": 23.95556235736197,
+  "ssim": 0.5830843648126242,
+  "sharp_ratio": 0.09621229986575507
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 22.45305323600769,
+  "psnr": 21.95053107891655,
+  "ssim": 0.4904159281492803,
+  "sharp_ratio": 1.791284269239713
+ },
+ {
+  "image": "set14_003",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 21.80281972885132,
+  "psnr": 21.279093221196998,
+  "ssim": 0.44090197979389034,
+  "sharp_ratio": 2.11154197967502
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 25.600115387390247,
+  "ssim": 0.5307296013740821,
+  "sharp_ratio": 0.011841167678329852
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.830331563949585,
+  "psnr": 24.763793380074517,
+  "ssim": 0.4757651493134815,
+  "sharp_ratio": 0.5967730925659057
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.2009789943695068,
+  "psnr": 25.229872510519918,
+  "ssim": 0.5207158015070998,
+  "sharp_ratio": 0.12241321654468947
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.2266998291015625,
+  "psnr": 25.16598225944329,
+  "ssim": 0.49551542405637417,
+  "sharp_ratio": 0.1984531112192887
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 12.049236536026001,
+  "psnr": 24.2501959251863,
+  "ssim": 0.4552240101916157,
+  "sharp_ratio": 0.5494825231253389
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 11.581750392913818,
+  "psnr": 24.152522394989028,
+  "ssim": 0.43793913866171974,
+  "sharp_ratio": 1.1565032748028987
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 11.64573335647583,
+  "psnr": 23.02537584303834,
+  "ssim": 0.4258418217587253,
+  "sharp_ratio": 1.5914458940981715
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 10.785959005355835,
+  "psnr": 24.532084016859155,
+  "ssim": 0.49233927748576933,
+  "sharp_ratio": 0.4313793372639546
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 10.735011339187622,
+  "psnr": 23.518203034978516,
+  "ssim": 0.4237612091094035,
+  "sharp_ratio": 2.1224203116752536
+ },
+ {
+  "image": "set14_004",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 11.224702835083008,
+  "psnr": 23.747651321484433,
+  "ssim": 0.4229776907809933,
+  "sharp_ratio": 1.3754849711465338
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 31.909849521766912,
+  "ssim": 0.7636072712514803,
+  "sharp_ratio": 0.010230939418046972
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.7928969860076904,
+  "psnr": 31.31012780602435,
+  "ssim": 0.7523755875184002,
+  "sharp_ratio": 0.25024857917102183
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.0429751873016357,
+  "psnr": 30.56032431863389,
+  "ssim": 0.7535282472105392,
+  "sharp_ratio": 0.06755783225270237
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.191162109375,
+  "psnr": 30.84520200049512,
+  "ssim": 0.7463350837325393,
+  "sharp_ratio": 0.08879988298061141
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 10.43910527229309,
+  "psnr": 30.631839317608293,
+  "ssim": 0.7404179674997989,
+  "sharp_ratio": 0.06794533120219676
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 10.956497192382812,
+  "psnr": 31.234490733447636,
+  "ssim": 0.7435127477849751,
+  "sharp_ratio": 0.3389347487864772
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 10.918558359146118,
+  "psnr": 30.388129688930526,
+  "ssim": 0.754989651789815,
+  "sharp_ratio": 0.28849071989260505
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 10.058641910552979,
+  "psnr": 29.940509956797456,
+  "ssim": 0.7327875292793713,
+  "sharp_ratio": 0.09952986393477652
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 10.342944383621216,
+  "psnr": 30.650267327464,
+  "ssim": 0.7322178749333316,
+  "sharp_ratio": 0.591873511177117
+ },
+ {
+  "image": "set14_006",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 11.36047625541687,
+  "psnr": 30.042624727325666,
+  "ssim": 0.7029123254657396,
+  "sharp_ratio": 0.652099660744603
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 25.967279813466938,
+  "ssim": 0.7380289753286378,
+  "sharp_ratio": 0.024821796906743857
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.0347692966461182,
+  "psnr": 25.464937176337216,
+  "ssim": 0.7265428295846198,
+  "sharp_ratio": 0.7826485330332618
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.7033271789550781,
+  "psnr": 25.606796481551843,
+  "ssim": 0.7450346108821924,
+  "sharp_ratio": 0.243034303688646
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.615556240081787,
+  "psnr": 25.74937904157904,
+  "ssim": 0.7349030851108721,
+  "sharp_ratio": 0.2276844242186747
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 19.48852229118347,
+  "psnr": 25.39648531859902,
+  "ssim": 0.7162298933852022,
+  "sharp_ratio": 0.22968190880843553
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 17.94755506515503,
+  "psnr": 26.2286099896614,
+  "ssim": 0.750778623637632,
+  "sharp_ratio": 0.8282845926904415
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 19.114951848983765,
+  "psnr": 23.81512832248061,
+  "ssim": 0.7141419063177114,
+  "sharp_ratio": 1.2323375884306123
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 18.399213790893555,
+  "psnr": 24.427658567122414,
+  "ssim": 0.6998121962505929,
+  "sharp_ratio": 0.4323599298267996
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 17.82408308982849,
+  "psnr": 26.032115682690403,
+  "ssim": 0.7620164349636163,
+  "sharp_ratio": 1.2406522592660063
+ },
+ {
+  "image": "set14_007",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 18.219538688659668,
+  "psnr": 24.610108130405678,
+  "ssim": 0.7042082234872815,
+  "sharp_ratio": 1.456237247605059
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 29.695978659101684,
+  "ssim": 0.8684961769271821,
+  "sharp_ratio": 0.03480133498508885
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.8808915615081787,
+  "psnr": 30.41108800743842,
+  "ssim": 0.8864852399495744,
+  "sharp_ratio": 0.9722005327681009
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.3521583080291748,
+  "psnr": 24.5603092999936,
+  "ssim": 0.8564099283497385,
+  "sharp_ratio": 0.9940823171476864
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.290412425994873,
+  "psnr": 26.301018826260144,
+  "ssim": 0.8478542219996258,
+  "sharp_ratio": 0.9100020800466694
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 12.06687331199646,
+  "psnr": 28.984870303167195,
+  "ssim": 0.8655801371221173,
+  "sharp_ratio": 0.9804825472483671
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 11.619587898254395,
+  "psnr": 30.880344483401974,
+  "ssim": 0.8833646103077814,
+  "sharp_ratio": 1.1963065943553226
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 11.397866010665894,
+  "psnr": 26.104074407507724,
+  "ssim": 0.8667013636505321,
+  "sharp_ratio": 2.70070800560195
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 11.402138948440552,
+  "psnr": 28.973644031203623,
+  "ssim": 0.8778296804657648,
+  "sharp_ratio": 0.6385719369324964
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 11.622313976287842,
+  "psnr": 29.687768619553037,
+  "ssim": 0.8471035328817,
+  "sharp_ratio": 1.7816595780357058
+ },
+ {
+  "image": "set14_008",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 10.709906578063965,
+  "psnr": 28.341941561980022,
+  "ssim": 0.8101883223231137,
+  "sharp_ratio": 1.7948359563860505
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 30.36671680199835,
+  "ssim": 0.8242777722575512,
+  "sharp_ratio": 0.026173917404030557
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.0829155445098877,
+  "psnr": 30.05218365011095,
+  "ssim": 0.8182710638019028,
+  "sharp_ratio": 0.5817334884190066
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.65574049949646,
+  "psnr": 29.13847730328128,
+  "ssim": 0.8239598997239217,
+  "sharp_ratio": 0.26912043348008285
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.8872108459472656,
+  "psnr": 29.647333554481555,
+  "ssim": 0.8169560834345764,
+  "sharp_ratio": 0.1981352874496482
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 22.184336185455322,
+  "psnr": 29.389203427371328,
+  "ssim": 0.804672218768052,
+  "sharp_ratio": 0.27243486650810295
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 21.890456438064575,
+  "psnr": 30.4888734580507,
+  "ssim": 0.8152092443577947,
+  "sharp_ratio": 0.6698571040862227
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 22.1232590675354,
+  "psnr": 27.679334825351877,
+  "ssim": 0.8095335784486636,
+  "sharp_ratio": 0.9864001550321265
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 22.476401567459106,
+  "psnr": 28.87488693825072,
+  "ssim": 0.8150271870486755,
+  "sharp_ratio": 0.2332161592246307
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 22.525104522705078,
+  "psnr": 26.588438414874005,
+  "ssim": 0.712210246007543,
+  "sharp_ratio": 3.8576578625657185
+ },
+ {
+  "image": "set14_009",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 21.715156078338623,
+  "psnr": 27.752978548005228,
+  "ssim": 0.7491230346860607,
+  "sharp_ratio": 2.287697913984854
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 26.01502047337149,
+  "ssim": 0.6918349140751002,
+  "sharp_ratio": 0.012290559051006945
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.3347058296203613,
+  "psnr": 25.938075921074375,
+  "ssim": 0.6904180145963316,
+  "sharp_ratio": 0.2931071766442607
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.9746472835540771,
+  "psnr": 25.025763977129266,
+  "ssim": 0.6784782605684194,
+  "sharp_ratio": 0.15191313216672203
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.837855339050293,
+  "psnr": 25.28749266508276,
+  "ssim": 0.6603980837347754,
+  "sharp_ratio": 0.1815316336756947
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 22.367018461227417,
+  "psnr": 25.254233643257983,
+  "ssim": 0.6650082508796579,
+  "sharp_ratio": 0.144961718515085
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 22.245257139205933,
+  "psnr": 25.769756193741788,
+  "ssim": 0.6897328950627162,
+  "sharp_ratio": 0.415284211319606
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 22.165232181549072,
+  "psnr": 24.18377228153021,
+  "ssim": 0.6729451808477247,
+  "sharp_ratio": 0.5663451118917997
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 22.56900405883789,
+  "psnr": 25.087332606172634,
+  "ssim": 0.6682804809857742,
+  "sharp_ratio": 0.1322315035185264
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 22.351861000061035,
+  "psnr": 24.233575174426313,
+  "ssim": 0.6096550380257437,
+  "sharp_ratio": 1.346424085545108
+ },
+ {
+  "image": "set14_010",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 22.042724132537842,
+  "psnr": 23.573041619396037,
+  "ssim": 0.5869591439631698,
+  "sharp_ratio": 1.4694567581113767
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 28.07940472496021,
+  "ssim": 0.8885085666524855,
+  "sharp_ratio": 0.041226025782158844
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.6008358001708984,
+  "psnr": 28.959141548017925,
+  "ssim": 0.9101624874755814,
+  "sharp_ratio": 0.8607389437945194
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 2.492511034011841,
+  "psnr": 25.98660539669365,
+  "ssim": 0.8964589713383241,
+  "sharp_ratio": 0.7091807204654419
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 2.5612990856170654,
+  "psnr": 26.539624245235274,
+  "ssim": 0.8886847801739828,
+  "sharp_ratio": 0.6721099754000874
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 33.27714276313782,
+  "psnr": 28.392921580628133,
+  "ssim": 0.8976501911444655,
+  "sharp_ratio": 0.449602998421441
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 32.2285943031311,
+  "psnr": 30.93473808770395,
+  "ssim": 0.9222607178872648,
+  "sharp_ratio": 0.8470390282489508
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 31.138503551483154,
+  "psnr": 26.19677266376653,
+  "ssim": 0.9010422245539939,
+  "sharp_ratio": 1.4127526639135044
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 32.24188947677612,
+  "psnr": 27.09996059423942,
+  "ssim": 0.8883318889249473,
+  "sharp_ratio": 0.5425404481699024
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 33.299560546875,
+  "psnr": 29.65773847712624,
+  "ssim": 0.8971444972904105,
+  "sharp_ratio": 0.9633467965615928
+ },
+ {
+  "image": "set14_011",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 31.90609359741211,
+  "psnr": 28.11713091577553,
+  "ssim": 0.8768099498976313,
+  "sharp_ratio": 1.410844064532834
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 31.146227036652085,
+  "ssim": 0.8425831611752176,
+  "sharp_ratio": 0.020565448711442953
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.2188074588775635,
+  "psnr": 31.119073117443968,
+  "ssim": 0.8400952873536144,
+  "sharp_ratio": 0.546734395078642
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.894071340560913,
+  "psnr": 29.925956441313367,
+  "ssim": 0.8416945212663939,
+  "sharp_ratio": 0.2674515184236044
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.8740110397338867,
+  "psnr": 31.033048703394467,
+  "ssim": 0.8394119940650204,
+  "sharp_ratio": 0.21025973751757107
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 21.97624945640564,
+  "psnr": 30.428837476413438,
+  "ssim": 0.8421273862714608,
+  "sharp_ratio": 0.13791552633975346
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 23.00862145423889,
+  "psnr": 32.46256540232048,
+  "ssim": 0.8464104505967284,
+  "sharp_ratio": 0.44101588921301516
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 22.646281003952026,
+  "psnr": 28.620272590726387,
+  "ssim": 0.8384976771350747,
+  "sharp_ratio": 0.7411239788267241
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 22.582990407943726,
+  "psnr": 29.031243699037546,
+  "ssim": 0.831927055523883,
+  "sharp_ratio": 0.24992661083044748
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 22.460541486740112,
+  "psnr": 30.740993092981668,
+  "ssim": 0.8154524127500705,
+  "sharp_ratio": 0.8807908491928976
+ },
+ {
+  "image": "set14_012",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 23.199267625808716,
+  "psnr": 30.81162618339428,
+  "ssim": 0.8130249262955085,
+  "sharp_ratio": 0.7237180928882976
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 24.819478169687248,
+  "ssim": 0.7138642804321423,
+  "sharp_ratio": 0.05851639434557564
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.0390291213989258,
+  "psnr": 23.832757239744147,
+  "ssim": 0.6382741468415499,
+  "sharp_ratio": 1.721371141286397
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.7585980892181396,
+  "psnr": 23.169323644591593,
+  "ssim": 0.6872461693172598,
+  "sharp_ratio": 0.8195595908115746
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.7683429718017578,
+  "psnr": 23.831044889504668,
+  "ssim": 0.6591023605390122,
+  "sharp_ratio": 0.7180002018876185
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 20.780521392822266,
+  "psnr": 23.74309001614275,
+  "ssim": 0.6416046431295844,
+  "sharp_ratio": 0.6664596967949443
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 20.423157215118408,
+  "psnr": 24.72438468814615,
+  "ssim": 0.6708249847177387,
+  "sharp_ratio": 1.4108403697501715
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 19.864080905914307,
+  "psnr": 21.53128628053267,
+  "ssim": 0.5837695118803609,
+  "sharp_ratio": 3.6878207657803665
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 21.789201259613037,
+  "psnr": 23.664062972044043,
+  "ssim": 0.6332759393904999,
+  "sharp_ratio": 0.806433639409309
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 21.079149961471558,
+  "psnr": 22.29078542564249,
+  "ssim": 0.637561302136063,
+  "sharp_ratio": 4.7142059212276095
+ },
+ {
+  "image": "set14_014",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 20.841201782226562,
+  "psnr": 20.950023892788426,
+  "ssim": 0.5122239517054944,
+  "sharp_ratio": 4.974241558423171
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 32.51832220775204,
+  "ssim": 0.8714009271340347,
+  "sharp_ratio": 0.042447246032167034
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 1.2066779136657715,
+  "psnr": 29.983940534972856,
+  "ssim": 0.8167123472370433,
+  "sharp_ratio": 1.6832302838434938
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.8427505493164062,
+  "psnr": 27.942551743888586,
+  "ssim": 0.8395471959978753,
+  "sharp_ratio": 0.6835356702311238
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 2.00972056388855,
+  "psnr": 26.74171460910475,
+  "ssim": 0.7689886226093449,
+  "sharp_ratio": 2.5477720976573703
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 21.885684728622437,
+  "psnr": 29.22427883831248,
+  "ssim": 0.8082348717121521,
+  "sharp_ratio": 1.218424034151315
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 23.042009353637695,
+  "psnr": 30.637644897212063,
+  "ssim": 0.832688686147761,
+  "sharp_ratio": 0.7948559951527693
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 21.679149866104126,
+  "psnr": 27.482732904945756,
+  "ssim": 0.7984035604451021,
+  "sharp_ratio": 2.5461189229331036
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 21.1102237701416,
+  "psnr": 29.749393146019514,
+  "ssim": 0.8416165512444954,
+  "sharp_ratio": 0.5793532380820536
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 22.202946662902832,
+  "psnr": 26.26334617712339,
+  "ssim": 0.7065355302505205,
+  "sharp_ratio": 7.032665049894856
+ },
+ {
+  "image": "set5_001",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 21.829702138900757,
+  "psnr": 25.85932734766934,
+  "ssim": 0.7218974414411534,
+  "sharp_ratio": 4.691005262633278
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 30.97566413622559,
+  "ssim": 0.886534310347898,
+  "sharp_ratio": 0.08021833856162686
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.74690842628479,
+  "psnr": 30.351329412604304,
+  "ssim": 0.8854887750718121,
+  "sharp_ratio": 1.6847542953725705
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.1814050674438477,
+  "psnr": 28.16705283930022,
+  "ssim": 0.8712799655211834,
+  "sharp_ratio": 1.0406764590663509
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.0203356742858887,
+  "psnr": 28.93957024389458,
+  "ssim": 0.8623091440796451,
+  "sharp_ratio": 0.943305853237876
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 9.560725212097168,
+  "psnr": 29.29693880657152,
+  "ssim": 0.8724157120792768,
+  "sharp_ratio": 0.730818176221069
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 10.183902263641357,
+  "psnr": 32.6419168982211,
+  "ssim": 0.918167559663492,
+  "sharp_ratio": 1.1679064908945342
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 9.778010845184326,
+  "psnr": 27.196639854075997,
+  "ssim": 0.8676309198154859,
+  "sharp_ratio": 2.328894814065011
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 9.757203102111816,
+  "psnr": 27.237478299375287,
+  "ssim": 0.835308848717497,
+  "sharp_ratio": 1.4222111646496003
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 10.776658535003662,
+  "psnr": 30.147578450428842,
+  "ssim": 0.8945189697661249,
+  "sharp_ratio": 2.896952538198407
+ },
+ {
+  "image": "set5_002",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 9.432077169418335,
+  "psnr": 28.202676677985785,
+  "ssim": 0.8177952329334555,
+  "sharp_ratio": 3.6796166941914725
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 22.745027677851507,
+  "ssim": 0.7419781052164469,
+  "sharp_ratio": 0.039501609614084
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.7162940502166748,
+  "psnr": 24.321829010639576,
+  "ssim": 0.8473392467916057,
+  "sharp_ratio": 0.9505141209676591
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.0605034828186035,
+  "psnr": 20.539754727225166,
+  "ssim": 0.8045697687674075,
+  "sharp_ratio": 0.8884303939608744
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.0433380603790283,
+  "psnr": 20.82255980742597,
+  "ssim": 0.7816055474912823,
+  "sharp_ratio": 0.8627329453173312
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "4xNomos8kSC",
+  "seconds": 8.486241340637207,
+  "psnr": 23.02109809725758,
+  "ssim": 0.8080036555705129,
+  "sharp_ratio": 0.6903975089574732
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "4xLSDIR",
+  "seconds": 8.582071781158447,
+  "psnr": 26.024761282509818,
+  "ssim": 0.8706192797854324,
+  "sharp_ratio": 1.020931261360083
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "4xLSDIRplusC",
+  "seconds": 7.823378324508667,
+  "psnr": 20.938907135670398,
+  "ssim": 0.8218812671995788,
+  "sharp_ratio": 1.7500619050973254
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "uniscale_restore",
+  "seconds": 8.9262216091156,
+  "psnr": 23.015500647699444,
+  "ssim": 0.839800759665204,
+  "sharp_ratio": 0.6021037445119282
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 9.174486875534058,
+  "psnr": 25.634443412403993,
+  "ssim": 0.8483909126805405,
+  "sharp_ratio": 0.9013894831210291
+ },
+ {
+  "image": "set5_003",
+  "category": "Nature & paysage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 9.059603929519653,
+  "psnr": 23.773345964231694,
+  "ssim": 0.7978583381511347,
+  "sharp_ratio": 1.3269273861860993
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 31.93898251227178,
+  "ssim": 0.7646833314032901,
+  "sharp_ratio": 0.010220385446683935
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.8318064212799072,
+  "psnr": 31.37590917315673,
+  "ssim": 0.7560445705543133,
+  "sharp_ratio": 0.256775887170083
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.082007646560669,
+  "psnr": 30.614025367724267,
+  "ssim": 0.7550514651608509,
+  "sharp_ratio": 0.0670243537698371
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.038830041885376,
+  "psnr": 30.93249432156008,
+  "ssim": 0.7494841763940849,
+  "sharp_ratio": 0.08298232000901695
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 10.314344882965088,
+  "psnr": 30.6775350932537,
+  "ssim": 0.7447822727246083,
+  "sharp_ratio": 0.06914955910583177
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 11.757725477218628,
+  "psnr": 31.1355955790361,
+  "ssim": 0.7369268231402433,
+  "sharp_ratio": 0.3965391482510383
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 10.520672798156738,
+  "psnr": 30.335065076176534,
+  "ssim": 0.7547352938147226,
+  "sharp_ratio": 0.3104825378326944
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 9.937976598739624,
+  "psnr": 30.00597169729534,
+  "ssim": 0.7357447664723727,
+  "sharp_ratio": 0.09666930498073706
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 10.902535676956177,
+  "psnr": 30.419442162881893,
+  "ssim": 0.7229523337228669,
+  "sharp_ratio": 0.661805865786856
+ },
+ {
+  "image": "set5_004",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 10.670934915542603,
+  "psnr": 29.901262966362726,
+  "ssim": 0.6954836996156316,
+  "sharp_ratio": 0.7645579176343255
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "Lanczos",
+  "seconds": 0.0,
+  "psnr": 27.151746568985573,
+  "ssim": 0.8416739305568667,
+  "sharp_ratio": 0.044181177980016265
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "4xLSDIRCompactC3",
+  "seconds": 0.7852277755737305,
+  "psnr": 27.29470045248364,
+  "ssim": 0.8721437983787604,
+  "sharp_ratio": 0.9567021481540066
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "RealESRGAN_General_x4_v3",
+  "seconds": 1.1866860389709473,
+  "psnr": 26.00164408562585,
+  "ssim": 0.8611296961413792,
+  "sharp_ratio": 0.6009161232635585
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "RealESRGAN_General_WDN_x4_v3",
+  "seconds": 1.2035822868347168,
+  "psnr": 26.342037890452502,
+  "ssim": 0.8525823663479626,
+  "sharp_ratio": 0.5500022867215072
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "4xNomos8kSC",
+  "seconds": 10.916688919067383,
+  "psnr": 27.104160828487416,
+  "ssim": 0.8592437565203263,
+  "sharp_ratio": 0.5473998198355241
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "4xLSDIR",
+  "seconds": 10.841492891311646,
+  "psnr": 28.304698874508016,
+  "ssim": 0.8789995403508917,
+  "sharp_ratio": 0.9618342949254552
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "4xLSDIRplusC",
+  "seconds": 10.417989253997803,
+  "psnr": 24.202030837393405,
+  "ssim": 0.8544341307895492,
+  "sharp_ratio": 1.6746414286574312
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "uniscale_restore",
+  "seconds": 11.201669692993164,
+  "psnr": 26.577554459619122,
+  "ssim": 0.850991912449419,
+  "sharp_ratio": 0.3883649081697768
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "4x_NMKD-Siax_200k",
+  "seconds": 11.429221153259277,
+  "psnr": 27.348036219203898,
+  "ssim": 0.8652235595455381,
+  "sharp_ratio": 1.4964874135261297
+ },
+ {
+  "image": "set5_005",
+  "category": "Visage",
+  "model": "4x_NMKD-Superscale-SP_178000_G",
+  "seconds": 10.712591648101807,
+  "psnr": 24.61403719283815,
+  "ssim": 0.7943716248547403,
+  "sharp_ratio": 2.361695048972731
+ }
+]

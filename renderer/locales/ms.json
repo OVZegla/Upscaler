@@ -131,13 +131,9 @@
       "AFTER": "Selepas",
       "ZOOM": "Zum",
       "MODELS": {
-        "upscayl-standard-4x": {
-          "NAME": "Standard",
-          "DESCRIPTION": "Sesuai untuk kebanyakan imej."
-        },
-        "upscayl-lite-4x": {
-          "NAME": "Lite",
-          "DESCRIPTION": "Sesuai untuk kebanyakan imej. Peningkatan saiz berkelajuan tinggi dengan kehilangan kualiti yang minimum."
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
         "remacri-4x": {
           "NAME": "Remacri (Bukan Komersial)",

@@ -131,13 +131,9 @@
       "AFTER": "بعد",
       "ZOOM": "تكبير",
       "MODELS": {
-        "upscayl-standard-4x": {
-          "NAME": "ابسكيل الاعتيادي",
-          "DESCRIPTION": "يفضل لأغلب الصور"
-        },
-        "upscayl-lite-4x": {
-          "NAME": "ابسكيل المخفف",
-          "DESCRIPTION": "مناسب لاغلب الصور لاكن اسرع مع بعض خسائر في الجودة"
+        "4xLSDIRCompactC3": {
+          "NAME": "Precision",
+          "DESCRIPTION": "Most faithful to the original detail, and by far the fastest."
         },
         "remacri-4x": {
           "NAME": "Remacri (Non-Commercial)",

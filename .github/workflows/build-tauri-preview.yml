@@ -21,6 +21,14 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      # This is a Tauri build — the Electron binary is never used, but the
+      # `electron` devDependency still pulls ~100 MB from an external CDN on
+      # install. That download failed with a 500 and took the macOS job down
+      # with it. Skipping it makes the build faster and removes a third-party
+      # outage from the critical path.
+      ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+
     steps:
       - uses: actions/checkout@v4
 

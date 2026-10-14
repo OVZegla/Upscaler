@@ -43,6 +43,23 @@ fn os_folder() -> &'static str {
     }
 }
 
+/// True when macOS is running the app from a randomised read-only copy.
+///
+/// Gatekeeper does this to any quarantined bundle that is launched from where
+/// it was unzipped, rather than from /Applications. The app then lives at
+/// /private/var/folders/<...>/AppTranslocation/<uuid>/d/<App>.app, and a path
+/// in an error message is unrecognisable to the person reading it. Detecting
+/// it lets us say what to do instead of showing a cryptic failure.
+pub fn is_translocated(app: &AppHandle) -> bool {
+    if !cfg!(target_os = "macos") {
+        return false;
+    }
+    app.path()
+        .resource_dir()
+        .map(|d| d.to_string_lossy().contains("/AppTranslocation/"))
+        .unwrap_or(false)
+}
+
 /// Absolute path to the upscayl-ncnn executable.
 pub fn exec_path(app: &AppHandle) -> PathBuf {
     if let Ok(resource_dir) = app.path().resource_dir() {
