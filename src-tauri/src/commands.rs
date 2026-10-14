@@ -577,19 +577,16 @@ pub fn upscale_image(app: AppHandle, payload: ImageUpscaylPayload) {
         let output_dir = percent_decode(&payload.output_path);
         let file_name_with_ext = filename_from_path(&image_path);
         let file_name = file_stem(&file_name_with_ext);
-        let model_label = payload
-            .model
-            .strip_prefix("upscayl-")
-            .unwrap_or(&payload.model)
-            .to_string();
-
+        // Name the file after what the user chose, not after our internals.
+        // The model used to be appended; with one model it said nothing, and
+        // it made every name 18 characters longer for no one's benefit.
         let scale_or_width = if !custom_width.is_empty() {
-            format!("{custom_width}px_")
+            format!("{custom_width}px")
         } else {
-            format!("{}x_", payload.scale)
+            format!("{}x", payload.scale)
         };
         let out_file = format!(
-            "{output_dir}{}{file_name}_upscaled_{scale_or_width}{model_label}.{}",
+            "{output_dir}{}{file_name}_upscaled_{scale_or_width}.{}",
             sep(),
             payload.save_image_as
         );
@@ -748,14 +745,13 @@ pub fn double_upscale_image(app: AppHandle, payload: DoubleUpscaylPayload) {
         let file_name = file_stem(&full_file_name);
 
         let scale_or_width = if !custom_width.is_empty() {
-            format!("{custom_width}px_")
+            format!("{custom_width}px")
         } else {
-            format!("{}x_", payload.scale)
+            format!("{}x", payload.scale)
         };
         let out_file = format!(
-            "{output_dir}{}{file_name}_upscayl_{scale_or_width}{}.{}",
+            "{output_dir}{}{file_name}_upscaled_{scale_or_width}.{}",
             sep(),
-            payload.model,
             payload.save_image_as
         );
 
