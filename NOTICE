@@ -41,6 +41,7 @@ original Upscayl codebase:
   status is read, Windows loader statuses are named, and a missing Vulkan
   runtime is reported before a job starts
 - Progress, cancel and various UX fixes
+- A separate Android app (android/), described below
 
 The AI models themselves are NOT modified: they are shipped byte-for-byte as
 received (see the checksums below).
@@ -132,6 +133,25 @@ A model a user loads through the custom-models feature is not distributed
 with this software and carries whatever terms its own author set — several
 widely circulated upscaling models are published under CC BY-NC terms, which
 do not permit commercial use.
+
+
+ANDROID APP (android/)
+----------------------
+
+A minimal x2 upscaler for Android, written for Symp's. It runs the same
+4xLSDIRCompactC3 weights as the desktop app.
+
+   CHANGES to the model, as CC BY 4.0 asks them to be indicated: the ncnn
+   files listed above were read and written out as an ONNX graph of the same
+   architecture by android/tools/ncnn_to_onnx.py. This is a change of file
+   format only: no weight was retrained, pruned or otherwise altered. The
+   result is android/app/src/main/assets/upscale.onnx. The app shows the
+   model's title, author and licence in its "i" screen.
+
+   ONNX Runtime            — MIT        — Copyright (c) Microsoft Corporation
+                             https://github.com/microsoft/onnxruntime
+   AndroidX ExifInterface  — Apache-2.0 — Copyright The Android Open Source Project
+                             https://developer.android.com/jetpack/androidx
 
 
 THIRD-PARTY LIBRARIES

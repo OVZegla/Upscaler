@@ -58,3 +58,10 @@ flags.ts
 
 # TypeScript incremental build state — a local cache, never a source file.
 *.tsbuildinfo
+
+# Android build output
+android/.gradle/
+android/.kotlin/
+android/build/
+android/*/build/
+android/local.properties
