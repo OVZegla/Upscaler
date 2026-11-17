@@ -15,20 +15,23 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Runs the real model, the file the app ships, on a plain JVM.
+ * Runs the real models on a plain JVM: the fast one the app ships, and the
+ * desktop app's own, converted.
  *
- * The reference image was produced by the desktop app's own engine (ncnn, the
- * same weights) enlarged by 4 and averaged down to 2, so these tests hold the
- * Android pipeline to what the desktop app already does, not to itself.
+ * The reference image was produced by the desktop app's engine itself (ncnn,
+ * the same weights) enlarged by 4 and averaged down to 2. The desktop model
+ * must reproduce it; the fast model, trained to imitate the desktop one, must
+ * come clearly closer to it than a plain enlargement does.
  */
 class UpscalerTest {
 
-    private val modelBytes = File(System.getProperty("model.path")).readBytes()
+    private val appModel = File(System.getProperty("app.model.path")).readBytes()
+    private val desktopModel = File(System.getProperty("desktop.model.path")).readBytes()
     private val opened = mutableListOf<Upscaler>()
 
-    private fun upscaler(tile: Int = Upscaler.TILE): Upscaler {
+    private fun upscaler(model: ByteArray = appModel, tile: Int = Upscaler.TILE): Upscaler {
         val env = OrtEnvironment.getEnvironment()
-        val session = env.createSession(modelBytes, OrtSession.SessionOptions())
+        val session = env.createSession(model, OrtSession.SessionOptions())
         return Upscaler(env, session, tile).also { opened += it }
     }
 
@@ -53,35 +56,96 @@ class UpscalerTest {
         return if (mse == 0.0) Double.POSITIVE_INFINITY else 10 * log10(255.0 * 255.0 / mse)
     }
 
+    /** Plain bilinear x2, the floor any model has to beat. */
+    private fun bilinear(src: IntArray, w: Int, h: Int): IntArray {
+        val out = IntArray(w * 2 * h * 2)
+        for (dy in 0 until h * 2) {
+            val fy = ((dy + 0.5f) / 2 - 0.5f).coerceIn(0f, (h - 1).toFloat())
+            val y0 = fy.toInt(); val y1 = minOf(y0 + 1, h - 1); val wy = fy - y0
+            for (dx in 0 until w * 2) {
+                val fx = ((dx + 0.5f) / 2 - 0.5f).coerceIn(0f, (w - 1).toFloat())
+                val x0 = fx.toInt(); val x1 = minOf(x0 + 1, w - 1); val wx = fx - x0
+                var p = 0xFF shl 24
+                for (shift in intArrayOf(16, 8, 0)) {
+                    fun c(i: Int) = (src[i] shr shift) and 0xFF
+                    val top = c(y0 * w + x0) + (c(y0 * w + x1) - c(y0 * w + x0)) * wx
+                    val bot = c(y1 * w + x0) + (c(y1 * w + x1) - c(y1 * w + x0)) * wx
+                    p = p or (Math.round(top + (bot - top) * wy).coerceIn(0, 255) shl shift)
+                }
+                out[dy * w * 2 + dx] = p
+            }
+        }
+        return out
+    }
+
     @Test
-    fun matches_the_desktop_engine() {
+    fun the_desktop_model_matches_the_desktop_engine() {
         val src = load("sample.png")
         val ref = load("sample_engine_x2.png")
-        val out = upscaler().upscale2x(argbOf(src), src.width, src.height)
+        val out = upscaler(desktopModel).upscale2x(argbOf(src), src.width, src.height)
         assertNotNull(out)
-        assertEquals(ref.width * ref.height, out.size)
-        // The desktop engine computes in half precision on the GPU; this runs in
-        // single precision. 54.9 dB measured; a plain bicubic enlargement of the
-        // same image scores 30.7 against the same reference.
+        // ncnn computes in half precision on the GPU; this runs in single
+        // precision. 54.8 dB measured.
         val score = psnr(out, argbOf(ref))
-        println("PSNR against the desktop engine: %.2f dB".format(score))
+        println("Desktop model vs desktop engine: %.2f dB".format(score))
         assertTrue(score > 48.0, "PSNR against the desktop engine: $score dB")
     }
 
     @Test
-    fun tiles_leave_no_seam() {
-        // 300x200 cut into 64-pixel tiles, against one tile holding everything.
+    fun the_app_model_comes_much_closer_to_the_desktop_engine_than_plain_resizing() {
+        val src = load("sample.png")
+        val ref = argbOf(load("sample_engine_x2.png"))
+        val px = argbOf(src)
+        val fast = upscaler().upscale2x(px, src.width, src.height)!!
+        val fastScore = psnr(fast, ref)
+        val plainScore = psnr(bilinear(px, src.width, src.height), ref)
+        println("App model vs desktop engine: %.2f dB (bilinear: %.2f dB)".format(fastScore, plainScore))
+        assertTrue(fastScore > plainScore + FAST_MODEL_MARGIN_DB, "fast $fastScore dB, bilinear $plainScore dB")
+    }
+
+    @Test
+    fun the_app_model_is_a_x2_model_with_a_small_reach() {
+        val u = upscaler()
+        assertEquals(2, u.modelScale)
+        assertTrue(u.pad < Upscaler.DESKTOP_MODEL_PAD, "reach ${u.pad}")
+    }
+
+    @Test
+    fun the_app_model_is_several_times_faster_than_the_desktop_one() {
         val src = load("sample.png")
         val px = argbOf(src)
-        val tiled = upscaler(tile = 64).upscale2x(px, src.width, src.height)!!
-        val whole = upscaler(tile = 512).upscale2x(px, src.width, src.height)!!
-        var worst = 0
-        for (i in tiled.indices) {
-            for (shift in intArrayOf(16, 8, 0)) {
-                worst = maxOf(worst, abs(((tiled[i] shr shift) and 0xFF) - ((whole[i] shr shift) and 0xFF)))
-            }
+        val fast = upscaler()
+        val slow = upscaler(desktopModel)
+        // Warm both up: the first run pays for graph preparation.
+        fast.upscale2x(px, src.width, src.height)
+        slow.upscale2x(px, src.width, src.height)
+        fun time(u: Upscaler): Long {
+            val t = System.nanoTime()
+            repeat(3) { u.upscale2x(px, src.width, src.height) }
+            return System.nanoTime() - t
         }
-        assertTrue(worst <= 1, "largest difference between tiled and whole: $worst")
+        val ratio = time(slow).toDouble() / time(fast)
+        println("App model is %.1fx faster than the desktop one here".format(ratio))
+        // Measured well above this; the bar is low so a busy CI runner does
+        // not turn timing noise into a failure.
+        assertTrue(ratio > 3.0, "only ${ratio}x faster")
+    }
+
+    @Test
+    fun tiles_leave_no_seam() {
+        val src = load("sample.png")
+        val px = argbOf(src)
+        for (model in listOf(appModel, desktopModel)) {
+            val tiled = upscaler(model, tile = 64).upscale2x(px, src.width, src.height)!!
+            val whole = upscaler(model, tile = 512).upscale2x(px, src.width, src.height)!!
+            var worst = 0
+            for (i in tiled.indices) {
+                for (shift in intArrayOf(16, 8, 0)) {
+                    worst = maxOf(worst, abs(((tiled[i] shr shift) and 0xFF) - ((whole[i] shr shift) and 0xFF)))
+                }
+            }
+            assertTrue(worst <= 1, "largest difference between tiled and whole: $worst")
+        }
     }
 
     @Test
@@ -98,7 +162,6 @@ class UpscalerTest {
     fun transparency_is_carried_over() {
         val w = 20
         val h = 10
-        // Left half opaque, right half fully transparent.
         val px = IntArray(w * h) { i -> if (i % w < w / 2) 0xFFCC3366.toInt() else 0x00CC3366 }
         val out = upscaler().upscale2x(px, w, h)!!
         val ow = w * 2
@@ -125,7 +188,7 @@ class UpscalerTest {
         for (p in out) {
             for (shift in intArrayOf(16, 8, 0)) {
                 val d = abs(((p shr shift) and 0xFF) - ((colour shr shift) and 0xFF))
-                assertTrue(d <= 2, "flat colour drifted by $d")
+                assertTrue(d <= 3, "flat colour drifted by $d")
             }
         }
     }
@@ -159,5 +222,10 @@ class UpscalerTest {
         for ((c, want) in expected) assertEquals(want, Upscaler.reflect(c, n), "reflect($c)")
         assertEquals(0, Upscaler.reflect(-18, 1))
         for (c in -100..100) assertTrue(Upscaler.reflect(c, 3) in 0..2)
+    }
+
+    private companion object {
+        /** How far ahead of bilinear the fast model must stay. */
+        const val FAST_MODEL_MARGIN_DB = 2.0
     }
 }

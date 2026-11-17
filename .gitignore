@@ -65,3 +65,5 @@ android/.kotlin/
 android/build/
 android/*/build/
 android/local.properties
+
+__pycache__/

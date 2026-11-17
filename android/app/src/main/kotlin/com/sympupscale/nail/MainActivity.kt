@@ -310,7 +310,8 @@ class MainActivity : Activity() {
 
         val src = source
         if (src != null && stage != Stage.EMPTY) {
-            sizeLine.text = getString(R.string.size_line, src.width, src.height, src.width * 2, src.height * 2)
+            sizeLine.text = getString(R.string.size_line, src.width, src.height, src.width * 2, src.height * 2) +
+                "   ·   " + getString(R.string.zoom_hint)
             sizeLine.visibility = View.VISIBLE
         } else {
             sizeLine.visibility = View.INVISIBLE

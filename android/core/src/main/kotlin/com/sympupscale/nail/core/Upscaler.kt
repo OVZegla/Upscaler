@@ -7,19 +7,21 @@ import java.nio.FloatBuffer
 import kotlin.math.roundToInt
 
 /**
- * Doubles the size of an image with the same model the desktop app ships.
+ * Doubles the size of an image with an ONNX super-resolution model.
  *
- * The model only knows how to enlarge by 4, so every tile is enlarged by 4 and
- * each 2x2 block of the result is then averaged into one pixel. That lands on
- * exactly twice the size, and the averaging is also the cleanest way down: it
- * smooths nothing the model drew at a scale a viewer could see.
+ * Two kinds of model are accepted, told apart by the "scale" entry of the
+ * model's metadata. A x2 model's output is used as is. A x4 model (the desktop
+ * app's own, which carries no metadata) is enlarged by 4 and each 2x2 block of
+ * the result averaged into one pixel, which lands on exactly twice the size.
  *
  * The image is processed in tiles so that a cheap tablet with little memory can
- * still do it. Each tile is read with a margin of [PAD] pixels around it, which
- * is the reach of the model's 18 stacked 3x3 convolutions: with that margin a
- * tile sees exactly what it would see inside the whole image, so the seams
- * between tiles do not exist rather than being hidden. At the edges of the
- * image the margin is filled by mirroring the image, as the desktop engine does.
+ * still do it. Each tile is read with a margin as wide as the model's reach
+ * (its "receptive_radius" metadata: one pixel per stacked 3x3 convolution):
+ * with that margin a tile sees exactly what it would see inside the whole
+ * image, so the seams between tiles do not exist rather than being hidden. At
+ * the edges of the image the margin is filled by mirroring the image, as the
+ * desktop engine does. A small model has a small reach, which is part of why
+ * it is fast: less of every tile is margin.
  *
  * Pixels go in and out as ARGB ints, the layout of an Android Bitmap, which
  * keeps this class free of any Android dependency so it can be tested on a
@@ -32,13 +34,11 @@ class Upscaler(
 ) : AutoCloseable {
 
     companion object {
-        const val MODEL_SCALE = 4
+        /** Input pixels per tile side: a few tens of MB per tile at most. */
+        const val TILE = 256
 
-        /** Input pixels per tile side. Small enough for a few MB per tile. */
-        const val TILE = 128
-
-        /** Receptive-field radius of 18 stacked 3x3 convolutions. */
-        const val PAD = 18
+        /** Reach of the desktop model, 18 stacked 3x3 convolutions. */
+        const val DESKTOP_MODEL_PAD = 18
 
         /**
          * Largest input accepted, in pixels. The result is four times that, held
@@ -71,6 +71,19 @@ class Upscaler(
     }
 
     private val inputName = session.inputNames.first()
+
+    private val meta: Map<String, String> =
+        runCatching { session.metadata.customMetadata }.getOrNull() ?: emptyMap()
+
+    /** How much the model itself enlarges: 2 or 4. */
+    val modelScale: Int = meta["scale"]?.toIntOrNull() ?: 4
+
+    /** Margin read around each tile. */
+    val pad: Int = meta["receptive_radius"]?.toIntOrNull() ?: DESKTOP_MODEL_PAD
+
+    init {
+        require(modelScale == 2 || modelScale == 4) { "unsupported model scale $modelScale" }
+    }
 
     /**
      * Returns the image at twice its width and height, as ARGB, or null when
@@ -119,16 +132,16 @@ class Upscaler(
         x0: Int, y0: Int, tw: Int, th: Int,
         out: IntArray, outW: Int,
     ) {
-        val iw = tw + 2 * PAD
-        val ih = th + 2 * PAD
+        val iw = tw + 2 * pad
+        val ih = th + 2 * pad
         val plane = iw * ih
         val input = FloatBuffer.allocate(3 * plane)
         val data = input.array()
 
         for (y in 0 until ih) {
-            val sy = reflect(y0 - PAD + y, h)
+            val sy = reflect(y0 - pad + y, h)
             for (x in 0 until iw) {
-                val sx = reflect(x0 - PAD + x, w)
+                val sx = reflect(x0 - pad + x, w)
                 val p = src[sy * w + sx]
                 val i = y * iw + x
                 data[i] = ((p shr 16) and 0xFF) / 255f
@@ -140,10 +153,15 @@ class Upscaler(
         val shape = longArrayOf(1, 3, ih.toLong(), iw.toLong())
         OnnxTensor.createTensor(env, input, shape).use { tensor ->
             session.run(mapOf(inputName to tensor)).use { result ->
-                val y4 = (result[0] as OnnxTensor).floatBuffer
-                val ow4 = iw * MODEL_SCALE
-                val plane4 = ow4 * ih * MODEL_SCALE
-                val off = PAD * MODEL_SCALE
+                val y = (result[0] as OnnxTensor).floatBuffer
+                if (modelScale == 2) {
+                    copyX2(y, iw, ih, x0, y0, tw, th, out, outW)
+                    return
+                }
+                val y4 = y
+                val ow4 = iw * 4
+                val plane4 = ow4 * ih * 4
+                val off = pad * 4
                 // Each output pixel is the mean of a 2x2 block of the x4 result.
                 for (oy in 0 until th * 2) {
                     val r0 = (off + oy * 2) * ow4
@@ -162,6 +180,29 @@ class Upscaler(
             }
         }
     }
+
+    private fun copyX2(
+        y: FloatBuffer, iw: Int, ih: Int,
+        x0: Int, y0: Int, tw: Int, th: Int,
+        out: IntArray, outW: Int,
+    ) {
+        val ow = iw * 2
+        val plane = ow * ih * 2
+        val off = pad * 2
+        for (oy in 0 until th * 2) {
+            val row = (off + oy) * ow + off
+            val dstRow = (y0 * 2 + oy) * outW + x0 * 2
+            for (ox in 0 until tw * 2) {
+                val i = row + ox
+                val r = level(y.get(i))
+                val g = level(y.get(plane + i))
+                val b = level(y.get(2 * plane + i))
+                out[dstRow + ox] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
+            }
+        }
+    }
+
+    private fun level(v: Float): Int = (v * 255f).roundToInt().coerceIn(0, 255)
 
     private fun avg(buf: FloatBuffer, a: Int, b: Int): Int {
         val v = (buf.get(a) + buf.get(a + 1) + buf.get(b) + buf.get(b + 1)) * (255f / 4f)
