@@ -1,8 +1,11 @@
 mod commands;
 mod events;
 mod orientation;
+mod passes;
 mod paths;
+mod resolution;
 mod state;
+mod strips;
 mod upscale;
 
 use tauri::Emitter;
@@ -56,6 +59,7 @@ pub fn run() {
             commands::get_gpu_info,
             commands::get_system_info,
             commands::set_notifications_off,
+            commands::engine_diagnostics,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Symp's Upscale");

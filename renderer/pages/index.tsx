@@ -7,6 +7,13 @@ import {
   batchModeAtom,
   savedOutputPathAtom,
   progressAtom,
+  upscalePassAtom,
+  stripResultAtom,
+  themeAtom,
+  zoomAtom,
+  panAtom,
+  etaTextAtom,
+  migrateRetiredModelAtom,
   rememberOutputFolderAtom,
   userStatsAtom,
   compressionAtom,
@@ -20,6 +27,8 @@ import { translationAtom } from "@/atoms/translations-atom";
 import Sidebar from "@/components/sidebar";
 import TopBar from "@/components/top-bar";
 import LeftPanel from "@/components/left-panel";
+import SectionRail from "@/components/section-rail";
+import HelpOverlay from "@/components/help-overlay";
 import PreviewPanel from "@/components/preview-panel";
 import SettingsTab from "@/components/sidebar/settings-tab";
 import getDirectoryFromPath from "@common/get-directory-from-path";
@@ -28,6 +37,14 @@ import { ImageFormat, VALID_IMAGE_FORMATS } from "@/lib/valid-formats";
 import { initCustomModels } from "@/components/hooks/use-custom-models";
 import useSystemInfo from "@/components/hooks/use-system-info";
 import { logAtom } from "@/atoms/log-atom";
+import {
+  EtaState,
+  formatRemaining,
+  overallFraction,
+  remainingMs,
+  startEta,
+  updateEta,
+} from "@/lib/eta";
 
 const Home = () => {
   const t = useAtomValue(translationAtom);
@@ -50,11 +67,20 @@ const Home = () => {
   const [batchFolderPath, setBatchFolderPath] = useState("");
   const [upscaledBatchFolderPath, setUpscaledBatchFolderPath] = useState("");
   const setProgress = useSetAtom(progressAtom);
+  const setUpscalePass = useSetAtom(upscalePassAtom);
+  const setStripResult = useSetAtom(stripResultAtom);
+  const setEtaText = useSetAtom(etaTextAtom);
+  // Kept in a ref: it is updated from an event handler many times a
+  // second and must not re-render the page on every sample.
+  const etaRef = useRef<EtaState | null>(null);
+  const passRef = useRef<{ current: number; total: number } | null>(null);
+  const migrateRetiredModel = useSetAtom(migrateRetiredModelAtom);
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
 
   const [selectedTab, setSelectedTab] = useState(0);
+  const [showHelp, setShowHelp] = useState(false);
   const upscaylHandlerRef = useRef<(() => Promise<void>) | null>(null);
   const handleUpscaylHandlerReady = (handler: () => Promise<void>) => {
     upscaylHandlerRef.current = handler;
@@ -62,8 +88,15 @@ const Home = () => {
   const upscaylHandler = () => upscaylHandlerRef.current?.();
 
   // UI redesign state
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [zoomAmount, setZoomAmount] = useState("100");
+  const [theme, setTheme] = useAtom(themeAtom);
+  const [zoom, setZoom] = useAtom(zoomAtom);
+  const setPan = useSetAtom(panAtom);
+  // TopBar still speaks in strings; the atom holds "fit" or a number.
+  const zoomAmount = typeof zoom === "number" ? String(zoom) : "fit";
+  const setZoomAmount = (v: string) => {
+    setZoom(v === "fit" ? "fit" : Number(v));
+    if (v === "fit") setPan({ x: 0, y: 0 });
+  };
   const [dragActive, setDragActive] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
 
@@ -184,6 +217,13 @@ const Home = () => {
     }
   };
 
+  // A stored choice naming a model that no longer ships would send the
+  // backend after a file that is not on disk. Reset it before anything
+  // can be launched.
+  useEffect(() => {
+    migrateRetiredModel();
+  }, []);
+
   // ELECTRON EVENT LISTENERS
   useEffect(() => {
     const handleErrors = (data: string) => {
@@ -279,7 +319,36 @@ const Home = () => {
         title: t("ERRORS.GENERIC_ERROR.TITLE"),
         description: data,
       });
-      resetImagePaths();
+      // Deliberately NOT clearing the selected image: a failed run used to
+      // throw away what the user had loaded, so every retry began with
+      // finding the file again. Only the in-flight state is reset.
+      setProgress("");
+      setUpscalePass(null);
+      setEtaText(null);
+      etaRef.current = null;
+    });
+    // STRIP CUTTING: the finished image was split into strips
+    window.electron.on(ELECTRON_COMMANDS.UPSCAYL_STRIPS, (_, data: any) => {
+      try {
+        const d = typeof data === "string" ? JSON.parse(data) : data;
+        if (d && typeof d.folder === "string" && d.folder) {
+          setStripResult({ folder: d.folder, count: Number(d.count) || 0 });
+        }
+      } catch {
+        /* the strips are on disk either way — never break the run over this */
+      }
+    });
+    // CHAINED UPSCALE: which pass is running
+    window.electron.on(ELECTRON_COMMANDS.UPSCAYL_PASS, (_, data: any) => {
+      try {
+        const d = typeof data === "string" ? JSON.parse(data) : data;
+        if (d && typeof d.current === "number" && typeof d.total === "number") {
+          setUpscalePass({ current: d.current, total: d.total });
+          passRef.current = { current: d.current, total: d.total };
+        }
+      } catch {
+        /* a malformed pass event must never break the run */
+      }
     });
     // UPSCAYL PROGRESS
     window.electron.on(
@@ -289,7 +358,19 @@ const Home = () => {
         // Take the LAST one so the bar reflects the most recent value.
         const percentMatches = data.match(/\d+(?:\.\d+)?%/g);
         if (percentMatches) {
-          setProgress(percentMatches[percentMatches.length - 1]);
+          const last = percentMatches[percentMatches.length - 1];
+          setProgress(last);
+          // Combine the per-pass percentage with the pass counter into one
+          // fraction for the whole job, then estimate from elapsed time.
+          // The first progress line marks the real start of work; timing
+          // from the click would fold in the file dialog and model load.
+          if (!etaRef.current) etaRef.current = startEta();
+          {
+            const f = overallFraction(parseFloat(last), passRef.current);
+            etaRef.current = updateEta(etaRef.current, f);
+            const left = remainingMs(etaRef.current, f);
+            setEtaText(left === null ? null : formatRemaining(left));
+          }
         } else if (data.includes("converting")) {
           setProgress(t("APP.PROGRESS.SCALING_CONVERTING_TITLE"));
         } else if (data.includes("Successful")) {
@@ -332,6 +413,10 @@ const Home = () => {
     // UPSCAYL DONE
     window.electron.on(ELECTRON_COMMANDS.UPSCAYL_DONE, (_, data: string) => {
       setProgress("");
+      setUpscalePass(null);
+      setEtaText(null);
+      etaRef.current = null;
+      passRef.current = null;
       setUpscaledImagePath(data);
       setUserStats((prev) => ({
         ...prev,
@@ -487,8 +572,6 @@ const Home = () => {
       </div>
 
       <TopBar
-        selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
         theme={theme}
         setTheme={setTheme}
         zoomAmount={zoomAmount}
@@ -496,6 +579,17 @@ const Home = () => {
         showComparison={showComparison}
         setShowComparison={setShowComparison}
       />
+
+      {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
+        {/* The rail stays put whatever is shown beside it, so Paramètres has
+            somewhere to go back to. */}
+        <SectionRail
+          settingsOpen={selectedTab === 1}
+          onOpenSettings={() => setSelectedTab(selectedTab === 1 ? 0 : 1)}
+          onOpenHelp={() => setShowHelp(true)}
+        />
 
       {selectedTab === 1 ? (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
@@ -534,11 +628,11 @@ const Home = () => {
             dimensions={dimensions}
             doubleUpscaylCounter={doubleUpscaylCounter}
             setDimensions={setDimensions}
-            zoomAmount={zoomAmount}
             showComparison={showComparison}
           />
         </div>
       )}
+      </div>
 
     </div>
   );

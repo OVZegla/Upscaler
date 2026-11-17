@@ -1,5 +1,6 @@
 "use client";
 
+import { publicAssetUrl } from "@/lib/asset-url";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,12 +72,12 @@ const SelectModelDialog = () => {
                     <div className="relative h-52 w-full overflow-hidden rounded-sm">
                       <div className="flex h-full w-full">
                         <img
-                          src={`public:///model-comparison/${model.id}/before.webp`}
+                          src={publicAssetUrl(`model-comparison/${model.id}/before.webp`)}
                           alt={`Model Before`}
                           className="h-full w-1/2 object-cover"
                         />
                         <img
-                          src={`public:///model-comparison/${model.id}/after.webp`}
+                          src={publicAssetUrl(`model-comparison/${model.id}/after.webp`)}
                           alt={`Model After`}
                           className="h-full w-1/2 object-cover"
                         />
@@ -138,7 +139,7 @@ const SelectModelDialog = () => {
             <div className="flex h-full w-full">
               <div className="relative h-full w-1/2">
                 <img
-                  src={`public:///model-comparison/${MODELS[zoomedModel]?.id}/before.webp`}
+                  src={publicAssetUrl(`model-comparison/${MODELS[zoomedModel]?.id}/before.webp`)}
                   alt={`Zoomed in Image - Before`}
                   className="h-full w-full object-contain"
                 />
@@ -148,7 +149,7 @@ const SelectModelDialog = () => {
               </div>
               <div className="relative h-full w-1/2">
                 <img
-                  src={`public:///model-comparison/${MODELS[zoomedModel]?.id}/after.webp`}
+                  src={publicAssetUrl(`model-comparison/${MODELS[zoomedModel]?.id}/after.webp`)}
                   alt={`Zoomed in Image - After`}
                   className="h-full w-full object-contain"
                 />

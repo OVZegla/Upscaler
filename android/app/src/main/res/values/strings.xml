@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Symp\'s Upscale</string>
+    <string name="pick_title">Choisir une image</string>
+    <string name="pick_hint">Touchez ici pour ouvrir une photo ou un motif</string>
+    <string name="upscale">Upscale ×2</string>
+    <string name="working">Upscale en cours… %1$d %%</string>
+    <string name="preparing">Préparation…</string>
+    <string name="cancel">Annuler</string>
+    <string name="save">Enregistrer</string>
+    <string name="saved">Enregistrée dans Images › Symp\'s Upscale</string>
+    <string name="new_image">Nouvelle image</string>
+    <string name="before">Avant</string>
+    <string name="after">Après</string>
+    <string name="size_line">%1$d × %2$d px  →  %3$d × %4$d px</string>
+    <string name="zoom_hint">Pincez pour zoomer</string>
+    <string name="err_open">Impossible d\'ouvrir cette image.</string>
+    <string name="err_too_big">Cette image fait déjà %1$d × %2$d px : elle est assez grande pour être imprimée sans upscale.</string>
+    <string name="err_upscale">L\'upscale a échoué : %1$s</string>
+    <string name="err_memory">Pas assez de mémoire sur cet appareil pour cette image. Essayez avec une image plus petite.</string>
+    <string name="err_save">Impossible d\'enregistrer l\'image : %1$s</string>
+    <string name="err_engine">Le moteur d\'upscale n\'a pas pu démarrer : %1$s</string>
+    <string name="err_no_picker">Aucune application ne permet de choisir une image sur cet appareil.</string>
+    <string name="about_title">Symp\'s Upscale 2.0</string>
+    <string name="about_body">Upscale ×2 par intelligence artificielle, sans connexion internet : tout le calcul se fait sur cet appareil.\n\nModèle d\'IA : modèle rapide de Symp\'s, entraîné à imiter 4xLSDIRCompactC3 de Philip Hofmann (licence Creative Commons Attribution 4.0, CC BY 4.0). L\'auteur de 4xLSDIRCompactC3 ne cautionne pas ce produit.\n\nMoteur de calcul : ONNX Runtime, © Microsoft, licence MIT.\n\nCode source : github.com/OVZegla/Upscaler</string>
+    <string name="ok">OK</string>
+</resources>

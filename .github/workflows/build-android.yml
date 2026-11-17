@@ -1,0 +1,47 @@
+name: Build Android (Symp's Upscale, onglerie)
+
+on:
+  push:
+    branches:
+      - claude/upscayl-symp-redesign-sevJH
+    paths:
+      - "android/**"
+      - ".github/workflows/build-android.yml"
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # The runner image ships the Android SDK and sets ANDROID_HOME, which
+      # is what brings the :app module into the build.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Test the upscaler against the desktop engine's output
+        run: gradle :core:test --no-daemon
+
+      - name: Build the APK
+        run: gradle :app:assembleRelease --no-daemon
+
+      - name: Name the APK
+        run: cp app/build/outputs/apk/release/app-release.apk "SympsUpscale-onglerie-${GITHUB_SHA::7}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: symps-upscale-android
+          path: android/SympsUpscale-onglerie-*.apk
+          retention-days: 30
+          if-no-files-found: error

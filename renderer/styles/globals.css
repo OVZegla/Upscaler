@@ -39,37 +39,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Redesign theme tokens (light / dark) ─────────────────────────── */
+/* ── Theme tokens, built on the Symp's mark ───────────────────────────
+   Navy #0A2F7A and red #D01217 come straight from the logo. The interface
+   used to run on a generic indigo/blue that belonged to no brand, which is
+   what made it read as a template. Navy is too dark to carry contrast on a
+   dark background, so dark mode lifts it rather than reusing it as-is. */
 :root,
 [data-theme="light"] {
-  --bg: #F4F6FA;
-  --bg-card: #FFFFFF;
-  --ink: #1A1A2E;
-  --ink-2: #3A3A5C;
-  --ink-3: #8888A8;
-  --border: rgba(26,26,46,0.08);
-  --border-2: rgba(26,26,46,0.14);
-  --accent: #4F46E5;
-  --accent-tint: rgba(79,70,229,0.08);
-  --accent-2: #3B82F6;
-  --red: #E53E3E;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-  --radius: 12px;
+  --bg:           #F6F7F9;
+  --bg-card:      #FFFFFF;
+  --bg-sunken:    #EDEFF4;
+  --ink:          #0B1220;
+  --ink-2:        #3D4758;
+  --ink-3:        #78839A;
+  --border:       rgba(11,18,32,0.09);
+  --border-2:     rgba(11,18,32,0.16);
+  --accent:       #0A2F7A;
+  --accent-2:     #14479F;
+  --accent-tint:  rgba(10,47,122,0.07);
+  --accent-ink:   #FFFFFF;
+  --red:          #D01217;
+  --red-tint:     rgba(208,18,23,0.08);
+  --shadow:       0 1px 2px rgba(11,18,32,0.05), 0 8px 24px rgba(11,18,32,0.07);
+  --shadow-pop:   0 2px 6px rgba(11,18,32,0.08), 0 18px 48px rgba(11,18,32,0.14);
+  --radius:       12px;
 }
 
 [data-theme="dark"] {
-  --bg: #0F0F1A;
-  --bg-card: #1A1A2E;
-  --ink: #F0F0FF;
-  --ink-2: #C0C0D8;
-  --ink-3: #7070A0;
-  --border: rgba(240,240,255,0.08);
-  --border-2: rgba(240,240,255,0.14);
-  --accent: #6366F1;
-  --accent-tint: rgba(99,102,241,0.12);
-  --accent-2: #60A5FA;
-  --red: #FC8181;
-  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --bg:           #0B0F17;
+  --bg-card:      #141A25;
+  --bg-sunken:    #0F141D;
+  --ink:          #EEF2F8;
+  --ink-2:        #B8C2D2;
+  --ink-3:        #7A869A;
+  --border:       rgba(238,242,248,0.10);
+  --border-2:     rgba(238,242,248,0.18);
+  --accent:       #5B8DEF;
+  --accent-2:     #7AA5F5;
+  --accent-tint:  rgba(91,141,239,0.14);
+  --accent-ink:   #0B0F17;
+  --red:          #FF5C62;
+  --red-tint:     rgba(255,92,98,0.12);
+  --shadow:       0 1px 2px rgba(0,0,0,0.45), 0 10px 30px rgba(0,0,0,0.40);
+  --shadow-pop:   0 2px 8px rgba(0,0,0,0.55), 0 22px 56px rgba(0,0,0,0.55);
+  --radius:       12px;
+}
+
+/* Every colour change crossfades, so switching theme is a settle, not a
+   flash. Transforms are excluded: they belong to the interactions. */
+[data-theme] *:not(.symp-menu-in):not(.symp-dialog-in) {
+  transition:
+    background-color 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+    color 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.28s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* ── Symp design tokens ───────────────────────────────────────────── */
@@ -329,6 +352,162 @@
 
 .symp-progress-indeterminate {
   animation: symp-indeterminate 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── v1.5 micro-interactions ──────────────────────────────────────── */
+
+/* Sections easing in on mount, staggered via --symp-delay. */
+@keyframes symp-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.symp-rise {
+  animation: symp-rise 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation-delay: var(--symp-delay, 0ms);
+}
+
+/* Press feedback shared by cards and buttons. */
+.symp-press {
+  transition: transform 0.14s cubic-bezier(0.32, 0.72, 0, 1),
+              box-shadow 0.2s ease,
+              border-color 0.2s ease,
+              background 0.2s ease;
+}
+.symp-press:active { transform: scale(0.975); }
+
+/* Lift on hover, for selectable cards. */
+.symp-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(14, 14, 15, 0.1);
+}
+
+/* Attention pulse while a drop target is armed. */
+@keyframes symp-drop-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--symp-accent-tint, rgba(0,85,164,0.10)); }
+  50%      { box-shadow: 0 0 0 10px transparent; }
+}
+.symp-drop-active { animation: symp-drop-pulse 1.5s ease-out infinite; }
+
+/* Launch animation: the mark settles, then a rule draws left to right. */
+@keyframes symp-splash-logo {
+  0%   { opacity: 0; transform: scale(0.92) translateY(10px); filter: blur(6px); }
+  60%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+.symp-splash-logo {
+  animation: symp-splash-logo 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes symp-splash-bar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.symp-splash-bar {
+  animation: symp-splash-bar 1.15s cubic-bezier(0.65, 0, 0.35, 1) 0.35s both;
+}
+
+/* The release number lands once the rule has finished drawing. */
+@keyframes symp-splash-version {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.symp-splash-version {
+  animation: symp-splash-version 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.35s both;
+}
+
+/* Modal entrances. */
+@keyframes symp-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.symp-overlay-in { animation: symp-overlay-in 0.2s ease both; }
+
+@keyframes symp-dialog-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.symp-dialog-in {
+  animation: symp-dialog-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* Menus and popovers: a short settle from just under their trigger. */
+@keyframes symp-menu-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.symp-menu-in {
+  animation: symp-menu-in 0.2s cubic-bezier(0.32, 0.72, 0, 1) both;
+  transform-origin: top right;
+}
+
+/* Switching section in the left rail.
+   The panel settles in from the rail's side, slightly small and out of
+   focus, while a thin accent line sweeps down across it once. Short enough
+   that it never delays the click it answers. */
+@keyframes symp-section-in {
+  from { opacity: 0; transform: translateX(14px) scale(0.985); filter: blur(3px); }
+  60%  { opacity: 1; filter: blur(0); }
+  to   { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+.symp-section-in {
+  animation: symp-section-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  position: relative;
+}
+
+@keyframes symp-section-sweep {
+  from { transform: translateY(-100%); opacity: 0; }
+  25%  { opacity: 1; }
+  to   { transform: translateY(1400%); opacity: 0; }
+}
+.symp-section-in::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent) 35%,
+    var(--red) 65%,
+    transparent
+  );
+  animation: symp-section-sweep 0.62s cubic-bezier(0.4, 0, 0.2, 1) both;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Each block arrives just after the one above it. */
+.symp-section-in > * {
+  animation: symp-section-stagger 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.symp-section-in > *:nth-child(1) { animation-delay: 0.03s; }
+.symp-section-in > *:nth-child(2) { animation-delay: 0.08s; }
+.symp-section-in > *:nth-child(3) { animation-delay: 0.13s; }
+@keyframes symp-section-stagger {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .symp-rise,
+  .symp-drop-active,
+  .symp-progress-indeterminate,
+  .symp-splash-logo,
+  .symp-splash-bar,
+  .symp-splash-version,
+  .symp-overlay-in,
+  .symp-dialog-in,
+  .symp-menu-in,
+  .symp-section-in,
+  .symp-section-in > *,
+  .symp-section-in::before {
+    animation: none !important;
+  }
+  .symp-press,
+  .symp-lift:hover { transition: none; transform: none; }
 }
 
 .no-scrollbar {

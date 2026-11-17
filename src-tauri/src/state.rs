@@ -22,6 +22,11 @@ pub struct AppState {
     pub saved_batch_path: Mutex<Option<String>>,
     /// Suppress desktop notifications when true.
     pub notifications_off: Arc<AtomicBool>,
+    /// Set once the engine has been seen to start and run its own code, so
+    /// the load check costs one process spawn per session instead of one per
+    /// job. Never set to false: a failed check is re-run, since the remedy is
+    /// usually installing a driver without closing the application.
+    pub engine_loads: Mutex<Option<bool>>,
 }
 
 impl AppState {

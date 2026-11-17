@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { cmToPixels } from "@/lib/print-size";
 import {
   batchModeAtom,
   compressionAtom,
@@ -14,12 +15,19 @@ import {
   useCustomWidthAtom,
   tileSizeAtom,
   selectedModelIdAtom,
-  doubleUpscaylAtom,
   gpuIdAtom,
   saveImageAsAtom,
   userStatsAtom,
   ttaModeAtom,
   copyMetadataAtom,
+  usePrintSizeAtom,
+  printDpiAtom,
+  printWidthCmAtom,
+  upscalePassAtom,
+  cutStripsAtom,
+  stripCountAtom,
+  stripOverlapCmAtom,
+  stripResultAtom,
 } from "../../atoms/user-settings-atom";
 import useLogger from "../hooks/use-logger";
 import {
@@ -66,7 +74,6 @@ const Sidebar = ({
   const version = useUpscaylVersion();
 
   const [selectedModelId] = useAtom(selectedModelIdAtom);
-  const [doubleUpscayl, setDoubleUpscayl] = useAtom(doubleUpscaylAtom);
   const [gpuId] = useAtom(gpuIdAtom);
   const [saveImageAs] = useAtom(saveImageAsAtom);
 
@@ -74,6 +81,7 @@ const Sidebar = ({
   const outputPath = useAtomValue(savedOutputPathAtom);
   const [compression] = useAtom(compressionAtom);
   const setProgress = useSetAtom(progressAtom);
+  const setUpscalePass = useSetAtom(upscalePassAtom);
   const [batchMode, setBatchMode] = useAtom(batchModeAtom);
   const [scale] = useAtom(scaleAtom);
   const setDontShowCloudModal = useSetAtom(dontShowCloudModalAtom);
@@ -84,14 +92,56 @@ const Sidebar = ({
   const setUserStats = useSetAtom(userStatsAtom);
   const ttaMode = useAtomValue(ttaModeAtom);
   const [copyMetadata] = useAtom(copyMetadataAtom);
+  const usePrintSize = useAtomValue(usePrintSizeAtom);
+  const printDpi = useAtomValue(printDpiAtom);
+  const printWidthCm = useAtomValue(printWidthCmAtom);
+  const cutStrips = useAtomValue(cutStripsAtom);
+  const stripCount = useAtomValue(stripCountAtom);
+  const stripOverlapCm = useAtomValue(stripOverlapCmAtom);
+  const setStripResult = useSetAtom(stripResultAtom);
+  // Only stamp a resolution when the user sized the job in real-world units.
+  const outputDpi = usePrintSize ? printDpi : null;
+
+  // Cutting is only meaningful from two strips up; below that the backend
+  // would do a full extra decode of a wall-sized file for nothing.
+  const effectiveStripCount = cutStrips && stripCount > 1 ? stripCount : null;
+  const effectiveStripOverlapCm = effectiveStripCount ? stripOverlapCm : null;
+
+  // Print mode derives the pixel width here rather than writing into
+  // customWidthAtom, which belongs to the "custom resolution" setting —
+  // sharing it would clobber whatever the user set there.
+  const printWidthPx = usePrintSize ? cmToPixels(printWidthCm, printDpi) : 0;
+  const effectiveUseCustomWidth = usePrintSize ? true : useCustomWidth;
+  const effectiveCustomWidth = usePrintSize
+    ? printWidthPx > 0
+      ? printWidthPx.toString()
+      : null
+    : customWidth > 0
+      ? customWidth.toString()
+      : null;
+
+  // In print mode the number of passes is derived from the target width, so a
+  // "double upscale" on top would route the job through the two-pass command
+  // and overshoot the size the user asked for. The toggle is hidden there, but
+  // a value stored from factor mode would still have taken that branch.
+  // Double upscale is gone: "double x4" and "x16" produced the same file, and
+  // above 4x the binary capped its own -s so it silently gave 16x whatever the
+  // slider said. The factor slider covers the whole range through the chain.
+  // Pinned false so a value stored by an older version cannot take the
+  // two-pass branch, which the backend still exposes.
+  const effectiveDoubleUpscayl = false;
 
   const upscaylHandler = async () => {
     logit("🔄 Resetting Upscaled Image Path");
     setUpscaledImagePath("");
+    // Clear any pass state left by a previous job — a run that errored out
+    // never emits UPSCAYL_DONE, so it would otherwise skew this one.
+    setUpscalePass(null);
+    setStripResult(null);
     setUpscaledBatchFolderPath("");
     if (imagePath !== "" || batchFolderPath !== "") {
       setProgress(t("APP.PROGRESS.WAIT_TITLE"));
-      if (doubleUpscayl) {
+      if (effectiveDoubleUpscayl) {
         window.electron.send<DoubleUpscaylPayload>(
           ELECTRON_COMMANDS.DOUBLE_UPSCAYL,
           {
@@ -103,11 +153,14 @@ const Sidebar = ({
             scale,
             noImageProcessing,
             compression: compression.toString(),
-            customWidth: customWidth > 0 ? customWidth.toString() : null,
-            useCustomWidth,
+            customWidth: effectiveCustomWidth,
+            useCustomWidth: effectiveUseCustomWidth,
             tileSize,
             ttaMode,
             copyMetadata,
+            outputDpi,
+            stripCount: effectiveStripCount,
+            stripOverlapCm: effectiveStripOverlapCm,
           },
         );
         setUserStats((prev) => ({
@@ -119,7 +172,6 @@ const Sidebar = ({
         }));
         logit("🏁 DOUBLE_UPSCAYL");
       } else if (batchMode) {
-        setDoubleUpscayl(false);
         window.electron.send<BatchUpscaylPayload>(
           ELECTRON_COMMANDS.FOLDER_UPSCAYL,
           {
@@ -131,11 +183,12 @@ const Sidebar = ({
             scale,
             noImageProcessing,
             compression: compression.toString(),
-            customWidth: customWidth > 0 ? customWidth.toString() : null,
-            useCustomWidth,
+            customWidth: effectiveCustomWidth,
+            useCustomWidth: effectiveUseCustomWidth,
             tileSize,
             ttaMode,
             copyMetadata,
+            outputDpi,
           },
         );
         setUserStats((prev) => ({
@@ -156,11 +209,14 @@ const Sidebar = ({
           overwrite,
           noImageProcessing,
           compression: compression.toString(),
-          customWidth: customWidth > 0 ? customWidth.toString() : null,
-          useCustomWidth,
+          customWidth: effectiveCustomWidth,
+          useCustomWidth: effectiveUseCustomWidth,
           tileSize,
           ttaMode,
           copyMetadata,
+          outputDpi,
+          stripCount: effectiveStripCount,
+          stripOverlapCm: effectiveStripOverlapCm,
         });
         setUserStats((prev) => ({
           ...prev,
@@ -181,7 +237,9 @@ const Sidebar = ({
 
   useEffect(() => {
     onUpscaylHandlerReady(upscaylHandler);
-  }, [imagePath, batchFolderPath, outputPath, selectedModelId, doubleUpscayl, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite]);
+    // Print-mode values belong here too: without them the registered handler
+    // keeps a stale width/DPI and the job runs with the previous size.
+  }, [imagePath, batchFolderPath, outputPath, selectedModelId, batchMode, scale, gpuId, saveImageAs, noImageProcessing, compression, customWidth, useCustomWidth, tileSize, ttaMode, copyMetadata, overwrite, usePrintSize, printDpi, printWidthCm, cutStrips, stripCount, stripOverlapCm]);
 
   return (
     <LeftNav

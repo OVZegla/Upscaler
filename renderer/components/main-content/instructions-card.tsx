@@ -1,4 +1,5 @@
 import React from "react";
+import SympLogo from "@/components/icons/symp-logo";
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
@@ -67,11 +68,7 @@ function InstructionsCard({
             marginBottom: 6,
           }}
         >
-          <img
-            src="public:///icone.png"
-            alt="Symp's Upscale"
-            style={{ width: 72, height: 72, objectFit: "contain" }}
-          />
+          <SympLogo size={65} subtitle={false} />
         </div>
 
         <div
